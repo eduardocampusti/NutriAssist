@@ -96,79 +96,80 @@ const SchoolDirectorDashboard: React.FC<SchoolDirectorDashboardProps> = ({
             )}
 
             {/* METRICS GRID */}
+            {/* METRICS GRID - GOVERNANCE STYLE */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* METRICS GRID - GOVERNANCE STYLE */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[
-                        { title: 'Matrículas', value: school.numAlunos, sub: 'Ativos no Censo', icon: <Users size={24} /> },
-                        { title: 'Alunos NE', value: school.numAlunosNE, sub: 'Necessidades Especiais', icon: <AlertCircle size={24} /> },
-                        { title: 'Cardápio', value: myExecutionToday ? 'Executado' : 'Pendente', sub: 'Status Hoje', icon: <BookOpen size={24} /> },
-                        { title: 'Pendências', value: '0', sub: 'Regular', icon: <FileText size={24} /> }
-                    ].map((stat, i) => (
-                        <Card key={i} variant="governance" padding="md" className="hover:bg-surface-50 transition-colors group">
-                            <div className="flex justify-between items-start mb-4">
-                                <span className="text-slate-400 group-hover:text-slate-900 transition-colors">{stat.icon}</span>
-                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-sm"></div>
-                            </div>
-                            <p className="text-4xl font-display font-black text-slate-900 tracking-tighter">{stat.value}</p>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.title}</p>
-                        </Card>
-                    ))}
-                </div>
-
-                {/* QUICK ACTIONS ROW */}
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Acesso Rápido</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Card
-                        onClick={() => navigate('/alunos')}
-                        className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
-                        variant="governance"
-                        padding="lg"
-                    >
-                        <div className="flex items-center gap-4">
-                            <Users size={32} className="text-slate-900 group-hover:text-white transition-colors" />
-                            <div>
-                                <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Turmas</h4>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Gerenciar Alunos</p>
-                            </div>
+                {[
+                    { title: 'Matrículas', value: school.numAlunos, sub: 'Ativos no Censo', icon: <Users size={24} /> },
+                    { title: 'Alunos NE', value: school.numAlunosNE, sub: 'Necessidades Especiais', icon: <AlertCircle size={24} /> },
+                    { title: 'Cardápio', value: myExecutionToday ? 'Executado' : 'Pendente', sub: 'Status Hoje', icon: <BookOpen size={24} /> },
+                    { title: 'Pendências', value: '0', sub: 'Regular', icon: <FileText size={24} /> }
+                ].map((stat, i) => (
+                    <Card key={i} variant="governance" padding="md" className="hover:bg-surface-50 transition-colors group">
+                        <div className="flex justify-between items-start mb-4">
+                            <span className="text-slate-400 group-hover:text-slate-900 transition-colors">{stat.icon}</span>
+                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-sm"></div>
                         </div>
+                        <p className="text-4xl font-display font-black text-slate-900 tracking-tighter">{stat.value}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.title}</p>
                     </Card>
-
-                    <Card
-                        onClick={() => navigate('/cardapio')}
-                        className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
-                        variant="governance"
-                        padding="lg"
-                    >
-                        <div className="flex items-center gap-4">
-                            <Calendar size={32} className="text-slate-900 group-hover:text-white transition-colors" />
-                            <div>
-                                <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Cardápio</h4>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Registrar Adesão</p>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <AccessGate permission="RECEIVE_DISTRIBUTION">
-                        <Card
-                            onClick={() => navigate('/estoque/recebimento')}
-                            className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
-                            variant="governance"
-                            padding="lg"
-                        >
-                            <div className="flex items-center gap-4">
-                                <Truck size={32} className="text-slate-900 group-hover:text-white transition-colors" />
-                                <div>
-                                    <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Estoque</h4>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Receber Cota</p>
-                                </div>
-                            </div>
-                        </Card>
-                    </AccessGate>
-                </div>
-
+                ))}
             </div>
-            );
+
+            {/* QUICK ACTIONS ROW */}
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest ml-1">Acesso Rápido</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card
+                    onClick={() => navigate('/alunos')}
+                    className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
+                    variant="governance"
+                    padding="lg"
+                >
+                    <div className="flex items-center gap-4">
+                        <Users size={32} className="text-slate-900 group-hover:text-white transition-colors" />
+                        <div>
+                            <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Turmas</h4>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Gerenciar Alunos</p>
+                        </div>
+                    </div>
+                </Card>
+
+                <Card
+                    onClick={() => navigate('/cardapio')}
+                    className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
+                    variant="governance"
+                    padding="lg"
+                >
+                    <div className="flex items-center gap-4">
+                        <Calendar size={32} className="text-slate-900 group-hover:text-white transition-colors" />
+                        <div>
+                            <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Cardápio</h4>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Registrar Adesão</p>
+                        </div>
+                    </div>
+                </Card>
+
+                <AccessGate permission="RECEIVE_DISTRIBUTION">
+                    <Card
+                        onClick={() => navigate('/estoque/recebimento')}
+                        className="group cursor-pointer hover:bg-emerald-600 hover:text-white transition-all duration-300"
+                        variant="governance"
+                        padding="lg"
+                    >
+                        <div className="flex items-center gap-4">
+                            <Truck size={32} className="text-slate-900 group-hover:text-white transition-colors" />
+                            <div>
+                                <h4 className="font-display font-black uppercase text-xl text-slate-900 group-hover:text-white">Estoque</h4>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-emerald-200">Receber Cota</p>
+                            </div>
+                        </div>
+                    </Card>
+                </AccessGate>
+            </div>
+
+        </div>
+    );
 };
+
+export default SchoolDirectorDashboard;
 
 
