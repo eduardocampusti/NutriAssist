@@ -93,13 +93,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 })));
             } else {
                 // Seeding
-                const initial: UserProfile[] = [
-                    { id: '00000000-0000-0000-0000-000000000001', nome: "Admin Municipal", role: UserRole.ADMIN, ativo: true, email: 'admin@gmail.com', login: 'admin' },
-                    { id: '00000000-0000-0000-0000-000000000002', nome: "Nutricionista RT", role: UserRole.NUTRICIONISTA, ativo: true, email: 'nutri@gmail.com', login: 'nutri' },
-                    { id: '00000000-0000-0000-0000-000000000003', nome: "Coordenadora Geral", role: UserRole.COORDENADORA, ativo: true, email: 'coord@gmail.com', login: 'coord' },
-                    { id: '00000000-0000-0000-0000-000000000004', nome: "Técnico de Estoque", role: UserRole.TECNICO, ativo: true, email: 'tecnico@gmail.com', login: 'tecnico' },
-                    { id: '00000000-0000-0000-0000-000000000005', nome: "Gabinete da Secretaria", role: UserRole.SECRETARIO, ativo: true, email: 'secretaria@gmail.com', login: 'secretaria' }
-                ];
+                const initial: UserProfile[] = [];
                 setProfiles(initial);
                 // Force Admin default ONLY if there is no user and we are seeding from scratch
                 // Actually, better not to set currentProfileId to admin by default if we want security.

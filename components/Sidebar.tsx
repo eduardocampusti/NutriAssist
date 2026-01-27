@@ -88,22 +88,18 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* PROFILE SELECTOR */}
         <div className="px-6 mb-6">
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-4 transition-all hover:bg-slate-900/60 group">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-xs border border-emerald-500/30">
                 {activeProfile?.nome.charAt(0)}
               </div>
               <div className="flex-1 overflow-hidden">
                 <p className="text-xs font-black text-slate-200 uppercase truncate">{activeProfile?.nome}</p>
-                <p className="text-[9px] font-bold text-emerald-500/70 uppercase tracking-widest">{activeProfile?.role}</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <p className="text-[9px] font-bold text-emerald-500/70 uppercase tracking-widest">{activeProfile?.role}</p>
+                </div>
               </div>
             </div>
-            <select
-              value={currentProfileId}
-              onChange={(e) => onProfileChange(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-[10px] font-black uppercase text-slate-400 outline-none cursor-pointer focus:border-emerald-500/50 transition-colors appearance-none"
-            >
-              {profiles.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
-            </select>
           </div>
         </div>
 
