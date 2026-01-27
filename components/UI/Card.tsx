@@ -1,15 +1,31 @@
 import React, { HTMLAttributes, forwardRef } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-    noPadding?: boolean;
+    variant?: 'elevated' | 'flat' | 'outlined' | 'glass';
+    padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-    ({ className = '', noPadding = false, children, ...props }, ref) => {
+    ({ className = '', variant = 'elevated', padding = 'md', children, ...props }, ref) => {
+
+        const variants = {
+            elevated: 'bg-white border border-slate-100 shadow-sm',
+            flat: 'bg-slate-50 border border-slate-100',
+            outlined: 'bg-transparent border border-slate-200',
+            glass: 'bg-white/80 backdrop-blur-md border border-white/20 shadow-lg'
+        };
+
+        const paddings = {
+            none: '',
+            sm: 'p-4',
+            md: 'p-6',
+            lg: 'p-8'
+        };
+
         return (
             <div
                 ref={ref}
-                className={`bg-white rounded-xl border border-slate-200 shadow-sm ${noPadding ? '' : 'p-6'} ${className}`}
+                className={`rounded-2xl transition-all ${variants[variant]} ${paddings[padding]} ${className}`}
                 {...props}
             >
                 {children}
