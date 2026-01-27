@@ -1,0 +1,42 @@
+components/Inventory/DistributionManager.tsx(84,58): error TS2339: Property 'data' does not exist on type 'InventoryMovement'.
+components/Inventory/DistributionManager.tsx(84,70): error TS2339: Property 'data' does not exist on type 'InventoryMovement'.
+components/LegalDashboard.tsx(21,17): error TS2693: 'ProcessStatus' only refers to a type, but is being used as a value here.
+components/LegalDashboard.tsx(23,9): error TS2322: Type 'number' is not assignable to type 'string'.
+components/LegalDashboard.tsx(33,17): error TS2693: 'ProcessStatus' only refers to a type, but is being used as a value here.
+components/LegalDashboard.tsx(35,9): error TS2322: Type 'number' is not assignable to type 'string'.
+components/LegalDashboard.tsx(50,17): error TS2693: 'ContractStatus' only refers to a type, but is being used as a value here.
+components/Security/ErrorBoundary.tsx(47,21): error TS2339: Property 'props' does not exist on type 'ErrorBoundary'.
+contexts/DocumentContext.tsx(194,19): error TS2739: Type '{ id: `${string}-${string}-${string}-${string}-${string}`; timestamp: number; type: string; category: string; title: string; content: GeneratedContent; status: DocStatus; authorRole: UserRole; profileId: string; }' is missing the following properties from type 'HistoryItem': date, action, user, details
+contexts/DocumentContext.tsx(219,26): error TS2345: Argument of type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; titulo: string; tipo: string; }; }' is not assignable to parameter of type 'Omit<SystemLog, "id" | "created_at">'.
+  Type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; titulo: string; tipo: string; }; }' is missing the following properties from type 'Omit<SystemLog, "id" | "created_at">': timestamp, level, message, userId
+contexts/DocumentContext.tsx(232,26): error TS2345: Argument of type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; status_novo: DocStatus; }; }' is not assignable to parameter of type 'Omit<SystemLog, "id" | "created_at">'.
+  Type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; status_novo: DocStatus; }; }' is missing the following properties from type 'Omit<SystemLog, "id" | "created_at">': timestamp, level, message, userId
+contexts/DocumentContext.tsx(250,26): error TS2345: Argument of type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; }; }' is not assignable to parameter of type 'Omit<SystemLog, "id" | "created_at">'.
+  Type '{ usuario_id: any; modulo: string; acao: string; dados: { id: string; }; }' is missing the following properties from type 'Omit<SystemLog, "id" | "created_at">': timestamp, level, message, userId
+contexts/InventoryContext.tsx(260,13): error TS2322: Type 'string | number' is not assignable to type 'number'.
+  Type 'string' is not assignable to type 'number'.
+contexts/MenuContext.tsx(70,21): error TS2322: Type '{ id: any; menuId: any; dishId: any; data: number; servingsConfirmed: any; wasModified: any; notes: any; authorId: any; }[]' is not assignable to type 'MenuExecution[]'.
+  Type '{ id: any; menuId: any; dishId: any; data: number; servingsConfirmed: any; wasModified: any; notes: any; authorId: any; }' is missing the following properties from type 'MenuExecution': schoolId, date, studentsPresent, acceptanceRate
+contexts/MenuContext.tsx(152,45): error TS2339: Property 'dishId' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(153,60): error TS2339: Property 'data' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(154,56): error TS2339: Property 'servingsConfirmed' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(155,50): error TS2339: Property 'wasModified' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(281,69): error TS2339: Property 'dishId' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(289,45): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(311,36): error TS2339: Property 'dishId' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(312,51): error TS2339: Property 'data' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(313,47): error TS2339: Property 'servingsConfirmed' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(314,41): error TS2339: Property 'wasModified' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(328,41): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(333,33): error TS2339: Property 'data' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(350,37): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/NutritionContext.tsx(41,43): error TS2339: Property 'idadeAnos' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(49,42): error TS2339: Property 'professor' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(50,53): error TS2339: Property 'contatoResponsaveis' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(140,33): error TS2339: Property 'idadeAnos' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(148,32): error TS2339: Property 'professor' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(149,43): error TS2339: Property 'contatoResponsaveis' does not exist on type 'NutritionalEvaluation'.
+contexts/PNAEContext.tsx(67,54): error TS2339: Property 'justificativaTecnica' does not exist on type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(68,42): error TS2339: Property 'authorId' does not exist on type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(122,13): error TS2353: Object literal may only specify known properties, and 'authorId' does not exist in type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(131,44): error TS2339: Property 'justificativaTecnica' does not exist on type 'ProcurementPlan'.

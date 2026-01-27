@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriAssist | Gestão Técnica de Nutrição Escolar</title>
+    <meta name="description"
+        content="Sistema de Gestão Técnica de Nutrição Escolar - NutriAssist. Controle de estoque, cardápios, avaliação nutricional e PNAE.">
+    <meta name="keywords" content="nutrição escolar, PNAE, gestão escolar, merenda, nutricionista, estoque">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nutriassist.gov.br/" />
+    <meta property="og:title" content="NutriAssist | Gestão Técnica de Nutrição Escolar">
+    <meta property="og:description"
+        content="Sistema de Gestão Técnica de Nutrição Escolar - NutriAssist. Controle de estoque, cardápios, avaliação nutricional e PNAE.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nutriassist.gov.br/">
+    <meta property="og:image" content="https://nutriassist.gov.br/login-bg.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --color-primary: #10b981;
+            --color-primary-dark: #059669;
+            --color-sidebar: #020617;
+            --color-accent: #6366f1;
+        }
+
+        body {
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f8fafc;
+        }
+
+        .bg-theme-primary {
+            background-color: var(--color-primary);
+        }
+
+        .text-theme-primary {
+            color: var(--color-primary);
+        }
+
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Refinado */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+        }
+
+        .soft-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.03), 0 10px 10px -5px rgba(0, 0, 0, 0.01);
+        }
+
+        /* Animações Suaves */
+        .page-transition {
+            animation: fadeInBlur 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInBlur {
+            from {
+                opacity: 0;
+                filter: blur(4px);
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+            }
+        }
+
+        input,
+        select,
+        textarea {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+
+<body class="text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>

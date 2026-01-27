@@ -1,0 +1,156 @@
+components/AdaptedMenuAutomation.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'MenuAdaptedResult'.
+components/DataExplorer.tsx(3,26): error TS2305: Module '"../types"' has no exported member 'DocumentAiDraft'.
+components/DocumentArchive.tsx(29,59): error TS2339: Property 'VISUALIZADOR' does not exist on type 'typeof UserRole'.
+components/DocumentArchive.tsx(59,22): error TS2339: Property 'ANALISE' does not exist on type 'typeof DocStatus'.
+components/DocumentTypeManager.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'DocumentTypeConfig'.
+components/DocumentTypeManager.tsx(14,79): error TS2339: Property 'RELATORIO' does not exist on type 'typeof DocumentCategory'.
+components/DocumentTypeManager.tsx(32,29): error TS2339: Property 'OFICIO' does not exist on type 'typeof DocumentCategory'.
+components/DocumentTypeManager.tsx(33,29): error TS2339: Property 'PARECER' does not exist on type 'typeof DocumentCategory'.
+components/DocumentTypeManager.tsx(34,29): error TS2339: Property 'RELATORIO' does not exist on type 'typeof DocumentCategory'.
+components/DraftHistory.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'DocumentAiDraft'.
+components/InstitutionalReportManager.tsx(40,35): error TS2339: Property 'MENSAL' does not exist on type 'typeof DocumentCategory'.
+components/InstitutionalReportManager.tsx(41,33): error TS2339: Property 'ESTOQUE' does not exist on type 'typeof DocumentCategory'.
+components/InstitutionalReportManager.tsx(42,35): error TS2339: Property 'SAUDE' does not exist on type 'typeof DocumentCategory'.
+components/InstitutionalReportManager.tsx(43,39): error TS2339: Property 'LICITACAO' does not exist on type 'typeof DocumentCategory'.
+components/Inventory/DistributionManager.tsx(84,58): error TS2339: Property 'data' does not exist on type 'InventoryMovement'.
+components/Inventory/DistributionManager.tsx(84,70): error TS2339: Property 'data' does not exist on type 'InventoryMovement'.
+components/Inventory/InventoryDashboard.tsx(90,44): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(18,28): error TS2339: Property 'JURIDICA' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(30,59): error TS2339: Property 'JURIDICA' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(88,64): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(102,61): error TS2339: Property 'JURIDICA' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(103,61): error TS2339: Property 'FISICA' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(104,61): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(195,65): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(200,160): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(201,73): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/Inventory/SupplierManager.tsx(222,65): error TS2339: Property 'AGRICULTOR' does not exist on type 'typeof SupplierType'.
+components/LegalDashboard.tsx(5,5): error TS2305: Module '"../types"' has no exported member 'Contract'.
+components/LegalDashboard.tsx(6,5): error TS2305: Module '"../types"' has no exported member 'ProcessStatus'.
+components/LegalDashboard.tsx(7,5): error TS2305: Module '"../types"' has no exported member 'ContractStatus'.
+components/LegalDashboard.tsx(23,9): error TS2322: Type 'number' is not assignable to type 'string'.
+components/LegalDashboard.tsx(35,9): error TS2322: Type 'number' is not assignable to type 'string'.
+components/MenuAutomation.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'MenuAutomationResult'.
+components/MonthlyReportAutomation.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'MonthlyReportResult'.
+components/ProcurementManager.tsx(89,29): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+components/ProcurementManager.tsx(90,9): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+components/ProcurementManager.tsx(95,56): error TS2339: Property 'numAlunos' does not exist on type 'MenuPlan'.
+components/Security/ErrorBoundary.tsx(47,21): error TS2339: Property 'props' does not exist on type 'ErrorBoundary'.
+components/SpecialNeedsRegistry.tsx(3,31): error TS2305: Module '"../types"' has no exported member 'SpecialNeedsRegistryResult'.
+components/StockAutomation.tsx(3,10): error TS2305: Module '"../types"' has no exported member 'StockAnalysisResult'.
+components/TechnicalNoteForm.tsx(2,10): error TS2305: Module '"../types"' has no exported member 'StructuredContext'.
+components/TechnicalNoteForm.tsx(2,50): error TS2305: Module '"../types"' has no exported member 'DocumentTypeConfig'.
+contexts/DocumentContext.tsx(80,42): error TS2339: Property 'school_id' does not exist on type 'FormalDocument'.
+contexts/DocumentContext.tsx(84,43): error TS2339: Property 'deletedAt' does not exist on type 'FormalDocument'.
+contexts/DocumentContext.tsx(84,66): error TS2339: Property 'deletedAt' does not exist on type 'FormalDocument'.
+contexts/DocumentContext.tsx(111,51): error TS2339: Property 'timestamp' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(112,37): error TS2339: Property 'type' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(113,41): error TS2339: Property 'category' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(114,38): error TS2339: Property 'title' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(115,40): error TS2339: Property 'content' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(116,39): error TS2339: Property 'status' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(117,44): error TS2339: Property 'authorRole' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(118,44): error TS2339: Property 'authorName' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(119,43): error TS2339: Property 'profileId' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(146,43): error TS2339: Property 'usuario_id' does not exist on type 'SystemLog'.
+contexts/DocumentContext.tsx(147,39): error TS2339: Property 'modulo' does not exist on type 'SystemLog'.
+contexts/DocumentContext.tsx(148,37): error TS2339: Property 'acao' does not exist on type 'SystemLog'.
+contexts/DocumentContext.tsx(149,38): error TS2339: Property 'dados' does not exist on type 'SystemLog'.
+contexts/DocumentContext.tsx(150,52): error TS2339: Property 'created_at' does not exist on type 'SystemLog'.
+contexts/DocumentContext.tsx(185,28): error TS2339: Property 'school_id' does not exist on type 'FormalDocument'.
+contexts/DocumentContext.tsx(196,17): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'HistoryItem'.
+contexts/DocumentContext.tsx(202,84): error TS2339: Property 'VISUALIZADOR' does not exist on type 'typeof UserRole'.
+contexts/DocumentContext.tsx(208,49): error TS2339: Property 'timestamp' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(209,35): error TS2339: Property 'type' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(210,39): error TS2339: Property 'category' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(211,36): error TS2339: Property 'title' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(212,38): error TS2339: Property 'content' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(213,37): error TS2339: Property 'status' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(214,42): error TS2339: Property 'authorRole' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(215,41): error TS2339: Property 'profileId' does not exist on type 'HistoryItem'.
+contexts/DocumentContext.tsx(220,17): error TS2353: Object literal may only specify known properties, and 'usuario_id' does not exist in type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(233,17): error TS2353: Object literal may only specify known properties, and 'usuario_id' does not exist in type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(251,17): error TS2353: Object literal may only specify known properties, and 'usuario_id' does not exist in type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(264,29): error TS2339: Property 'usuario_id' does not exist on type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(265,25): error TS2339: Property 'modulo' does not exist on type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(266,23): error TS2339: Property 'acao' does not exist on type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/DocumentContext.tsx(267,24): error TS2339: Property 'dados' does not exist on type 'Omit<SystemLog, "id" | "created_at">'.
+contexts/InventoryContext.tsx(260,13): error TS2322: Type 'string | number' is not assignable to type 'number'.
+  Type 'string' is not assignable to type 'number'.
+contexts/MenuContext.tsx(46,21): error TS2322: Type '{ id: any; titulo: any; escolaId: any; studentNeId: any; etapa: any; numAlunos: any; diasLetivos: any; status: any; isSpecial: any; nutritionalStats: any; estimatedCost: any; stockStatus: any; created_at: number; authorId: any; preparacoes: any; }[]' is not assignable to type 'MenuPlan[]'.
+  Type '{ id: any; titulo: any; escolaId: any; studentNeId: any; etapa: any; numAlunos: any; diasLetivos: any; status: any; isSpecial: any; nutritionalStats: any; estimatedCost: any; stockStatus: any; created_at: number; authorId: any; preparacoes: any; }' is missing the following properties from type 'MenuPlan': ano_letivo, periodo, modalidade, faixa_etaria, and 2 more.
+contexts/MenuContext.tsx(70,21): error TS2322: Type '{ id: any; menuId: any; dishId: any; data: number; servingsConfirmed: any; wasModified: any; notes: any; authorId: any; }[]' is not assignable to type 'MenuExecution[]'.
+  Type '{ id: any; menuId: any; dishId: any; data: number; servingsConfirmed: any; wasModified: any; notes: any; authorId: any; }' is missing the following properties from type 'MenuExecution': schoolId, date, studentsPresent, acceptanceRate
+contexts/MenuContext.tsx(89,46): error TS2339: Property 'titulo' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(90,49): error TS2551: Property 'escolaId' does not exist on type 'MenuPlan'. Did you mean 'escola_id'?
+contexts/MenuContext.tsx(91,53): error TS2339: Property 'studentNeId' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(92,45): error TS2339: Property 'etapa' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(93,50): error TS2339: Property 'numAlunos' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(94,52): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(96,50): error TS2339: Property 'isSpecial' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(97,49): error TS2339: Property 'authorId' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(98,59): error TS2339: Property 'created_at' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(101,47): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(102,57): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(122,25): error TS2353: Object literal may only specify known properties, and 'titulo' does not exist in type 'MenuPlan'.
+contexts/MenuContext.tsx(152,45): error TS2339: Property 'dishId' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(153,60): error TS2339: Property 'data' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(154,56): error TS2339: Property 'servingsConfirmed' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(155,50): error TS2339: Property 'wasModified' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(175,25): error TS2353: Object literal may only specify known properties, and 'titulo' does not exist in type 'MenuPlan'.
+contexts/MenuContext.tsx(210,13): error TS2353: Object literal may only specify known properties, and 'created_at' does not exist in type 'MenuPlan'.
+contexts/MenuContext.tsx(217,29): error TS2339: Property 'titulo' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(218,32): error TS2551: Property 'escolaId' does not exist on type 'MenuPlan'. Did you mean 'escola_id'?
+contexts/MenuContext.tsx(219,36): error TS2339: Property 'studentNeId' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(220,28): error TS2339: Property 'etapa' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(221,33): error TS2339: Property 'numAlunos' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(222,35): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(224,33): error TS2339: Property 'isSpecial' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(225,32): error TS2339: Property 'authorId' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(226,42): error TS2339: Property 'created_at' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(237,25): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(238,44): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(258,54): error TS2339: Property 'titulo' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(258,77): error TS2339: Property 'etapa' does not exist on type 'MenuPlan'.
+contexts/MenuContext.tsx(264,21): error TS2339: Property 'titulo' does not exist on type 'Partial<MenuPlan>'.
+contexts/MenuContext.tsx(264,62): error TS2339: Property 'titulo' does not exist on type 'Partial<MenuPlan>'.
+contexts/MenuContext.tsx(266,21): error TS2339: Property 'numAlunos' does not exist on type 'Partial<MenuPlan>'.
+contexts/MenuContext.tsx(266,83): error TS2339: Property 'numAlunos' does not exist on type 'Partial<MenuPlan>'.
+contexts/MenuContext.tsx(281,69): error TS2339: Property 'dishId' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(289,45): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(311,36): error TS2339: Property 'dishId' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(312,51): error TS2339: Property 'data' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(313,47): error TS2339: Property 'servingsConfirmed' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(314,41): error TS2339: Property 'wasModified' does not exist on type 'MenuExecution'.
+contexts/MenuContext.tsx(328,41): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(333,33): error TS2339: Property 'data' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/MenuContext.tsx(335,62): error TS2339: Property 'ESPECIAL' does not exist on type 'typeof MovementPurpose'.
+contexts/MenuContext.tsx(350,37): error TS2339: Property 'servingsConfirmed' does not exist on type 'Omit<MenuExecution, "id" | "authorId">'.
+contexts/NutritionContext.tsx(41,43): error TS2339: Property 'idadeAnos' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(49,42): error TS2339: Property 'professor' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(50,53): error TS2339: Property 'contatoResponsaveis' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(140,33): error TS2339: Property 'idadeAnos' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(148,32): error TS2339: Property 'professor' does not exist on type 'NutritionalEvaluation'.
+contexts/NutritionContext.tsx(149,43): error TS2339: Property 'contatoResponsaveis' does not exist on type 'NutritionalEvaluation'.
+contexts/PNAEContext.tsx(67,54): error TS2339: Property 'justificativaTecnica' does not exist on type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(68,42): error TS2339: Property 'authorId' does not exist on type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(122,13): error TS2353: Object literal may only specify known properties, and 'authorId' does not exist in type 'ProcurementPlan'.
+contexts/PNAEContext.tsx(131,44): error TS2339: Property 'justificativaTecnica' does not exist on type 'ProcurementPlan'.
+contexts/SchoolContext.tsx(181,13): error TS2353: Object literal may only specify known properties, and 'created_at' does not exist in type 'Cook'.
+contexts/SchoolContext.tsx(228,13): error TS2353: Object literal may only specify known properties, and 'created_at' does not exist in type 'StudentNE'.
+services/menuEngine.ts(188,10): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(246,77): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(546,34): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(549,10): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(594,23): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(594,46): error TS2339: Property 'diasLetivos' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(605,37): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.
+services/menuEngine.ts(629,68): error TS2339: Property 'numAlunos' does not exist on type 'MenuPlan'.
+services/menuService.ts(28,9): error TS2322: Type '{ id: any; titulo: any; escolaId: any; etapa: any; numAlunos: number; diasLetivos: number; status: DocStatus; nutricionista_id: any; created_at: number; authorId: any; preparacoes: any[]; faixaEtariaMinMeses: any; faixaEtariaMaxMeses: any; periodo: any; justificativaTecnica: string; }[]' is not assignable to type 'MenuPlan[]'.
+  Type '{ id: any; titulo: any; escolaId: any; etapa: any; numAlunos: number; diasLetivos: number; status: DocStatus; nutricionista_id: any; created_at: number; authorId: any; preparacoes: any[]; faixaEtariaMinMeses: any; faixaEtariaMaxMeses: any; periodo: any; justificativaTecnica: string; }' is missing the following properties from type 'MenuPlan': ano_letivo, modalidade, faixa_etaria, criado_por, data_criacao
+services/menuService.ts(56,26): error TS2339: Property 'titulo' does not exist on type 'MenuPlan'.
+services/menuService.ts(57,29): error TS2551: Property 'escolaId' does not exist on type 'MenuPlan'. Did you mean 'escola_id'?
+services/menuService.ts(58,30): error TS2339: Property 'etapa' does not exist on type 'MenuPlan'.
+services/menuService.ts(59,42): error TS2339: Property 'faixaEtariaMinMeses' does not exist on type 'MenuPlan'.
+services/menuService.ts(60,42): error TS2339: Property 'faixaEtariaMaxMeses' does not exist on type 'MenuPlan'.
+services/menuService.ts(90,14): error TS2339: Property 'preparacoes' does not exist on type 'MenuPlan'.

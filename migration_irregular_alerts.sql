@@ -1,0 +1,1 @@
+ALTER TABLE alertas_inteligentes ADD COLUMN IF NOT EXISTS justificativa_admin TEXT;\nALTER TABLE alertas_inteligentes ADD COLUMN IF NOT EXISTS encaminhado_auditoria BOOLEAN DEFAULT FALSE;\nALTER TABLE alertas_inteligentes ADD COLUMN IF NOT EXISTS auditado_por UUID REFERENCES usuarios(id);
