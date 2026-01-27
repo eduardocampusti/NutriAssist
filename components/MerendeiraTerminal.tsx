@@ -10,6 +10,9 @@ import {
   UserRole
 } from '../types';
 import { stockService } from '../services/stockService';
+import { PageHeader } from './UI/PageHeader';
+import { Card } from './UI/Card';
+import { Utensils, ClipboardPaste, PackageSearch } from 'lucide-react';
 
 interface MerendeiraTerminalProps {
   activeProfile: UserProfile;
@@ -145,39 +148,34 @@ const MerendeiraTerminal: React.FC<MerendeiraTerminalProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-20">
-      {/* HEADER */}
-      <div className="bg-emerald-600 p-8 rounded-[40px] text-white shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <div className="flex items-center gap-6 relative z-10">
-          <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-[28px] flex items-center justify-center text-4xl shadow-inner border border-white/30 font-black">👩‍🍳</div>
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black tracking-tighter uppercase leading-none">{school?.nome || 'Minha Unidade'}</h2>
-            <p className="text-emerald-100 text-sm font-bold uppercase tracking-widest opacity-80">Terminal de Cozinha • {new Date().toLocaleDateString()}</p>
+    <div className="space-y-6 animate-in fade-in duration-500 pb-24">
+      <PageHeader
+        title={school?.nome || 'Minha Unidade'}
+        subtitle={`Terminal de Cozinha • ${new Date().toLocaleDateString()}`}
+        icon={<Utensils className="w-8 h-8 text-emerald-500" />}
+        actions={
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner w-full sm:w-auto">
+            <button
+              onClick={() => setViewMode('MENU')}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'MENU' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
+            >
+              Cardápio
+            </button>
+            <button
+              onClick={() => setViewMode('MANUAL')}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'MANUAL' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
+            >
+              Manual
+            </button>
+            <button
+              onClick={() => setViewMode('ESTOQUE')}
+              className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'ESTOQUE' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
+            >
+              Estoque
+            </button>
           </div>
-        </div>
-
-        <div className="flex gap-2 relative z-10">
-          <button
-            onClick={() => setViewMode('MENU')}
-            className={`px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all ${viewMode === 'MENU' ? 'bg-white text-emerald-900 shadow-lg' : 'bg-emerald-700 text-emerald-100'}`}
-          >
-            Cardápio do Dia
-          </button>
-          <button
-            onClick={() => setViewMode('MANUAL')}
-            className={`px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all ${viewMode === 'MANUAL' ? 'bg-white text-emerald-900 shadow-lg' : 'bg-emerald-700 text-emerald-100'}`}
-          >
-            Baixa Manual
-          </button>
-          <button
-            onClick={() => setViewMode('ESTOQUE')}
-            className={`px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest transition-all ${viewMode === 'ESTOQUE' ? 'bg-white text-emerald-900 shadow-lg' : 'bg-emerald-700 text-emerald-100'}`}
-          >
-            Estoque / Entradas
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -185,20 +183,23 @@ const MerendeiraTerminal: React.FC<MerendeiraTerminalProps> = ({
         <div className="lg:col-span-7 space-y-6">
 
           {viewMode === 'MENU' && dailyMenu && (
-            <div className="bg-white p-10 rounded-[48px] border border-slate-200 shadow-xl space-y-8">
+            <Card variant="elevated" padding="lg" className="space-y-8 animate-in slide-in-from-left-4 duration-500">
               <div className="flex justify-between items-start">
-                <h3 className="text-xl font-black text-slate-800 uppercase leading-none">
-                  {dailyMenu.title}
-                </h3>
-                <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">FNDE/PNAE</span>
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 uppercase leading-tight">
+                    {dailyMenu.title}
+                  </h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Refeição Planejada</p>
+                </div>
+                <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase border border-emerald-100">PNAE</span>
               </div>
 
-              <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100">
-                <p className="text-[10px] font-bold text-slate-400 uppercase mb-4">Ingredientes Previstos (Per Capita)</p>
+              <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">Itens do Cardápio</p>
                 <div className="space-y-3">
                   {dailyMenu.items.map((item: any, idx: number) => (
-                    <div key={idx} className="flex justify-between items-center border-b border-dashed border-slate-200 pb-2">
-                      <span className="text-sm font-bold text-slate-700 uppercase">{item.name}</span>
+                    <div key={idx} className="flex justify-between items-center border-b border-white pb-2">
+                      <span className="text-xs font-bold text-slate-700 uppercase">{item.name}</span>
                       <span className="text-xs font-black text-emerald-600">{item.perCapita} {item.unit}</span>
                     </div>
                   ))}
@@ -206,103 +207,121 @@ const MerendeiraTerminal: React.FC<MerendeiraTerminalProps> = ({
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-500 uppercase block ml-1">Quantos alunos foram servidos?</label>
-                <div className="flex gap-4">
+                <label className="text-[10px] font-black text-slate-500 uppercase block px-1 tracking-widest">Alunos Servidos</label>
+                <div className="flex flex-col sm:flex-row gap-4">
                   <input
                     type="number"
                     value={studentsServed || ''}
                     onChange={e => setStudentsServed(parseInt(e.target.value))}
-                    className="flex-1 bg-slate-50 border-none rounded-[24px] px-6 py-5 text-3xl font-black text-emerald-600 outline-none text-center"
-                    placeholder="0"
+                    className="flex-1 bg-slate-50 border-2 border-transparent focus:border-emerald-500/20 rounded-2xl px-6 py-4 text-3xl font-black text-emerald-600 outline-none text-center shadow-inner transition-all"
+                    placeholder="000"
                   />
                   <button
                     onClick={handleExecuteMenu}
                     disabled={isExecuting || studentsServed <= 0}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 rounded-[24px] font-black uppercase tracking-widest text-xs transition-all shadow-xl disabled:opacity-50 disabled:grayscale"
+                    className="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-emerald-500/10 disabled:opacity-50 disabled:grayscale"
                   >
-                    {isExecuting ? '...' : 'Confirmar Execução'}
+                    {isExecuting ? 'Processando...' : 'Baixar Estoque'}
                   </button>
                 </div>
-                <p className="text-[10px] text-slate-400 italic text-center">Isso dará baixa automática proporcional em todos os ingredientes.</p>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">Baixa automática proporcional aos per-capitas</p>
               </div>
-            </div>
+            </Card>
           )}
 
           {viewMode === 'MANUAL' && (
-            <div className="bg-white p-10 rounded-[48px] border border-slate-200 shadow-xl space-y-8">
-              <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Baixa Avulsa / Ajuste</h3>
+            <Card variant="elevated" padding="lg" className="space-y-8 animate-in slide-in-from-left-4 duration-500">
+              <div className="flex items-center gap-3">
+                <ClipboardPaste className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Baixa Avulsa</h3>
+              </div>
               <form onSubmit={handleConfirmManual} className="space-y-6">
-                {/* ... Existing Manual Form Logic ... */}
                 <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Produto</label>
                   <select
                     value={selectedItemId}
                     onChange={e => setSelectedItemId(e.target.value)}
-                    className="w-full bg-slate-50 border-none rounded-[24px] px-6 py-4 text-sm font-bold text-slate-800 outline-none"
+                    className="w-full bg-slate-50 border-2 border-transparent focus:border-emerald-500/20 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 outline-none transition-all appearance-none shadow-sm"
                   >
                     <option value="">Selecione o Item...</option>
                     {schoolInventory.map(i => <option key={i.id} value={i.id}>{i.nome}</option>)}
                   </select>
                 </div>
-                <div className="flex gap-4">
-                  <input
-                    type="number"
-                    value={quantity || ''}
-                    onChange={e => setQuantity(parseFloat(e.target.value))}
-                    className="w-full bg-slate-50 border-none rounded-[24px] px-6 py-4 text-xl font-black text-slate-800 outline-none"
-                    placeholder="Qtd"
-                  />
-                  <button type="submit" className="bg-slate-900 text-white px-8 rounded-[24px] font-black uppercase tracking-widest text-xs">
-                    Confirmar
-                  </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Quantidade</label>
+                    <input
+                      type="number"
+                      value={quantity || ''}
+                      onChange={e => setQuantity(parseFloat(e.target.value))}
+                      className="w-full bg-slate-50 border-2 border-transparent focus:border-emerald-500/20 rounded-2xl px-6 py-4 text-xl font-black text-slate-800 outline-none shadow-sm transition-all"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button type="submit" className="w-full bg-slate-900 hover:bg-emerald-600 active:scale-95 text-white px-8 py-4.5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-slate-900/10">
+                      Registrar
+                    </button>
+                  </div>
                 </div>
               </form>
-            </div>
+            </Card>
           )}
 
           {viewMode === 'ESTOQUE' && (
-            <div className="bg-white p-10 rounded-[48px] border border-slate-200 shadow-xl space-y-8 animate-in slide-in-from-bottom-4 duration-300">
+            <Card variant="elevated" padding="lg" className="space-y-8 animate-in slide-in-from-left-4 duration-300">
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black text-slate-800 uppercase">Estoque da Unidade</h3>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo em Tempo Real</span>
+                <div className="flex items-center gap-3">
+                  <PackageSearch className="w-5 h-5 text-emerald-500" />
+                  <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Inventário Atual</h3>
+                </div>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Saldo Real-time</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {schoolInventory.map(item => (
-                  <div key={item.id} className="p-5 rounded-3xl bg-slate-50 border border-slate-100 flex justify-between items-center group hover:bg-white hover:border-emerald-200 transition-all">
+                  <Card key={item.id} variant="flat" padding="md" className="bg-slate-50/50 border border-slate-100 flex justify-between items-center group hover:bg-white hover:border-emerald-200 transition-all cursor-default">
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.unidade_medida || item.unidadeMedida || 'UN'}</p>
-                      <h4 className="font-bold text-slate-800 uppercase text-sm truncate max-w-[150px]">{item.nome}</h4>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.unidade_medida || item.unidadeMedida || 'UN'}</p>
+                      <h4 className="font-bold text-slate-800 uppercase text-xs truncate max-w-[120px]">{item.nome}</h4>
                     </div>
                     <div className="text-right">
-                      <p className={`text-2xl font-black ${item.saldoEscola < (item.estoque_minimo || 5) ? 'text-rose-500' : 'text-emerald-600'}`}>
+                      <p className={`text-xl font-black ${item.saldoEscola < (item.estoque_minimo || 5) ? 'text-rose-500' : 'text-emerald-600'}`}>
                         {item.saldoEscola.toFixed(1)}
                       </p>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </div>
+            </Card>
           )}
         </div>
 
-        {/* RIGHT PANEL - HISTORY */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm space-y-6">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Histórico Recente</h4>
-            {/* ... List ... */}
-            <div className="space-y-2">
-              {schoolHistory.map(mov => (
-                <div key={mov.id} className="p-3 bg-slate-50 rounded-2xl flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-600 uppercase">
-                    {inventory.find(i => i.id === mov.itemId)?.nome || 'Item'}
-                  </span>
-                  <span className="text-[10px] font-black text-slate-800">
-                    {mov.quantidade}
-                  </span>
+          <Card variant="flat" padding="lg" className="border border-slate-100 space-y-6">
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Histórico de Movimentação</h4>
+            <div className="space-y-3">
+              {schoolHistory.length > 0 ? schoolHistory.map(mov => (
+                <div key={mov.id} className="p-4 bg-white rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-slate-800 uppercase">
+                      {inventory.find(i => i.id === mov.itemId)?.nome || 'Item Desconhecido'}
+                    </span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                      {new Date(mov.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className={`text-sm font-black ${mov.type === 'SAIDA' ? 'text-rose-500' : 'text-emerald-600'}`}>
+                      {mov.type === 'SAIDA' ? '-' : '+'}{mov.quantity}
+                    </span>
+                  </div>
                 </div>
-              ))}
+              )) : (
+                <p className="text-[10px] text-slate-400 uppercase font-black text-center py-10 tracking-widest">Nenhuma movimentação</p>
+              )}
             </div>
-          </div>
+          </Card>
         </div>
 
       </div>

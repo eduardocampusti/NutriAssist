@@ -18,6 +18,9 @@ import { StockAudit, ReplenishmentRequest, OperationalOccurrence, Distribution }
 import AlertWidget from './AlertWidget';
 import SchoolServiceHistory from './SchoolServiceHistory';
 import { priorityEngine } from '../services/priorityEngine';
+import { PageHeader } from './UI/PageHeader';
+import { Card } from './UI/Card';
+import { LayoutDashboard, FileEdit, Archive } from 'lucide-react';
 
 const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { formalDocs: documents } = useDocuments();
@@ -135,75 +138,72 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
   }, [filteredData, inventory, movements, schools, trainings, procurements]);
 
   const StatCard = ({ title, value, icon, color, onClick }: any) => (
-    <button
-      onClick={onClick}
-      className="glass-card soft-shadow p-8 rounded-[32px] text-left hover:-translate-y-2 transition-all duration-500 group relative overflow-hidden"
+    <Card
+      variant="elevated"
+      padding="none"
+      className="group cursor-pointer hover:ring-2 hover:ring-emerald-500/50 transition-all active:scale-95"
     >
-      <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-[0.03] -mr-8 -mt-8 rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity`}></div>
-      <div className="flex justify-between items-start mb-6">
-        <div className={`w-14 h-14 rounded-2xl ${color} bg-opacity-10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-500`}>
-          {icon}
+      <button
+        onClick={onClick}
+        className="w-full p-6 text-left"
+      >
+        <div className="flex justify-between items-start mb-4">
+          <div className={`w-12 h-12 rounded-xl ${color} bg-opacity-10 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-500`}>
+            {icon}
+          </div>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</span>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{title}</span>
+        <div className="text-3xl font-black text-slate-900 tracking-tighter mb-1">{value}</div>
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tempo Real</p>
         </div>
-      </div>
-      <div className="text-4xl font-extrabold text-slate-900 tracking-tighter mb-1">{value}</div>
-      <div className="flex items-center gap-2">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monitoramento Ativo</p>
-      </div>
-    </button>
+      </button>
+    </Card>
   );
 
   return (
-    <div className="page-transition space-y-12">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 bg-emerald-500 text-white text-[9px] font-black uppercase rounded-full tracking-widest">{letterhead.municipio || 'SME'}</span>
-            <span className="text-slate-300 text-lg">•</span>
-            <span className="text-slate-400 text-sm font-semibold italic">Gestão Inteligente PNAE</span>
-          </div>
-          <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
-            Bem-vindo(a), <span className="text-emerald-600">{activeProfile?.nome?.split(' ')[0] || 'Visitante'}</span>.
-          </h1>
-        </div>
-
-        <div className="flex flex-col md:items-end gap-4">
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
-            <button
-              onClick={() => setActiveTab('operational')}
-              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'operational' ? 'bg-white text-slate-900 shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              Visão Operacional
-            </button>
-            <button
-              onClick={() => setActiveTab('executive')}
-              className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'executive' ? 'bg-white text-emerald-600 shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              Painel Executivo
-            </button>
-          </div>
-
-          <div className="flex gap-2">
-            {activeProfile?.role !== UserRole.SECRETARIO && (
+    <div className="page-transition space-y-10">
+      <PageHeader
+        title={`Olá, ${activeProfile?.nome?.split(' ')[0] || 'Visitante'}`}
+        subtitle={`Gestão Inteligente PNAE • ${letterhead.municipio || 'SME'}`}
+        icon={<LayoutDashboard className="w-8 h-8 text-emerald-500" />}
+        actions={
+          <div className="flex flex-wrap gap-2 sm:gap-4 w-full sm:w-auto">
+            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner w-full sm:w-auto mb-2 sm:mb-0">
               <button
-                onClick={() => onNavigate('form')}
-                className="bg-slate-900 text-white px-8 py-4 rounded-[20px] text-xs font-black uppercase tracking-widest shadow-2xl shadow-slate-900/20 hover:bg-emerald-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3"
+                onClick={() => setActiveTab('operational')}
+                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === 'operational' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}
               >
-                <span>✍️</span> Nova Redação
+                Operacional
               </button>
-            )}
-            <button
-              onClick={() => onNavigate('archive')}
-              className="bg-white text-slate-600 border border-slate-200 px-8 py-4 rounded-[20px] text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-3"
-            >
-              <span>👁️</span> Arquivo
-            </button>
+              <button
+                onClick={() => setActiveTab('executive')}
+                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === 'executive' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}
+              >
+                Executivo
+              </button>
+            </div>
+
+            <div className="flex gap-2 w-full sm:w-auto">
+              {activeProfile?.role !== UserRole.SECRETARIO && (
+                <button
+                  onClick={() => onNavigate('form')}
+                  className="flex-1 bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-emerald-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <FileEdit className="w-4 h-4" /> Nova Redação
+                </button>
+              )}
+              <button
+                onClick={() => onNavigate('archive')}
+                className="flex-1 bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Archive className="w-4 h-4" /> Arquivo
+              </button>
+            </div>
           </div>
-        </div>
-      </header >
+        }
+      />
 
       {/* GLOBAL FILTERS */}
       <div className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex flex-wrap gap-6 items-end">
@@ -366,76 +366,74 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
             </div>
           </div>
 
-          <section className="bg-white rounded-[44px] p-12 border border-slate-100 soft-shadow">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+          <Card variant="flat" padding="lg" className="border border-slate-100">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
               <div>
-                <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">Conformidade e Triagem</h2>
-                <p className="text-sm text-slate-400 font-medium tracking-tight">Vigilância Nutricional SISVAN e Qualidade PNAE</p>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase">Conformidade e Triagem</h2>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Vigilância SISVAN e Qualidade PNAE</p>
               </div>
-              <div className="flex gap-4">
-                <div className="px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Tempo Real</span>
-                </div>
+              <div className="px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-100 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Monitoramento Ativo</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-8 bg-slate-50 rounded-[32px] border border-slate-100 flex flex-col justify-between group hover:border-emerald-200 transition-colors">
-                <div>
-                  <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform">🌾</span>
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">Impacto na Economia Local</h4>
-                  <p className="text-sm text-slate-600 font-medium mb-4">Investimento direto no produtor rural de Brotas.</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card variant="elevated" padding="md" className="flex flex-col justify-between hover:ring-2 hover:ring-emerald-500/20 transition-all">
+                <div className="mb-6">
+                  <span className="text-2xl mb-3 block">🌾</span>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Economia Local</h4>
+                  <p className="text-xs text-slate-500 font-medium">Investimento no produtor rural local.</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <span className="text-4xl font-black text-slate-900">{stats.afPercent.toFixed(1)}%</span>
-                    <span className="text-[10px] font-black text-emerald-600 uppercase">Agricultura Familiar</span>
+                    <span className="text-3xl font-black text-slate-900">{stats.afPercent.toFixed(1)}%</span>
+                    <span className="text-[9px] font-black text-emerald-600 uppercase">Agricultura Familiar</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${Math.max(stats.afPercent, 5)}%` }}></div>
                   </div>
                 </div>
-              </div>
+              </Card>
 
-              <div className="p-8 bg-slate-50 rounded-[32px] border border-slate-100 flex flex-col justify-between group hover:border-amber-200 transition-colors">
-                <div>
-                  <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform">🚫</span>
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">Qualidade Nutricional</h4>
-                  <p className="text-sm text-slate-600 font-medium mb-4">Restrição de ultraprocessados (Res. 06/2020).</p>
+              <Card variant="elevated" padding="md" className="flex flex-col justify-between hover:ring-2 hover:ring-amber-500/20 transition-all">
+                <div className="mb-6">
+                  <span className="text-2xl mb-3 block">🚫</span>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Qualidade</h4>
+                  <p className="text-xs text-slate-500 font-medium">Restrição de ultraprocessados.</p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-end">
-                    <span className="text-4xl font-black text-slate-900">{String(stats.ultraProcessedCount).padStart(2, '0')}</span>
-                    <span className="text-[10px] font-black text-amber-600 uppercase">Alertas Ativos</span>
+                    <span className="text-3xl font-black text-slate-900">{String(stats.ultraProcessedCount).padStart(2, '0')}</span>
+                    <span className="text-[9px] font-black text-amber-600 uppercase">Alertas Ativos</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div className="h-full bg-amber-500 rounded-full" style={{ width: `${(stats.ultraProcessedCount / Math.max(inventory.length, 1)) * 100}%` }}></div>
                   </div>
                 </div>
-              </div>
+              </Card>
 
-              <div className="p-8 bg-slate-50 rounded-[32px] border border-slate-100 flex flex-col justify-between border-b-4 border-b-rose-500 group hover:border-rose-200 transition-colors">
-                <div>
-                  <span className="text-3xl mb-4 block group-hover:scale-110 transition-transform">🩺</span>
-                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">Risco SISVAN (Antropometria)</h4>
-                  <p className="text-sm text-slate-600 font-medium mb-4">Avaliações com desvio de curva identificado.</p>
+              <Card variant="elevated" padding="md" className="flex flex-col justify-between border-b-4 border-b-rose-500 hover:ring-2 hover:ring-rose-500/20 transition-all">
+                <div className="mb-6">
+                  <span className="text-2xl mb-3 block">🩺</span>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Risco Nutricional</h4>
+                  <p className="text-xs text-slate-500 font-medium">Alunos com desvio identificado.</p>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-slate-500 uppercase">Alunos em Risco</span>
-                    <span className="bg-rose-500 text-white px-2 py-0.5 rounded-lg text-[10px] font-black">{stats.sisvanRisk}</span>
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Em Risco</span>
+                    <span className="bg-rose-500 text-white px-2 py-0.5 rounded-lg text-[9px] font-black">{stats.sisvanRisk}</span>
                   </div>
                   <button
                     onClick={() => onNavigate('nutritional')}
-                    className="w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all shadow-lg active:scale-95"
+                    className="w-full bg-slate-900 text-white py-3 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all shadow-md active:scale-95"
                   >
                     Inspecionar SISVAN
                   </button>
                 </div>
-              </div>
+              </Card>
             </div>
-          </section>
+          </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <AccessGate permission="MANAGE_DISTRIBUTION">
