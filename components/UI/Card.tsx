@@ -9,10 +9,10 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     ({ className = '', variant = 'elevated', padding = 'md', children, ...props }, ref) => {
 
         const variants = {
-            elevated: 'bg-white border border-slate-100 shadow-sm',
+            elevated: 'bg-white border border-slate-100 shadow-sm hover:shadow-md',
             flat: 'bg-slate-50 border border-slate-100',
             outlined: 'bg-transparent border border-slate-200',
-            glass: 'bg-white/80 backdrop-blur-md border border-white/20 shadow-lg'
+            glass: 'bg-white/90 backdrop-blur-xl border border-white/40 shadow-xl'
         };
 
         const paddings = {
@@ -25,7 +25,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         return (
             <div
                 ref={ref}
-                className={`rounded-2xl transition-all ${variants[variant]} ${paddings[padding]} ${className}`}
+                className={`rounded-2xl transition-all duration-300 ease-in-out ${variants[variant]} ${paddings[padding]} ${className}`}
                 {...props}
             >
                 {children}

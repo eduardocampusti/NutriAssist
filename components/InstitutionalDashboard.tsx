@@ -137,7 +137,7 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
   const StatCard = ({ title, value, icon, color, onClick, subtext }: any) => (
     <Card
       padding="none"
-      className="group cursor-pointer hover:border-brand-200 transition-all active:scale-[0.98] overflow-hidden relative"
+      className="group cursor-pointer hover:border-brand-200 transition-all active:scale-[0.98] overflow-hidden relative border border-transparent hover:shadow-lg hover:shadow-brand-500/5"
       onClick={onClick}
     >
       <div className={`absolute top-0 left-0 w-1 h-full ${color.replace('bg-', 'bg-')}`}></div>
@@ -154,7 +154,7 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{subtext}</p>
           ) : (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Atualizado</p>
             </>
           )}
@@ -180,7 +180,7 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
               </button>
               <button
                 onClick={() => setActiveTab('executive')}
-                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'executive' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${activeTab === 'executive' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
               >
                 Executivo
               </button>
@@ -335,7 +335,7 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
                 )}
                 {hasPermission(activeProfile?.role, 'VIEW_PROCUREMENT') && (
                   <div className="flex gap-4 items-start group cursor-pointer p-4 rounded-xl hover:bg-slate-50 transition-colors" onClick={() => onNavigate('pnae')}>
-                    <div className="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-2xl shadow-lg">📑</div>
+                    <div className="w-12 h-12 bg-brand-600 text-white rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-brand-500/30">📑</div>
                     <div>
                       <p className="text-2xl font-bold text-slate-900 tracking-tight">{stats.activeProc}</p>
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Editais PNAE</p>
@@ -346,11 +346,11 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
               </div>
             </Card>
 
-            <Card padding="lg" className="bg-emerald-900 text-white border-none relative overflow-hidden flex flex-col justify-between">
+            <Card padding="lg" className="bg-gradient-to-br from-brand-900 to-brand-800 text-white border-none relative overflow-hidden flex flex-col justify-between shadow-xl shadow-brand-900/20">
               <div className="relative z-10">
-                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center text-xl mb-4">🌱</div>
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl mb-4 backdrop-blur-sm">🌱</div>
                 <h3 className="text-xl font-bold tracking-tight mb-2">Agricultura Familiar</h3>
-                <p className="text-emerald-200/80 text-xs leading-relaxed font-medium mb-6">
+                <p className="text-brand-100 text-xs leading-relaxed font-medium mb-6">
                   Meta Legal: 45% (Lei 15.226/2025).
                 </p>
               </div>
@@ -358,16 +358,16 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
                 <div className="mb-4">
                   <div className="flex justify-between items-end mb-2">
                     <span className="text-3xl font-bold text-white tracking-tight">{stats.afPercent.toFixed(1)}%</span>
-                    <span className={`text-[9px] font-bold uppercase tracking-widest ${stats.afPercent >= 30 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest ${stats.afPercent >= 30 ? 'text-brand-300' : 'text-amber-300'}`}>
                       {stats.afPercent >= 30 || stats.afPercent === 0 ? 'Regular' : 'Abaixo'}
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div className={`h-full transition-all duration-1000 ${stats.afPercent >= 30 ? 'bg-emerald-400' : 'bg-amber-400'}`} style={{ width: `${Math.max(stats.afPercent, 5)}%` }}></div>
+                  <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
+                    <div className={`h-full transition-all duration-1000 ${stats.afPercent >= 30 ? 'bg-brand-400' : 'bg-amber-400'}`} style={{ width: `${Math.max(stats.afPercent, 5)}%` }}></div>
                   </div>
                 </div>
               </div>
-              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-emerald-500/20 rounded-full blur-[60px]"></div>
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-brand-500/30 rounded-full blur-[60px] animate-pulse"></div>
             </Card>
           </div>
 
@@ -377,21 +377,21 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
                 <h2 className="text-lg font-bold text-slate-900 tracking-tight uppercase">Conformidade e Triagem</h2>
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Vigilância Nutricional</p>
               </div>
-              <div className="px-3 py-1 bg-emerald-50 rounded-full border border-emerald-100 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-[9px] font-bold text-emerald-700 uppercase tracking-widest">Monitoramento</span>
+              <div className="px-3 py-1 bg-brand-50 rounded-full border border-brand-100 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></div>
+                <span className="text-[10px] font-bold text-brand-700 uppercase tracking-widest">Monitoramento</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-4 rounded-xl bg-white border border-slate-100 hover:border-emerald-200 transition-colors">
+              <div className="p-4 rounded-xl bg-white border border-slate-100 hover:border-brand-200 transition-colors shadow-sm hover:shadow-md">
                 <div className="flex justify-between items-start mb-4">
                   <span className="text-2xl">🌾</span>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Local</span>
                 </div>
                 <p className="text-2xl font-bold text-slate-900 mb-1">{stats.afPercent.toFixed(1)}%</p>
                 <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500" style={{ width: `${Math.max(stats.afPercent, 5)}%` }}></div>
+                  <div className="h-full bg-brand-500" style={{ width: `${Math.max(stats.afPercent, 5)}%` }}></div>
                 </div>
               </div>
 

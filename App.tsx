@@ -65,8 +65,8 @@ import { UserRole, DocStatus, FormalDocument } from './types';
 const LoadingScreen = () => (
   <div className="h-screen w-screen flex items-center justify-center bg-slate-950">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
-      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] animate-pulse">Carregando Módulo...</p>
+      <div className="w-16 h-16 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
+      <p className="text-xs font-bold text-brand-500 uppercase tracking-widest animate-pulse">Carregando Módulo...</p>
     </div>
   </div>
 );
