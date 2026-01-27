@@ -47,7 +47,7 @@ const AppShell: React.FC<AppShellProps> = ({ children }) => {
     }
 
     return (
-        <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden flex-col lg:flex-row font-sans">
+        <div className="flex h-screen bg-surface-50 dark:bg-slate-950 overflow-hidden flex-col lg:flex-row font-sans">
             {/* MOBILE TOPBAR */}
             <Topbar
                 onOpenMenu={() => setIsSidebarOpen(true)}

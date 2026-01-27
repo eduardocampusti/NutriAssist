@@ -1,7 +1,7 @@
 import React, { HTMLAttributes, forwardRef } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-    variant?: 'elevated' | 'flat' | 'outlined' | 'glass';
+    variant?: 'elevated' | 'flat' | 'outlined' | 'glass' | 'gradient' | 'neo' | 'governance';
     padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
@@ -9,10 +9,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     ({ className = '', variant = 'elevated', padding = 'md', children, ...props }, ref) => {
 
         const variants = {
-            elevated: 'bg-white border border-slate-100 shadow-sm hover:shadow-md',
-            flat: 'bg-slate-50 border border-slate-100',
-            outlined: 'bg-transparent border border-slate-200',
-            glass: 'bg-white/90 backdrop-blur-xl border border-white/40 shadow-xl'
+            elevated: 'bg-white border border-surface-200 shadow-sm hover:shadow-md hover:-translate-y-[2px]',
+            flat: 'bg-surface-50 border border-surface-200',
+            outlined: 'bg-transparent border border-surface-200',
+            glass: 'bg-white/90 backdrop-blur-sm border border-emerald-900/10 shadow-sm', // Minimal glass
+            gradient: 'bg-gradient-to-br from-white to-surface-50 border border-emerald-900/10 shadow-sm',
+            neo: 'bg-white border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]',
+            governance: 'bg-white border border-emerald-900/20 shadow-none rounded-[2px]' // New Strict Authority Variant
         };
 
         const paddings = {
@@ -25,7 +28,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         return (
             <div
                 ref={ref}
-                className={`rounded-2xl transition-all duration-300 ease-in-out ${variants[variant]} ${paddings[padding]} ${className}`}
+                className={`rounded-2xl transition-all duration-300 ease-out ${variants[variant]} ${paddings[padding]} ${className}`}
                 {...props}
             >
                 {children}

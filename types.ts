@@ -289,6 +289,10 @@ export interface ProcurementProcess {
   titulo?: string;
   anoReferencia?: number;
   itens?: any[];
+  justificativaTecnica?: string;
+  justificativa_tecnica?: string;
+  authorId?: string;
+  author_id?: string;
 }
 
 export type ProcurementPlan = ProcurementProcess;
@@ -516,10 +520,10 @@ export interface FormalDocument {
 
 export interface SystemLog {
   id: string;
-  timestamp: number;
-  level: 'INFO' | 'WARN' | 'ERROR';
-  message: string;
-  userId: string;
+  timestamp?: number;
+  level?: 'INFO' | 'WARN' | 'ERROR';
+  message?: string;
+  userId?: string;
   metadata?: any;
   // Joins/Supabase Fields
   usuario_id?: string;

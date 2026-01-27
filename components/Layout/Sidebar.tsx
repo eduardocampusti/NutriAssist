@@ -33,14 +33,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const MenuItem = ({ icon: Icon, label, path, badge, variant = 'default', sub = false }: any) => {
     const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
 
-    let baseStyles = "w-full group flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all duration-200 relative overflow-hidden active:scale-[0.98]";
+    let baseStyles = "w-full group flex items-center justify-between px-4 py-3 rounded-none border-l-2 border-transparent text-sm transition-all duration-150 relative overflow-hidden active:translate-x-1";
 
     // Variant Styles
     let normalStyle = isActive
-      ? "bg-brand-50 text-brand-700 font-bold shadow-sm ring-1 ring-brand-200 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20"
-      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100";
+      ? "bg-slate-800 border-emerald-500 text-emerald-400 font-bold"
+      : "text-slate-400 hover:bg-slate-800/50 hover:text-white hover:border-slate-700";
 
-    let logoutStyle = "mt-8 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 border border-transparent hover:border-red-100 dark:hover:border-red-900/30";
+    let logoutStyle = "mt-8 text-red-400 hover:bg-red-900/20 hover:text-red-300 border-l-2 border-transparent hover:border-red-500";
 
     const activeClass = variant === 'logout' ? logoutStyle : normalStyle;
 
@@ -50,16 +50,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className={`${baseStyles} ${activeClass} ${sub ? 'pl-11 py-2 text-[12px]' : ''}`}
       >
         <div className="flex items-center gap-3 relative z-10">
-          {!sub && <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />}
-          <span className="tracking-medium">{label}</span>
+          {!sub && <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-100' : 'group-hover:scale-100'}`} />}
+          <span className="tracking-tight">{label}</span>
         </div>
 
-        {isActive && !sub && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 bg-brand-600 rounded-r-full"></div>
-        )}
-
         {badge && (
-          <span className={`text-[10px] px-2 py-0.5 rounded-lg font-bold uppercase tracking-wider relative z-10 transition-colors ${isActive ? 'bg-brand-200 text-brand-800 dark:bg-brand-500/30 dark:text-brand-300' : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:shadow-sm dark:bg-slate-800 dark:text-slate-400'}`}>
+          <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-black uppercase tracking-wider relative z-10 ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-500'}`}>
             {badge}
           </span>
         )}
@@ -84,37 +80,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:shadow-none flex flex-col transition-transform duration-300 ease-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-slate-900 border-r border-slate-800 shadow-2xl lg:shadow-none flex flex-col transition-transform duration-300 ease-out lg:relative lg:translate-x-0 h-full ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
 
         {/* Header / Brand */}
-        <div className="p-6 pb-2">
-          <div className="flex items-center justify-between mb-6 lg:hidden">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Menu Principal</span>
-            <Button variant="ghost" size="icon" onClick={onClose}><X className="w-5 h-5" /></Button>
+        <div className="p-6 md:p-8 flex flex-col gap-6">
+          <div className="flex items-center justify-between lg:hidden">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Menu</span>
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-white"><X className="w-5 h-5" /></Button>
           </div>
 
-          <div className="flex items-center gap-3 relative group cursor-default">
-            <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-brand-600/20 text-white transition-transform group-hover:scale-105 group-hover:rotate-3">
+          <div className="flex items-center gap-4 relative group cursor-pointer">
+            <div className="w-12 h-12 bg-emerald-600 rounded-sm flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] text-white ring-2 ring-emerald-900">
               {letterhead.logoEmoji || '🥗'}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">NutriAssist<span className="text-brand-600">SME</span></h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Gestão Inteligente</p>
+              <h1 className="text-2xl font-display font-black text-white tracking-tighter leading-none">
+                NutriAssist
+              </h1>
+              <span className="text-emerald-400 block text-[10px] font-bold uppercase tracking-[0.2em] mt-1">SME Digital</span>
             </div>
           </div>
         </div>
 
         {/* Profile Card */}
-        <div className="px-4 mb-2">
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 flex items-center justify-center font-bold text-sm">
-              {activeProfile?.nome.charAt(0)}
+        <div className="px-6 mb-6">
+          <div className="bg-surface-50 dark:bg-surface-800 rounded-2xl p-4 border border-surface-200 dark:border-surface-700 flex items-center gap-4 group hover:border-brand-200 transition-colors shadow-sm">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-xl bg-white dark:bg-surface-900 flex items-center justify-center font-bold text-lg text-brand-600 shadow-sm border border-surface-100">
+                {activeProfile?.nome.charAt(0)}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-brand-500 rounded-full border-2 border-white dark:border-surface-800"></div>
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{activeProfile?.nome}</p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase truncate">{activeProfile?.role}</p>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-brand-700 transition-colors">{activeProfile?.nome}</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate">{activeProfile?.role}</p>
             </div>
+            <Settings className="w-4 h-4 text-slate-300 group-hover:text-brand-400 transition-colors" />
           </div>
         </div>
 

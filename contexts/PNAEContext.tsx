@@ -160,10 +160,12 @@ export const PNAEProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLetterhead(config);
 
         try {
-            const { error } = await supabase.from('application_settings').update({
+            // Using upsert to ensure it saves even if the row was somehow deleted or missed
+            const { error } = await supabase.from('application_settings').upsert({
+                id: 'letterhead',
                 data: config,
                 updated_at: new Date().toISOString()
-            }).eq('id', 'letterhead');
+            });
 
             if (error) {
                 console.error("Erro ao sincronizar configurações com Supabase:", error);

@@ -18,19 +18,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     icon
 }) => {
     return (
-        <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-                {icon && (
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 shadow-sm border border-emerald-500/10">
-                        {icon}
-                    </div>
-                )}
+        <div className="flex flex-col gap-6 mb-10 sm:flex-row sm:items-start sm:justify-between animate-in fade-in duration-700">
+            <div className="flex items-center gap-5">
+
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none uppercase">
+                    <h1 className="text-4xl md:text-5xl font-display font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-1">
                         {title}
                     </h1>
                     {subtitle && (
-                        <p className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">
+                        <p className="text-base font-bold text-slate-500 dark:text-slate-400 tracking-tight">
                             {subtitle}
                         </p>
                     )}
@@ -38,7 +34,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             </div>
 
             {actions && (
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                     {actions}
                 </div>
             )}
