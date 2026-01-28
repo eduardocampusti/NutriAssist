@@ -112,53 +112,94 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
         };
     }, [menuPlans, inventory, evaluations, schools, audits, requests, occurrences]);
 
-    const KPICard = ({ title, value, subValue, icon: Icon, color, trend }: any) => (
-        <Card variant="glass" padding="md" className="group hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-            <div className={`absolute top-0 right-0 w-24 h-24 ${color} opacity-[0.05] -mr-6 -mt-6 rounded-full group-hover:scale-150 transition-transform duration-700`}></div>
-            <div className="flex justify-between items-start mb-4 relative z-10">
-                <div className={`w-12 h-12 rounded-xl ${color} bg-opacity-10 flex items-center justify-center text-xl text-${color.split('-')[1]}-600 group-hover:scale-110 transition-transform duration-300 shadow-sm ring-1 ring-inset ring-black/5`}>
-                    <Icon className="w-6 h-6" />
-                </div>
-                {trend && (
-                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide ${trend > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                        {trend > 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                        {Math.abs(trend)}%
+    const KPICard = ({ title, value, subValue, icon: Icon, color, trend }: any) => {
+        // Extract color name (e.g., 'emerald' from 'bg-emerald-500')
+        const colorName = color.split('-')[1];
+
+        // Soft Glass Style
+        const bgClass =
+            colorName === 'emerald' ? 'bg-emerald-50' :
+                colorName === 'rose' ? 'bg-rose-50' :
+                    colorName === 'blue' ? 'bg-blue-50' :
+                        'bg-amber-50';
+
+        const textClass =
+            colorName === 'emerald' ? 'text-emerald-600' :
+                colorName === 'rose' ? 'text-rose-600' :
+                    colorName === 'blue' ? 'text-blue-600' :
+                        'text-amber-600';
+
+        // Gradient Background for Texture
+        const gradientClass =
+            colorName === 'emerald' ? 'from-white via-white to-emerald-50/50' :
+                colorName === 'rose' ? 'from-white via-white to-rose-50/50' :
+                    colorName === 'blue' ? 'from-white via-white to-blue-50/50' :
+                        'from-white via-white to-amber-50/50';
+
+        return (
+            <div className={`bg-white rounded-xl border border-slate-100 p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] bg-gradient-to-br ${gradientClass}`}>
+                <div className="flex justify-between items-start mb-6 relative z-10">
+                    <div className={`w-12 h-12 rounded-xl ${bgClass} flex items-center justify-center ${textClass} group-hover:scale-105 transition-transform duration-300`}>
+                        <Icon className="w-6 h-6" strokeWidth={2} />
                     </div>
-                )}
-            </div>
-            <div className="relative z-10">
-                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">{title}</h4>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-display font-bold text-slate-900 tracking-tight">{value}</span>
-                    {subValue && <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{subValue}</span>}
+                    {trend && (
+                        <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${trend > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                            {trend > 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                            {Math.abs(trend)}%
+                        </div>
+                    )}
+                </div>
+                <div className="relative z-10">
+                    <h4 className="text-sm font-bold text-slate-500 leading-tight mb-2 tracking-tight uppercase">{title}</h4>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-extrabold text-[#111827] tracking-tight">{value}</span>
+                        {subValue && <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">{subValue}</span>}
+                    </div>
                 </div>
             </div>
-        </Card>
-    );
+        );
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 pb-12">
-            {/* ALERT WIDGET */}
-            <div className="mb-0 flex flex-col md:flex-row gap-6 justify-between items-start md:items-stretch">
-                <div className="flex-1 w-full">
-                    <AlertWidget
-                        activeProfile={activeProfile!}
-                        onViewAll={() => onNavigate('inventory')}
-                    />
+            {/* HERO SECTION - GREEN ROOF */}
+            <div className="h-[280px] w-full bg-[#064E3B] -mx-8 -mt-8 px-8 py-8 mb-0 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light"></div>
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+
+                <div className="relative z-10 flex flex-col xl:flex-row gap-6 justify-between items-start xl:items-center pt-4">
+                    <div className="text-white">
+                        <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-white">Olá, {activeProfile?.nome?.split(' ')[0] || 'Gestor'}</h1>
+                        <p className="text-emerald-100/80 font-medium text-sm flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span>
+                            Visão Geral da Rede • 2026/1
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Transparent Hero Filters */}
+                        <button className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/20 backdrop-blur-sm transition-all flex items-center gap-2">
+                            <Building2 size={14} className="text-emerald-200" /> Todas Escolas
+                        </button>
+                        <button className="px-4 py-2 bg-white/10 border border-white/20 text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/20 backdrop-blur-sm transition-all flex items-center gap-2">
+                            <Calendar size={14} className="text-emerald-200" /> 2026/1
+                        </button>
+
+                        <div className="w-px h-6 bg-white/20 mx-2 hidden sm:block"></div>
+
+                        <button
+                            onClick={() => setIsTermOpen(true)}
+                            className="text-emerald-100 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-all"
+                        >
+                            <Scale size={16} />
+                            Termo
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={() => setIsTermOpen(true)}
-                    className="px-6 py-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition-all flex items-center gap-3 shadow-lg shadow-slate-900/10 shrink-0 transform hover:-translate-y-0.5"
-                >
-                    <Scale size={18} className="text-emerald-400" />
-                    Termo de Ciência
-                </button>
             </div>
 
-            <GovernanceTermViewer isOpen={isTermOpen} onClose={() => setIsTermOpen(false)} />
-
-            {/* TOP METRICS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* TOP METRICS - OVERLAPPING LAYER */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 -mt-20 relative z-20 px-2">
                 <KPICard
                     title="Governança Técnica"
                     value={`${analytics.complianceRate.toFixed(0)}%`}
@@ -191,59 +232,70 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
                 />
             </div>
 
+            <GovernanceTermViewer isOpen={isTermOpen} onClose={() => setIsTermOpen(false)} />
+
+            {/* ALERT WIDGET SECTION - MOVED BELOW */}
+            <div className="mt-2 mb-8">
+                <AlertWidget
+                    activeProfile={activeProfile!}
+                    onViewAll={() => onNavigate('inventory')}
+                />
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* IMPACT AND REACH */}
-                <Card variant="gradient" padding="none" className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white shadow-xl relative overflow-hidden flex flex-col justify-between group h-full">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500 opacity-[0.05] rounded-full blur-[80px] -mr-32 -mt-32 animate-pulse"></div>
-                    <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-500 opacity-[0.05] rounded-full blur-[60px] -ml-20 -mb-20"></div>
+                <Card variant="glass" padding="none" className="lg:col-span-2 bg-white text-stone-900 shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.05)] rounded-2xl relative overflow-hidden flex flex-col justify-between group h-full border-stone-200">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-50 opacity-[0.6] rounded-full blur-[80px] -mr-32 -mt-32"></div>
 
-                    <div className="p-8 pb-0 relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-white/5">
-                        <div className="space-y-1 mb-8">
-                            <h3 className="text-2xl font-display font-bold tracking-tight text-white mb-1">Impacto Social PNAE</h3>
-                            <p className="text-slate-400 text-sm font-medium">Alcance estratégico da política pública.</p>
+                    <div className="p-8 pb-0 relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                        <div className="space-y-4 mb-4 border-l-4 border-emerald-500 pl-6">
+                            <h3 className="text-3xl font-bold tracking-tight text-gray-900 mb-1">Impacto Social PNAE</h3>
+                            <p className="text-gray-500 text-sm font-bold">Alcance estratégico da política pública.</p>
                         </div>
-                        <div className="flex gap-8 mb-8">
+                        <div className="flex gap-8 mb-4">
                             <div className="text-center">
-                                <p className="text-4xl font-display font-bold tracking-tight text-white">{analytics.totalSchools}</p>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Escolas</p>
+                                <p className="text-6xl font-extrabold tracking-tight text-gray-900">{analytics.totalSchools}</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2">Escolas</p>
                             </div>
                             <div className="text-center">
-                                <p className="text-4xl font-display font-bold tracking-tight text-brand-400">{(analytics.totalStudents / 1000).toFixed(1)}k</p>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Alunos</p>
+                                <p className="text-6xl font-extrabold tracking-tight text-[#16A34A]">{(analytics.totalStudents / 1000).toFixed(1)}k</p>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-2">Alunos</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-8 pt-6 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+                    <div className="w-full h-px bg-stone-100 my-4 relative z-10"></div>
+
+                    <div className="p-8 pt-4 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
                         <div>
                             <div className="flex justify-between items-end mb-3">
-                                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">Execução do Planejamento</h4>
-                                <span className="text-lg font-bold text-brand-400">92%</span>
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-stone-500">Execução do Planejamento</h4>
+                                <span className="text-xs font-bold text-[#16A34A] bg-emerald-50 px-2 py-1 rounded-full">+12.5%</span>
                             </div>
-                            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-brand-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000" style={{ width: '92%' }}></div>
+                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-brand-500 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-all duration-1000" style={{ width: '92%' }}></div>
                             </div>
                             <p className="text-[11px] text-slate-500 font-medium mt-3 leading-relaxed">
                                 Meta baseada no cronograma de 200 dias letivos e distribuição semanal.
                             </p>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-2xl border border-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                            <CheckCircle2 className="text-brand-400 w-6 h-6 mb-3" />
-                            <h5 className="text-sm font-bold text-white mb-1">Transparência PNAE</h5>
-                            <p className="text-xs text-slate-400 leading-relaxed">Dados consolidados prontos para prestação de contas ao FNDE.</p>
+                        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors">
+                            <CheckCircle2 className="text-brand-600 w-6 h-6 mb-3" />
+                            <h5 className="text-sm font-bold text-slate-800 mb-1">Transparência PNAE</h5>
+                            <p className="text-xs text-slate-500 leading-relaxed">Dados consolidados prontos para prestação de contas ao FNDE.</p>
                         </div>
                     </div>
                 </Card>
 
-                <Card variant="glass" padding="lg" className="flex flex-col justify-between h-full">
+                <Card variant="glass" padding="lg" className="flex flex-col justify-between h-full bg-white border border-gray-200 shadow-sm rounded-xl">
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-indigo-500/10 text-indigo-600 rounded-xl flex items-center justify-center border border-indigo-100 shadow-sm">
-                                <Truck className="w-6 h-6" />
+                        <div className="flex items-center gap-4 border-l-4 border-blue-500 pl-4 py-1">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center border border-blue-100 shadow-sm">
+                                <Truck className="w-6 h-6" strokeWidth={2.5} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-display font-bold text-slate-900 uppercase tracking-tight">Status das Entregas</h3>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logística na Rede</p>
+                                <h3 className="text-lg font-bold text-gray-900 uppercase tracking-tight">Status das Entregas</h3>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Logística na Rede</p>
                             </div>
                         </div>
 
@@ -253,65 +305,65 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
                                 { label: 'Atrasadas / Pendentes', count: 3, color: 'rose' },
                                 { label: 'Em Rota de Entrega', count: 5, color: 'blue' },
                             ].map((s, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 bg-surface-50 rounded-xl border border-transparent hover:border-surface-200 transition-all hover:bg-white hover:shadow-sm group">
+                                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-all hover:bg-white hover:shadow-sm group">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-2.5 h-2.5 rounded-full bg-${s.color}-500 ring-2 ring-${s.color}-100`}></div>
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide group-hover:text-slate-700">{s.label}</span>
+                                        <div className={`w-3 h-3 rounded-full bg-${s.color}-500 ring-2 ring-${s.color}-100`}></div>
+                                        <span className="text-xs font-bold text-gray-600 uppercase tracking-wide group-hover:text-gray-900">{s.label}</span>
                                     </div>
-                                    <span className="text-sm font-bold text-slate-900">{s.count}</span>
+                                    <span className="text-lg font-extrabold text-gray-900">{s.count}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="mt-8 p-6 bg-slate-900 rounded-2xl text-white relative overflow-hidden shadow-lg shadow-slate-900/20">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 opacity-10 rounded-full blur-3xl -mr-10 -mt-10 animate-pulse"></div>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-2 relative z-10">Volume Executado PNAE</p>
+                    <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm border-l-4 border-l-emerald-500">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 opacity-10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 relative z-10">Volume Executado PNAE</p>
                         <div className="flex justify-between items-end mb-3 relative z-10">
-                            <span className="text-2xl font-display font-bold tracking-tight">R$ 142.5k</span>
-                            <span className="text-[9px] font-bold text-brand-400 uppercase bg-brand-500/10 px-2 py-0.5 rounded">34% AF</span>
+                            <span className="text-4xl font-extrabold tracking-tight text-gray-900">R$ 142.5k</span>
+                            <span className="text-xs font-bold text-emerald-800 uppercase bg-emerald-100 px-3 py-1 rounded-full">34% AF</span>
                         </div>
-                        <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden relative z-10">
-                            <div className="h-full bg-brand-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: '34%' }}></div>
+                        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden relative z-10">
+                            <div className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" style={{ width: '34%' }}></div>
                         </div>
                     </div>
                 </Card>
             </div>
 
             {/* RECENT STRATEGIC EVENTS */}
-            <Card variant="glass" padding="lg">
+            <Card variant="glass" padding="lg" className="rounded-2xl border border-stone-100 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 border border-brand-100 shadow-sm">
+                        <div className="w-12 h-12 rounded-xl bg-stone-50 flex items-center justify-center text-stone-600 border border-stone-100">
                             <CheckCircle2 className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-display font-bold text-slate-900 uppercase tracking-tight leading-none">Ajustes e Validações</h3>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Pareceres Técnicos Recentes</p>
+                            <h3 className="text-lg font-bold text-stone-900 uppercase tracking-tight leading-none">Ajustes e Validações</h3>
+                            <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mt-1">Pareceres Técnicos Recentes</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {requests.filter(r => r.parecer_nutricional).slice(0, 3).map((request, i) => (
-                        <div key={i} className="p-6 bg-surface-50 rounded-2xl border border-surface-100 hover:border-brand-200 hover:bg-white hover:shadow-md transition-all group cursor-default">
+                        <div key={i} className="p-6 bg-stone-50 rounded-2xl border border-stone-100 hover:border-emerald-200 hover:bg-white hover:shadow-md transition-all group cursor-default">
                             <div className="flex justify-between items-start mb-3">
-                                <span className="px-2.5 py-1 bg-brand-100 text-brand-700 rounded-md text-[9px] font-bold uppercase tracking-wider group-hover:bg-brand-500 group-hover:text-white transition-colors">
+                                <span className="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[9px] font-bold uppercase tracking-wider group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                                     Ajuste Autorizado
                                 </span>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1">
                                     <Calendar size={10} /> {new Date(request.created_at || '').toLocaleDateString()}
                                 </span>
                             </div>
-                            <h5 className="text-xs font-bold text-slate-800 uppercase tracking-tight mb-2 group-hover:text-brand-600 transition-colors">{(request as any).escola?.nome}</h5>
-                            <p className="text-[11px] text-slate-500 font-medium leading-relaxed italic line-clamp-2">
+                            <h5 className="text-xs font-bold text-stone-800 uppercase tracking-tight mb-2 group-hover:text-emerald-700 transition-colors">{(request as any).escola?.nome}</h5>
+                            <p className="text-[11px] text-stone-500 font-medium leading-relaxed italic line-clamp-2">
                                 "{request.parecer_nutricional}"
                             </p>
                         </div>
                     ))}
                     {requests.filter(r => r.parecer_nutricional).length === 0 && (
-                        <div className="lg:col-span-3 py-12 text-center bg-surface-50 rounded-2xl border border-dashed border-surface-200">
-                            <p className="text-sm text-slate-400 font-medium">Nenhum ajuste técnico recente.</p>
+                        <div className="lg:col-span-3 py-12 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+                            <p className="text-sm text-stone-400 font-medium">Nenhum ajuste técnico recente.</p>
                         </div>
                     )}
                 </div>

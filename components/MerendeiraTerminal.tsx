@@ -152,7 +152,7 @@ const MerendeiraTerminal: React.FC<MerendeiraTerminalProps> = ({
       <PageHeader
         title={school?.nome || 'Minha Unidade'}
         subtitle={`Terminal de Cozinha • ${new Date().toLocaleDateString()}`}
-        icon={<Utensils className="w-8 h-8 text-emerald-500" />}
+        icon={Utensils}
         actions={
           <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner w-full sm:w-auto">
             <button

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LetterheadConfig } from '../types';
 import {
   ShieldCheck,
@@ -7,15 +7,17 @@ import {
   FileCheck,
   Users,
   Award,
-  Terminal,
   Code2,
   HeartPulse,
   ChefHat,
   GraduationCap,
   Building2,
   X,
-  Scale,
-  CheckCircle2
+  Moon,
+  Sun,
+  LayoutGrid,
+  ClipboardList,
+  Fingerprint
 } from 'lucide-react';
 
 interface AboutSystemProps {
@@ -24,275 +26,255 @@ interface AboutSystemProps {
 }
 
 const AboutSystem: React.FC<AboutSystemProps> = ({ config, onClose }) => {
+  // We remove the state-based theme enforcement because standard is now Light Mode
+  // But we keep the toggle for preference.
+
+  const isDark = document.documentElement.classList.contains('dark');
+
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700 pb-24 font-inter">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] transition-colors duration-500 p-4 md:p-8 font-inter overflow-y-auto">
+      <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
 
-      {/* HEADER: TITULO & FECHAR */}
-      <div className="flex justify-between items-start">
-        <div className="space-y-1">
-          <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Informações Institucionais</h2>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">
-            Sobre o <span className="text-emerald-600">Sistema</span>
-          </h1>
+        {/* HEADER */}
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Informações Institucionais</h2>
+            <h1 className="text-3xl md:text-3xl font-black text-[#1E293B] dark:text-white tracking-tighter uppercase">
+              Sobre o <span className="text-emerald-600">Sistema</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onClose}
+              className="p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-300 hover:text-rose-500 transition-all active:scale-95 shadow-sm"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-        <button
-          onClick={onClose}
-          className="p-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-slate-400 hover:text-rose-500 transition-all active:scale-90 shadow-sm"
-        >
-          <X className="w-6 h-6" />
-        </button>
-      </div>
 
-      {/* GRID PRINCIPAL */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* HERO BANNER - PREMIUM REDESIGN */}
+        <div className="relative w-full rounded-[30px] shadow-2xl overflow-hidden min-h-[400px] flex flex-col justify-center p-10 md:p-16 group transition-all hover:shadow-emerald-900/20">
+          {/* Background Image */}
+          <div className="absolute inset-0 bg-[url('/premium-hero.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"></div>
 
-        {/* COLUNA ESQUERDA: BRANDING & ADMINISTRAÇÃO (4 Colunas) */}
-        <div className="lg:col-span-4 space-y-8">
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, rgba(6,78,59,0.95) 0%, rgba(6,78,59,0.4) 100%)' }}></div>
 
-          {/* CARTÃO BRANDING */}
-          <div className="bg-[#020617] p-10 rounded-[40px] relative overflow-hidden group shadow-2xl shadow-slate-900/20 text-white min-h-[320px] flex flex-col justify-between border border-slate-800">
-            {/* Efeitos de Fundo */}
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/20 transition-all duration-1000"></div>
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/2"></div>
-
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20 mb-6 group-hover:scale-110 transition-transform duration-500 ring-4 ring-white/5">
+          {/* Content */}
+          <div className="relative z-10 space-y-6 max-w-4xl animate-in slide-in-from-left-8 duration-700">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-2xl border border-white/20 text-white shadow-lg">
                 🥗
               </div>
-              <h2 className="text-3xl font-black tracking-tighter leading-none mb-2">
-                NutriAssist <span className="text-emerald-400">SME</span>
-              </h2>
-              <p className="text-emerald-500/60 font-black text-[10px] uppercase tracking-[0.3em]">Gestão Inteligente</p>
+              <span className="px-3 py-1 rounded-full border border-emerald-400/30 bg-emerald-900/30 text-emerald-100 text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
+                Versão {config.sistemaVersao || '2.6.0'}
+              </span>
             </div>
 
-            <div className="relative z-10 pt-8 border-t border-white/10">
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Versão do Sistema</p>
-              <p className="text-sm font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                {config.sistemaVersao || 'v2.6.0 (Stable)'}
-              </p>
-            </div>
-          </div>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-[1.1] text-white drop-shadow-sm">
+              NUTRIASSIST <span className="text-emerald-400">SME</span> — <br />
+              GESTÃO INTELIGENTE
+            </h2>
 
-          {/* CARTÃO ADMINISTRAÇÃO */}
-          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-xl shadow-slate-200/50 space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-slate-50 rounded-bl-[40px] -mr-4 -mt-4 z-0"></div>
+            <p className="text-lg md:text-xl text-emerald-50 font-medium leading-relaxed max-w-2xl text-shadow-sm opacity-90">
+              A solução definitiva para automação técnica nutricional, garantindo conformidade com o PNAE e eficiência operacional para a rede municipal de ensino.
+            </p>
 
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-slate-100 rounded-lg text-slate-600">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Administração Municipal</h3>
+            <div className="pt-6 flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors">
+                <ShieldCheck className="text-emerald-300 w-5 h-5" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Segurança PNAE</span>
               </div>
-
-              <div className="space-y-5">
-                <div className="group">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-emerald-600 transition-colors">Prefeito Municipal</p>
-                  <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{config.prefeitoNome || 'Dr. Antônio Kleber Ribeiro'}</p>
-                </div>
-
-                <div className="w-full h-px bg-slate-100"></div>
-
-                <div className="group">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-emerald-600 transition-colors">Secretária de Educação</p>
-                  <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{config.secretariaNome || 'Gislene Leite Santos Araújo'}</p>
-                </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors">
+                <Cpu className="text-emerald-300 w-5 h-5" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Automação IA</span>
               </div>
             </div>
           </div>
-
         </div>
 
-        {/* COLUNA DIREITA: EQUIPE TÉCNICA E DNA (8 Colunas) */}
-        <div className="lg:col-span-8 space-y-8">
+        {/* TEAM ROW: 2 CARDS - REFINED */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* EQUIPE TÉCNICA (GRID DUPLO) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* CARD 2: NUTRICIONISTA - REFINED */}
+          <div className="relative overflow-hidden rounded-[24px] bg-white dark:bg-slate-800 p-8 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between min-h-[320px] group hover:border-rose-200 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/5">
 
-            {/* ALEXANDRA */}
-            <div className="bg-gradient-to-br from-white to-slate-50 p-8 rounded-[32px] border border-slate-200/60 shadow-lg hover:shadow-xl transition-all group relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                <HeartPulse className="w-24 h-24 text-rose-500" />
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-2xl flex items-center justify-center shadow-sm border border-rose-100 dark:border-rose-800/30">
+                    <ChefHat className="w-8 h-8 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div className="bg-rose-50 text-rose-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-rose-100">
+                    RT Ativa
+                  </div>
+                </div>
+
+                <p className="text-[10px] font-black text-rose-600/60 uppercase tracking-widest mb-2">Responsabilidade Técnica</p>
+                <h3 className="text-3xl font-black tracking-tight uppercase leading-none mb-2 text-[#1E293B] dark:text-white">{config.nutricionistaNome || 'Alexandra Fernandes'}</h3>
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <Award className="w-4 h-4 text-emerald-500" />
+                  CRN-5/16149
+                </p>
               </div>
 
-              <div className="relative z-10 flex flex-col h-full justify-between gap-6">
-                <div className="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center shadow-inner">
-                  <ChefHat className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-2">Responsabilidade Técnica</p>
-                  <h3 className="text-xl font-black text-slate-800 uppercase mb-1">{config.nutricionistaNome || 'Alexandra Fernandes'}</h3>
-                  <p className="text-xs font-bold text-slate-500">Nutricionista • {config.nutricionistaCrn || 'CRN-5/16149'}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-200/60">
-                  <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
-                    "Supervisão rigorosa dos parâmetros nutricionais, conformidade com o PNAE e garantia da segurança alimentar."
-                  </p>
-                </div>
+              <div className="pt-6 border-t border-slate-50 dark:border-slate-700 space-y-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium italic">
+                  "Supervisão rigorosa dos parâmetros nutricionais, conformidade com o PNAE e garantia da segurança alimentar."
+                </p>
+                <button className="w-full py-3 rounded-xl bg-rose-600 text-white border border-rose-600 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 hover:bg-rose-700 hover:shadow-lg hover:shadow-rose-500/30 active:scale-[0.98]">
+                  Ver Credencial Oficial
+                </button>
               </div>
-            </div>
-
-            {/* EDUARDO */}
-            <div className="bg-[#0F172A] p-8 rounded-[32px] border border-slate-700 shadow-lg hover:shadow-xl transition-all group relative overflow-hidden text-white">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Terminal className="w-24 h-24 text-emerald-400" />
-              </div>
-
-              <div className="relative z-10 flex flex-col h-full justify-between gap-6">
-                <div className="w-12 h-12 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center shadow-inner border border-slate-700">
-                  <Code2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-2">Arquitetura & Desenvolvimento</p>
-                  <h3 className="text-xl font-black text-white uppercase mb-1">Carlos Eduardo</h3>
-                  <p className="text-xs font-bold text-slate-400">Engenheiro de Software • Full Stack</p>
-                </div>
-                <div className="pt-4 border-t border-slate-700/60">
-                  <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                    "Desenvolvimento do ecossistema digital focado em segurança de dados, alta performance e usabilidade governamental."
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          {/* DNA DO SISTEMA (MODULOS) */}
-          <div className="bg-white px-8 py-10 rounded-[32px] border border-slate-200 shadow-sm">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-8 h-8 bg-emerald-50 text-emerald-600 flex items-center justify-center rounded-lg">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <h3 className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">Módulos de Conformidade & Tecnologia</h3>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { icon: ShieldCheck, label: "Compliance PNAE" },
-                { icon: Database, label: "Banco de Dados Seguro" },
-                { icon: Users, label: "Gestão por Papéis (RBAC)" },
-                { icon: FileCheck, label: "Auditoria Digital" },
-                { icon: Cpu, label: "Automação Inteligente" },
-                { icon: Award, label: "Certificação de Qualidade" },
-                { icon: GraduationCap, label: "Módulo Capacitação" },
-                { icon: HeartPulse, label: "Saúde Escolar (PSE)" },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:border-emerald-200 hover:shadow-md transition-all group cursor-default">
-                  <item.icon className="w-6 h-6 text-slate-400 group-hover:text-emerald-500 transition-colors mb-3" />
-                  <span className="text-[9px] font-bold text-slate-500 uppercase text-center group-hover:text-emerald-700 transition-colors">{item.label}</span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* APRESENTAÇÃO INSTITUCIONAL */}
-          <div className="bg-emerald-50/50 px-10 py-12 rounded-[40px] border border-emerald-100/60 shadow-inner space-y-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-10 opacity-5">
-              <ShieldCheck className="w-32 h-32 text-emerald-600" />
+          {/* CARD 3: ARQUITETO - REFINED */}
+          <div className="relative overflow-hidden rounded-[24px] bg-white dark:bg-slate-800 p-8 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between min-h-[320px] group hover:border-amber-200 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5">
+
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center shadow-sm border border-amber-100 dark:border-amber-800/30">
+                    <Code2 className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-100">
+                    Lead Dev
+                  </div>
+                </div>
+
+                <p className="text-[10px] font-black text-amber-600/60 uppercase tracking-widest mb-2">Engenharia de Software</p>
+                <h3 className="text-3xl font-black tracking-tight uppercase leading-none mb-2 text-[#1E293B] dark:text-white">Carlos Eduardo</h3>
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-emerald-500" />
+                  Full Stack Developer
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-50 dark:border-slate-700 space-y-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium italic">
+                  "Ecossistema digital focado em segurança de dados, alta performance e usabilidade governamental."
+                </p>
+                <button className="w-full py-3 rounded-xl bg-amber-500 text-white border border-amber-500 font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 hover:bg-amber-600 hover:shadow-lg hover:shadow-amber-500/30 active:scale-[0.98]">
+                  Ver Portfolio Técnico
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM ROW: 2 PANELS - REFINED */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+          {/* PANEL 1: ADMIN - OFFICIAL GOVERNMENT STYLE */}
+          <div className="lg:col-span-4 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-[24px] p-8 relative overflow-hidden shadow-md border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
+            {/* Watermark Seal */}
+            <div className="absolute -right-12 -bottom-12 opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-screen">
+              <Building2 className="w-64 h-64 text-slate-900 dark:text-white" />
             </div>
 
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="relative z-10 space-y-8">
+              <div className="flex items-center gap-4 border-b border-slate-200 pb-6">
+                <div className="p-3 bg-slate-900 rounded-xl text-emerald-400 shadow-lg shadow-slate-900/20">
                   <Building2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Apresentação Institucional</h3>
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{config.secretaria || 'SME'} {config.municipio || 'Brotas de Macaúbas/BA'}</p>
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Gestão 2025-2028</h3>
+                  <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Administração Municipal</h2>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="bg-white/60 p-8 rounded-[32px] border border-white shadow-sm">
-                  <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                    O **Sistema NutriAssist SME** organiza o fluxo da alimentação: a nutricionista planeja, o sistema controla o estoque, os alimentos chegam às escolas e a direção confirma o recebimento.
+              <div className="space-y-8">
+                <div className="group">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2 group-hover:text-emerald-600 transition-colors">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover:bg-emerald-500 transition-colors"></span> Prefeito Municipal
                   </p>
+                  <p className="text-xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight">{config.prefeitoNome || 'Dr. Antônio Kleber Ribeiro'}</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-                  <div className="space-y-4">
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Tudo fica registrado de forma simples para sabermos exatamente o que foi comprado, entregue e consumido, protegendo quem trabalha e evitando desperdícios.
-                    </p>
-                    <ul className="space-y-2 text-[11px] font-bold text-slate-500 uppercase">
-                      <li className="flex items-center gap-2 text-emerald-600"><CheckCircle2 size={14} /> Redução de Burocracia</li>
-                      <li className="flex items-center gap-2 text-emerald-600"><CheckCircle2 size={14} /> Segurança para a Gestão</li>
-                      <li className="flex items-center gap-2 text-emerald-600"><CheckCircle2 size={14} /> Transparência Total</li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Fortalece o papel do **Conselho de Alimentação Escolar (CAE)**, garantindo informações acessíveis para o controle social e a transparência pública.
-                    </p>
-                    <div className="p-4 bg-emerald-600/5 rounded-2xl border border-emerald-100">
-                      <p className="text-[10px] text-emerald-800 font-bold leading-relaxed italic">
-                        "Reafirmamos nosso compromisso com a boa aplicação dos recursos públicos e com o direito dos nossos estudantes a uma alimentação de excelência."
-                      </p>
-                    </div>
-                  </div>
+                <div className="group">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2 group-hover:text-emerald-600 transition-colors">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover:bg-emerald-500 transition-colors"></span> Secretária de Educação
+                  </p>
+                  <p className="text-xl font-black text-[#0F172A] dark:text-white uppercase tracking-tight leading-tight">{config.secretariaNome || 'Gislene Leite Santos Araújo'}</p>
                 </div>
+              </div>
 
-                <div className="pt-8 border-t border-emerald-100 flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-slate-100 shadow-sm text-[9px] font-black text-slate-400 uppercase">
-                    <Scale size={14} /> Validade Administrativa
+              <div className="pt-6 border-t border-slate-200">
+                <div className="flex items-center gap-2 opacity-100">
+                  <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="w-[40%] h-full bg-emerald-500"></div>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-slate-100 shadow-sm text-[9px] font-black text-slate-400 uppercase">
-                    <FileCheck size={14} /> Conformidade PNAE
-                  </div>
-                </div>
-
-                {/* NOVO: RESPALDO AUDITORIA E REPOSIÇÃO */}
-                <div className="mt-12 p-8 bg-white/40 border border-emerald-200/50 rounded-[32px] space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
-                  <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest flex items-center gap-2">
-                    <ShieldCheck size={14} /> Governança & Base Normativa
-                  </h4>
-                  <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm">
-                    <div className="w-10 h-10 bg-emerald-600/10 rounded-xl flex items-center justify-center text-emerald-600">
-                      <Scale size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black text-slate-800 uppercase tracking-tight">Portaria Normativa - {config.secretaria || 'SME'}</p>
-                      <p className="text-[9px] text-slate-500 font-medium leading-none mt-1">Designação do Núcleo Cocal para gestão administrativa PNAE.</p>
-                    </div>
-                  </div>
-                  <div className="space-y-4 text-[11px] text-slate-600 font-medium leading-relaxed">
-                    <p>
-                      O **Módulo de Auditoria e Solicitação de Reposição de Estoque Escolar** integra o Sistema NutriAssist SME como instrumento de apoio à gestão da alimentação escolar, com fundamento nos princípios da legalidade, eficiência, transparência e controle administrativo.
-                    </p>
-                    <p>
-                      A funcionalidade não transfere à unidade escolar a responsabilidade pela gestão centralizada do estoque, cabendo à direção apenas o acompanhamento, a auditoria local e a comunicação formal das necessidades da escola.
-                    </p>
-                    <p>
-                      As solicitações registradas no sistema possuem caráter administrativo, servindo como subsídio para planejamento, distribuição de alimentos e prestação de contas, em conformidade com as normas do Programa Nacional de Alimentação Escolar – PNAE.
-                    </p>
-                    <div className="flex items-center gap-3 p-3 bg-emerald-600/10 rounded-xl border border-emerald-200 mt-2">
-                      <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                      <p className="text-[10px] font-bold text-emerald-900 uppercase">
-                        Todos os registros possuem rastreabilidade, data, identificação do responsável e histórico, garantindo segurança jurídica aos gestores, à Nutricionista RT e à SME.
-                      </p>
-                    </div>
-                  </div>
+                  <span className="text-[8px] font-bold uppercase text-emerald-600">Transparência Ativa</span>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* PANEL 2: MODULES - APP STORE TILES */}
+          <div className="lg:col-span-8 bg-slate-50 dark:bg-slate-800/50 rounded-[24px] p-8 border border-slate-100 dark:border-slate-700 shadow-inner relative overflow-hidden">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 bg-white shadow-sm text-emerald-600 dark:text-emerald-400 flex items-center justify-center rounded-xl">
+                <LayoutGrid className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Ecossistema Digital</h3>
+                <h2 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">Módulos Instalados</h2>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <ModuleCard icon={ShieldCheck} label="Compliance PNAE" color="emerald" />
+              <ModuleCard icon={Database} label="Banco de Dados" color="blue" />
+              <ModuleCard icon={Users} label="Gestão RBAC" color="orange" />
+              <ModuleCard icon={FileCheck} label="Auditoria Digital" color="slate" />
+
+              <ModuleCard icon={Cpu} label="Automação IA" color="purple" />
+              <ModuleCard icon={Award} label="Certificação Qualidade" color="blue" />
+              <ModuleCard icon={GraduationCap} label="Capacitação" color="orange" />
+              <ModuleCard icon={HeartPulse} label="Saúde Escolar (PSE)" color="rose" />
+            </div>
+          </div>
+
+        </div>
+
+        {/* FOOTER */}
+        <div className="text-center pt-8 border-t border-slate-200 dark:border-slate-800 opacity-60">
+          <p className="text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em]">
+            Desenvolvido exclusivamente para a Secretaria Municipal de Educação
+          </p>
+          <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium mt-1">
+            {config.municipio || 'Brotas de Macaúbas'} — {config.uf || 'Bahia'} • {new Date().getFullYear()}
+          </p>
         </div>
 
       </div>
+    </div>
+  );
+};
 
-      {/* FOOTER */}
-      <div className="text-center pt-8 border-t border-slate-100 opacity-60 hover:opacity-100 transition-opacity">
-        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">
-          Desenvolvido exclusivamente para a Secretaria Municipal de Educação
-        </p>
-        <p className="text-[9px] text-slate-300 font-medium mt-1">
-          {config.municipio || 'Brotas de Macaúbas'} — {config.uf || 'Bahia'} • {new Date().getFullYear()}
-        </p>
+// HELPER COMPONENTS
+
+const ModuleCard = ({ icon: Icon, label, color }: { icon: any, label: string, color: string }) => {
+  // App Store Tile Style
+  const getColorClass = (c: string) => {
+    switch (c) {
+      case 'emerald': return 'text-emerald-600 bg-emerald-50 border-emerald-100 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500';
+      case 'blue': return 'text-blue-600 bg-blue-50 border-blue-100 group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500';
+      case 'orange': return 'text-orange-600 bg-orange-50 border-orange-100 group-hover:bg-orange-500 group-hover:text-white group-hover:border-orange-500';
+      case 'rose': return 'text-rose-600 bg-rose-50 border-rose-100 group-hover:bg-rose-500 group-hover:text-white group-hover:border-rose-500';
+      case 'purple': return 'text-fuchsia-600 bg-fuchsia-50 border-fuchsia-100 group-hover:bg-fuchsia-500 group-hover:text-white group-hover:border-fuchsia-500';
+      default: return 'text-slate-600 bg-slate-50 border-slate-100 group-hover:bg-slate-500 group-hover:text-white group-hover:border-slate-500';
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer aspect-square">
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all duration-300 border ${getColorClass(color)}`}>
+        <Icon className="w-6 h-6 transform group-hover:scale-110 transition-transform" />
       </div>
-
+      <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-800 dark:group-hover:text-white uppercase text-center leading-tight transition-colors px-2">{label}</span>
     </div>
   );
 };

@@ -9,13 +9,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     ({ className = '', variant = 'elevated', padding = 'md', children, ...props }, ref) => {
 
         const variants = {
-            elevated: 'bg-white border border-surface-200 shadow-sm hover:shadow-md hover:-translate-y-[2px]',
-            flat: 'bg-surface-50 border border-surface-200',
-            outlined: 'bg-transparent border border-surface-200',
-            glass: 'bg-white/90 backdrop-blur-sm border border-emerald-900/10 shadow-sm', // Minimal glass
-            gradient: 'bg-gradient-to-br from-white to-surface-50 border border-emerald-900/10 shadow-sm',
-            neo: 'bg-white border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]',
-            governance: 'bg-white border border-emerald-900/20 shadow-none rounded-[2px]' // New Strict Authority Variant
+            elevated: 'bg-white border border-stone-200 shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.05),0px_4px_6px_-2px_rgba(0,0,0,0.025)] hover:shadow-xl hover:-translate-y-[2px]',
+            flat: 'bg-stone-50 border border-stone-200',
+            outlined: 'bg-transparent border border-stone-200',
+            glass: 'bg-white border border-stone-200 shadow-[0px_4px_20px_rgba(0,0,0,0.03)]',
+            gradient: 'bg-gradient-to-br from-white to-stone-50 border border-stone-200 shadow-sm',
+            neo: 'bg-white border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)]',
+            governance: 'bg-white border border-stone-200 shadow-[0px_2px_12px_rgba(0,0,0,0.04)] rounded-2xl' // New Premium Clean Variant
         };
 
         const paddings = {

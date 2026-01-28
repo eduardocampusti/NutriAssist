@@ -42,58 +42,62 @@ const AlertWidget: React.FC<AlertWidgetProps> = ({ activeProfile, onViewAll }) =
     );
 
     return (
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-[2.5rem] shadow-2xl shadow-slate-200 relative overflow-hidden group">
-            {/* DECORATION */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-[0px_4px_20px_rgba(0,0,0,0.03)] relative overflow-hidden group h-full">
+            {/* Background Chart Visualization */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 opacity-[0.05] pointer-events-none">
+                <svg viewBox="0 0 500 150" preserveAspectRatio="none" className="w-full h-full text-slate-900 fill-current">
+                    <path d="M0,100 C150,150 350,0 500,100 L500,150 L0,150 Z" />
+                </svg>
+            </div>
 
             <div className="flex items-start justify-between mb-6 relative z-10">
-                <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md border border-white/10">
-                    <BellRing className="w-6 h-6 text-blue-400" />
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
+                    <BellRing className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <button
                     onClick={onViewAll}
-                    className="p-2 transition-all hover:translate-x-1 text-white/40 hover:text-white"
+                    className="p-2 transition-all hover:translate-x-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
             </div>
 
             <div className="space-y-4 relative z-10">
-                <h4 className="text-sm font-black text-white/60 uppercase tracking-widest">Alertas Inteligentes</h4>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Alertas Inteligentes</h4>
 
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center border border-red-500/20">
-                            <AlertOctagon className="w-5 h-5 text-red-500" />
+                        <div className="w-10 h-10 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center border border-red-100 dark:border-red-800">
+                            <AlertOctagon className="w-5 h-5 text-red-600 dark:text-red-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-black text-white">{criticals.length}</p>
-                            <p className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Críticos</p>
+                            <p className="text-2xl font-black text-slate-900 dark:text-white">{criticals.length}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Críticos</p>
                         </div>
                     </div>
 
-                    <div className="w-px h-10 bg-white/10"></div>
+                    <div className="w-px h-10 bg-slate-100 dark:bg-slate-700"></div>
 
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center border border-amber-500/20">
-                            <AlertTriangle className="w-5 h-5 text-amber-500" />
+                        <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-center justify-center border border-amber-100 dark:border-amber-800">
+                            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                         </div>
                         <div>
-                            <p className="text-2xl font-black text-white">{attentions.length}</p>
-                            <p className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Atenção</p>
+                            <p className="text-2xl font-black text-slate-900 dark:text-white">{attentions.length}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Atenção</p>
                         </div>
                     </div>
                 </div>
 
                 {alerts.length > 0 ? (
                     <div className="pt-2">
-                        <p className="text-[11px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                        <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                             Ação Recomendada em {alerts[0].escola?.nome || 'Escola'}
                         </p>
                     </div>
                 ) : (
-                    <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest pt-2">Operação Normalizada</p>
+                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest pt-2">Operação Normalizada</p>
                 )}
             </div>
         </div>

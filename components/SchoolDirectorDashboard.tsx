@@ -63,7 +63,7 @@ const SchoolDirectorDashboard: React.FC<SchoolDirectorDashboardProps> = ({
             <PageHeader
                 title={school.nome}
                 subtitle={`Painel do Gestor • INEP: ${school.codigo_inep}`}
-                icon={<SchoolIcon className="w-6 h-6" />}
+                icon={SchoolIcon}
                 actions={
                     <div className="flex gap-3 w-full md:w-auto">
                         <button
