@@ -16,7 +16,8 @@ import {
     ChevronDown,
     Zap,
     Download,
-    BarChart3
+    BarChart3,
+    Activity
 } from 'lucide-react';
 import {
     School,
@@ -139,6 +140,10 @@ const UnifiedNutritionalPanel: React.FC<{ onNavigate: (view: string) => void }> 
                     <div className="flex-1 md:flex-none flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-white rounded-xl transition-all group" onClick={() => onNavigate('simulador-nutricional')}>
                         <Zap className="w-4 h-4 text-emerald-500 fill-current group-hover:scale-110 transition-transform" />
                         <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Simulador</span>
+                    </div>
+                    <div className="flex-1 md:flex-none flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-white rounded-xl transition-all group border-l border-slate-200" onClick={() => onNavigate('painel-fnde')}>
+                        <Activity className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Painel FNDE</span>
                     </div>
                     <div className="flex-1 md:flex-none flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-white rounded-xl transition-all group border-l border-slate-200" onClick={() => onNavigate('risco-nutricional')}>
                         <BarChart3 className="w-4 h-4 text-indigo-500 group-hover:scale-110 transition-transform" />

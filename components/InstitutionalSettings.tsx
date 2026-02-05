@@ -106,6 +106,20 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
                   </button>
                </div>
 
+               {/* IMPORTAÇÃO BASE FNDE */}
+               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-all" onClick={() => navigate('/importar-fnde')}>
+                  <div className="flex items-center gap-4">
+                     <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors">📊</div>
+                     <div>
+                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">Importação da Base FNDE</h3>
+                        <p className="text-xs text-slate-500 font-medium">Atualizar a tabela oficial de composição nutricional (PNAE).</p>
+                     </div>
+                  </div>
+                  <button className="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                     Importar XLSX
+                  </button>
+               </div>
+
                {/* TABS DE CONFIGURAÇÃO */}
                <div className="flex gap-2 overflow-x-auto pb-2">
                   <button onClick={() => setActiveTab('HEADER')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'HEADER' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Cabeçalho</button>

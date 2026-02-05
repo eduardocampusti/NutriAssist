@@ -1,0 +1,154 @@
+import React, { useEffect, useState } from 'react';
+import { Card } from './UI/Card';
+import { ShieldCheck, Award, Info, Search, SearchSlash } from 'lucide-react';
+import { nutritionalDashboardService, CertifiedSchool } from '../services/nutritionalDashboardService';
+
+const PublicTransparencyPanel: React.FC = () => {
+    const [certifiedSchools, setCertifiedSchools] = useState<CertifiedSchool[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const fetchPublicData = async () => {
+            setIsLoading(true);
+            try {
+                const data = await nutritionalDashboardService.getCertifiedSchools();
+                setCertifiedSchools(data);
+            } catch (err) {
+                console.error("Erro ao carregar dados públicos:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchPublicData();
+    }, []);
+
+    const filtered = certifiedSchools.filter(s =>
+        s.escola_nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.zona.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (isLoading) {
+        return <div className="p-20 text-center font-black text-slate-400 uppercase tracking-widest animate-pulse">Consultando Registros Oficiais...</div>;
+    }
+
+    return (
+        <div className="max-w-6xl mx-auto space-y-12 py-12 px-6 animate-in fade-in duration-1000">
+            {/* HERO SECTION */}
+            <div className="text-center space-y-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 mb-4">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">PNAE Compliance Transparência</span>
+                </div>
+                <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
+                    Selo Escola em Conformidade Nutricional
+                </h1>
+                <p className="max-w-2xl mx-auto text-slate-500 text-lg leading-relaxed">
+                    Reconhecimento oficial às unidades de ensino que mantêm excelência técnica,
+                    rigor sanitário e execução integral do cardápio planejado.
+                </p>
+            </div>
+
+            {/* METODOLOGIA CARD */}
+            <Card variant="governance" padding="lg" className="bg-slate-900 text-white relative overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+                    <div className="w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-xl shadow-emerald-500/20">
+                        <Award className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <h3 className="text-xl font-black uppercase tracking-tight">Critérios de Certificação</h3>
+                        <p className="text-slate-400 text-sm leading-relaxed">
+                            A avaliação é 100% automatizada e considera a regularidade do estoque,
+                            o recebimento técnico das mercadorias, a ausência de alertas nutricionais críticos
+                            e a conformidade do checklist sanitário bimestral.
+                        </p>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                            <p className="text-xs font-black text-slate-500 uppercase mb-1">Validade</p>
+                            <p className="text-sm font-bold">60 Dias</p>
+                        </div>
+                        <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                            <p className="text-xs font-black text-slate-500 uppercase mb-1">Avaliação</p>
+                            <p className="text-sm font-bold">Mensal</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]"></div>
+            </Card>
+
+            {/* BUSCA */}
+            <div className="relative max-w-md mx-auto">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    placeholder="Pesquisar escola certificada..."
+                    className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-sm"
+                />
+            </div>
+
+            {/* GRID DE ESCOLAS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filtered.map((school, idx) => (
+                    <Card key={idx} variant="elevated" className="bg-white border-slate-200 hover:border-slate-300 transition-all group overflow-hidden">
+                        <div className="p-8 space-y-6">
+                            <div className="flex justify-between items-start">
+                                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-transform group-hover:scale-110">
+                                    <ShieldCheck className="w-6 h-6" />
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-widest">Ativo</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 className="text-lg font-black text-slate-900 uppercase tracking-tighter leading-tight mb-1">{school.escola_nome}</h4>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{school.zona}</p>
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-50 flex justify-between items-center">
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Validade até</p>
+                                    <p className="text-xs font-bold text-slate-600">{new Date(school.validade_fim).toLocaleDateString()}</p>
+                                </div>
+                                <Info className="w-4 h-4 text-slate-200" />
+                            </div>
+                        </div>
+                    </Card>
+                ))}
+            </div>
+
+            {filtered.length === 0 && (
+                <div className="py-24 text-center space-y-6 bg-slate-50 rounded-[40px] border border-dashed border-slate-200">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
+                        <SearchSlash className="w-8 h-8 text-slate-300" />
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">Consulta sem resultados</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest max-w-[280px] mx-auto leading-relaxed">
+                            No momento, nenhuma unidade correspondente atende aos pré-requisitos de certificação ativa.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* FOOTER PUBLICO */}
+            <div className="pt-12 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                <div className="flex items-center gap-4">
+                    <div className="text-2xl">🇧🇷</div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">SME - NutriAssist</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase">Gestão da Merenda de Alta Performance</p>
+                    </div>
+                </div>
+                <div className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                    Dados atualizados diariamente às 00:00 (Brasília)
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default PublicTransparencyPanel;

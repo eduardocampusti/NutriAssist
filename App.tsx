@@ -58,6 +58,11 @@ const ForcePasswordChange = lazy(() => import('./components/Security/ForcePasswo
 const ComplianceDashboard = lazy(() => import('./components/ComplianceDashboard'));
 const EvolutionDashboard = lazy(() => import('./components/EvolutionDashboard'));
 const TransparencyPanel = lazy(() => import('./pages/public/TransparencyPanel'));
+const FNDEImportManager = lazy(() => import('./components/FNDEImportManager'));
+const SchoolNutritionalDashboard = lazy(() => import('./components/SchoolNutritionalDashboard'));
+const SecretaryExecutiveDashboard = lazy(() => import('./components/SecretaryExecutiveDashboard'));
+const PublicTransparencyPanel = lazy(() => import('./components/PublicTransparencyPanel'));
+const InternalEvolutionRanking = lazy(() => import('./components/InternalEvolutionRanking'));
 
 // Types
 import { UserRole, DocStatus, FormalDocument } from './types';
@@ -168,8 +173,13 @@ const AppContent: React.FC = () => {
             <Route path="/logs" element={<AccessGate permission="VIEW_LOGS" fallback={<Navigate to="/" />}><SystemLogManager onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/conformidade" element={<AccessGate permission="VIEW_REPORTS_TECHNICAL" fallback={<Navigate to="/" />}><ComplianceDashboard /></AccessGate>} />
             <Route path="/evolucao" element={<AccessGate permission="VIEW_REPORTS_TECHNICAL" fallback={<Navigate to="/" />}><EvolutionDashboard onClose={() => navigate('/')} /></AccessGate>} />
+            <Route path="/painel-fnde" element={<AccessGate permission="VIEW_NUTRITIONAL_PANEL" fallback={<Navigate to="/" />}><SchoolNutritionalDashboard onBack={() => navigate('/controle-nutricional')} /></AccessGate>} />
+            <Route path="/painel-secretario" element={<AccessGate permission="VIEW_SECRETARY_PANEL" fallback={<Navigate to="/" />}><SecretaryExecutiveDashboard /></AccessGate>} />
+            <Route path="/transparencia-pnae" element={<PublicTransparencyPanel />} />
+            <Route path="/ranking-evolucao" element={<AccessGate permission="VIEW_INTERNAL_RANKING" fallback={<Navigate to="/" />}><InternalEvolutionRanking /></AccessGate>} />
             <Route path="/manual" element={<UserManual activeProfile={activeProfile} onClose={() => navigate('/')} />} />
             <Route path="/sobre" element={<AboutSystem config={letterhead} onClose={() => navigate('/')} />} />
+            <Route path="/importar-fnde" element={<AccessGate permission="MANAGE_FNDE_IMPORT" fallback={<Navigate to="/" />}><FNDEImportManager activeProfile={activeProfile!} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/projeto/tr" element={<SystemTR />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
