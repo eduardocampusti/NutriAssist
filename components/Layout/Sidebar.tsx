@@ -6,7 +6,7 @@ import {
   Home, FileText, Sparkles, FolderLock, Utensils, ShoppingBag, Truck,
   Users, Heart, Scale, GraduationCap, Users2, Settings, History, Shield, ShieldCheck,
   Menu, Info, BookOpen, LogOut, ChevronRight, LayoutDashboard, Database, ClipboardList, Zap, BarChart3,
-  X, Building2
+  X, Building2, Award
 } from 'lucide-react';
 import { hasPermission } from '../../utils/permissions';
 import { Button } from '../UI/Button';
@@ -115,6 +115,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <MenuItem icon={ClipboardList} label="Painel Estratégico" path="/controle-nutricional" badge="Gestão" />
           )}
 
+          {hasPermission(activeProfile?.role, 'VIEW_SECRETARY_PANEL') && (
+            <MenuItem icon={Shield} label="Painel da Secretária" path="/painel-secretario" badge="Executivo" />
+          )}
+
           <SectionLabel label="Operacional" />
           {hasPermission(activeProfile?.role, 'VIEW_MENUS') && <MenuItem icon={Utensils} label="Cardápios PNAE" path="/cardapio" />}
           {hasPermission(activeProfile?.role, 'VIEW_STOCK') && <MenuItem icon={Truck} label="Logística & Estoque" path="/estoque" />}
@@ -130,7 +134,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <MenuItem icon={Sparkles} label="Redação Técnica IA" path="/elaborar" badge="Novo" />
               <MenuItem icon={FolderLock} label="Arquivo Digital" path="/arquivo" />
               <MenuItem icon={FileText} label="Relatórios Oficiais" path="/relatorios" />
-              <MenuItem icon={ShieldCheck} label="Compliance" path="/conformidade" />
+              {hasPermission(activeProfile?.role, 'VIEW_NUTRITIONAL_PANEL') && <MenuItem icon={BarChart3} label="Cockpit FNDE" path="/painel-fnde" />}
+              <MenuItem icon={ShieldCheck} label="Compliance & Selo" path="/conformidade" />
+              <MenuItem icon={Award} label="Transparência PNAE" path="/transparencia-pnae" />
             </>
           )}
 
