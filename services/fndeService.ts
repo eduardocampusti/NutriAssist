@@ -122,5 +122,15 @@ export const fndeService = {
 
         if (error) throw error;
         return data;
+    },
+
+    async listAlimentos() {
+        const { data, error } = await supabase
+            .from('fnde_alimentos')
+            .select('*')
+            .order('descricao');
+
+        if (error) throw error;
+        return data || [];
     }
 };

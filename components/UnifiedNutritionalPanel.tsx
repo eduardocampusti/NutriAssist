@@ -149,6 +149,10 @@ const UnifiedNutritionalPanel: React.FC<{ onNavigate: (view: string) => void }> 
                         <BarChart3 className="w-4 h-4 text-indigo-500 group-hover:scale-110 transition-transform" />
                         <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Risco Zona</span>
                     </div>
+                    <div className="flex-1 md:flex-none flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-white rounded-xl transition-all group border-l border-slate-200" onClick={() => onNavigate('fichas-tecnicas')}>
+                        <FileCheck className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                        <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">Fichas Técnicas</span>
+                    </div>
                     <div className="flex-1 md:flex-none flex items-center gap-3 px-4 py-2 border-l border-slate-200">
                         <span className="text-xs font-black text-slate-500 uppercase">Alertas:</span>
                         <span className="bg-red-500 text-white px-2 py-0.5 rounded-lg text-xs font-black">{alerts.length}</span>
