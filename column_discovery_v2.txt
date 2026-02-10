@@ -1,0 +1,4 @@
+inventory_movements: [id, created_at, item_id, quantidade, tipo, finalidade, observacao]
+inventory_items: [id, created_at]
+menu_plans: [id, created_at]
+cardapios: [id]

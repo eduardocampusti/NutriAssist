@@ -46,22 +46,22 @@ async function runDiagnosis() {
 
 
     // MENUS
-    // console.log(await checkTable('cardapios'));
-    // console.log(await checkTable('menu_plans'));
+    console.log(await checkTable('cardapios'));
+    console.log(await checkTable('menu_plans'));
 
     // EXECUCOES
-    // console.log(await checkTable('menu_executions'));
-    // console.log(await checkTable('execucoes_cardapio'));
+    console.log(await checkTable('menu_executions'));
+    console.log(await checkTable('execucoes_cardapio'));
 
     // ESTOQUE
-    // console.log(await checkTable('estoque_movimentacoes'));
-    // console.log(await checkTable('inventory_movements'));
-    // console.log(await checkTable('estoque_produtos'));
-    // console.log(await checkTable('inventory_items'));
+    console.log(await checkTable('estoque_movimentacoes'));
+    console.log(await checkTable('inventory_movements'));
+    console.log(await checkTable('estoque_produtos'));
+    console.log(await checkTable('inventory_items'));
 
     // ESCOLAS
-    // console.log(await checkTable('escolas'));
-    // console.log(await checkTable('schools'));
+    console.log(await checkTable('escolas'));
+    console.log(await checkTable('schools'));
 
     // COMPRAS
     console.log(await checkTable('licitacoes'));

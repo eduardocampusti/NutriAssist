@@ -1,0 +1,6 @@
+✅ escolas: [id, nome, codigo_inep, endereco, diretor, telefone, ativo, created_at]
+✅ menu_plans: EMPTY (Checking structure via error trick)
+✅ cardapios: EMPTY (Checking structure via error trick)
+✅ inventory_items: EMPTY (Checking structure via error trick)
+✅ inventory_movements: EMPTY (Checking structure via error trick)
+✅ students_ne: EMPTY (Checking structure via error trick)

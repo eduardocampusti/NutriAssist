@@ -1,0 +1,59 @@
+[
+  {
+    "table": "schools",
+    "cols": []
+  },
+  {
+    "table": "escolas",
+    "cols": [
+      "id",
+      "nome",
+      "codigo_inep",
+      "endereco",
+      "diretor",
+      "telefone",
+      "ativo",
+      "created_at"
+    ]
+  },
+  {
+    "table": "inventory_items",
+    "cols": []
+  },
+  {
+    "table": "inventory_movements",
+    "cols": []
+  },
+  {
+    "table": "menu_plans",
+    "cols": []
+  },
+  {
+    "table": "cardapios",
+    "cols": []
+  },
+  {
+    "table": "menu_dishes",
+    "cols": []
+  },
+  {
+    "table": "menu_executions",
+    "cols": []
+  },
+  {
+    "table": "students",
+    "cols": []
+  },
+  {
+    "table": "students_ne",
+    "cols": []
+  },
+  {
+    "table": "profiles",
+    "cols": []
+  },
+  {
+    "table": "usuarios",
+    "cols": []
+  }
+]

@@ -1,0 +1,8 @@
+❌ procurement_processes: PGRST205 - Could not find the table 'public.procurement_processes' in the schema cache
+❌ contracts: PGRST205 - Could not find the table 'public.contracts' in the schema cache
+❌ licitacoes: PGRST205 - Could not find the table 'public.licitacoes' in the schema cache
+❌ compras: PGRST205 - Could not find the table 'public.compras' in the schema cache
+✅ inventory_movements: [(vazia)]
+❌ estoque_movimentacoes: PGRST205 - Could not find the table 'public.estoque_movimentacoes' in the schema cache
+✅ menu_executions: [(vazia)]
+❌ execucoes_cardapio: PGRST205 - Could not find the table 'public.execucoes_cardapio' in the schema cache

@@ -1,0 +1,5 @@
+✅ escolas: [id, nome, codigo_inep, endereco, diretor, telefone, ativo, created_at]
+✅ cardapios: EMPTY
+✅ inventory_items: EMPTY
+✅ inventory_movements: EMPTY
+✅ students_ne: EMPTY

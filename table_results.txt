@@ -1,0 +1,10 @@
+✅ schools: [(vazia ou sem colunas)]
+✅ escolas: [id, nome, codigo_inep, endereco, diretor, telefone, ativo, created_at]
+❌ purchases: Could not find the table 'public.purchases' in the schema cache
+❌ licitacoes: Could not find the table 'public.licitacoes' in the schema cache
+✅ menu_plans: [(vazia ou sem colunas)]
+✅ cardapios: [(vazia ou sem colunas)]
+✅ inventory_items: [(vazia ou sem colunas)]
+❌ alimentos_normativos: Could not find the table 'public.alimentos_normativos' in the schema cache
+✅ students_ne: [(vazia ou sem colunas)]
+❌ alunos_nae: Could not find the table 'public.alunos_nae' in the schema cache
