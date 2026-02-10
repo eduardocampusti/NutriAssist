@@ -39,6 +39,12 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     const [rendimento, setRendimento] = useState(1);
     const [ingredientes, setIngredientes] = useState<Partial<FNDEPreparacaoIngrediente>[]>([]);
 
+    // PNAE Classifications
+    const [categoria, setCategoria] = useState<'CRECHE' | 'ENSINO' | ''>('');
+    const [etapa, setEtapa] = useState('');
+    const [modalidade, setModalidade] = useState('');
+    const [faixaEtaria, setFaixaEtaria] = useState('');
+
     // FNDE Food selection state
     const [fndeAlimentos, setFndeAlimentos] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -63,6 +69,10 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                     setModoPreparo(prep.modo_preparo || '');
                     setRendimento(prep.rendimento_porcoes);
                     setIngredientes(prep.ingredientes || []);
+                    setCategoria(prep.categoria_cardapio || '');
+                    setEtapa(prep.etapa_ensino || '');
+                    setModalidade(prep.modalidade_ensino || '');
+                    setFaixaEtaria(prep.faixa_etaria || '');
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados:", err);
@@ -128,9 +138,19 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         setIngredientes(newIngs);
     };
 
+    const handleUpdateIngredient = (index: number, quantity: number) => {
+        const newIngs = [...ingredientes];
+        newIngs[index] = { ...newIngs[index], quantidade_per_capita: quantity };
+        setIngredientes(newIngs);
+    };
+
     const handleSave = async () => {
         if (!nome) {
             addToast("O nome da preparação é obrigatório.", "warning");
+            return;
+        }
+        if (!categoria) {
+            addToast("A categoria do cardápio é obrigatória.", "warning");
             return;
         }
         if (ingredientes.length === 0) {
@@ -146,7 +166,11 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                     nome,
                     descricao,
                     modo_preparo: modoPreparo,
-                    rendimento_porcoes: rendimento
+                    rendimento_porcoes: rendimento,
+                    categoria_cardapio: categoria as 'CRECHE' | 'ENSINO',
+                    etapa_ensino: etapa,
+                    modalidade_ensino: modalidade,
+                    faixa_etaria: faixaEtaria
                 },
                 ingredientes.map(ing => ({
                     alimento_id: ing.alimento_id,
@@ -197,6 +221,93 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                 {/* FORMULÁRIO PRINCIPAL */}
                 <div className="lg:col-span-8 space-y-12">
                     <div className="bg-white rounded-[48px] border-2 border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-12 space-y-12">
+                        {/* CLASSIFICAÇÃO PNAE */}
+                        <div className="bg-slate-50/50 p-8 rounded-[40px] border border-slate-100/50 space-y-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
+                                <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.2em]">Classificação PNAE (Obrigatório)</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tipo de Cardápio</label>
+                                    <select
+                                        value={categoria}
+                                        onChange={(e) => {
+                                            setCategoria(e.target.value as any);
+                                            setEtapa('');
+                                            setModalidade('');
+                                            setFaixaEtaria('');
+                                        }}
+                                        className="w-full bg-white border-2 border-slate-100 rounded-2xl px-6 py-4 text-xs font-black text-slate-900 outline-none focus:border-emerald-600 transition-all uppercase cursor-pointer"
+                                    >
+                                        <option value="">SELECIONE O TIPO...</option>
+                                        <option value="CRECHE">CARDÁPIO - CRECHE</option>
+                                        <option value="ENSINO">CARDÁPIO - ETAPA DE ENSINO</option>
+                                    </select>
+                                </div>
+
+                                {categoria === 'ENSINO' && (
+                                    <div className="space-y-2 animate-in slide-in-from-left-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Etapa de Ensino</label>
+                                        <select
+                                            value={etapa}
+                                            onChange={(e) => setEtapa(e.target.value)}
+                                            className="w-full bg-white border-2 border-slate-100 rounded-2xl px-6 py-4 text-xs font-black text-slate-900 outline-none focus:border-emerald-600 transition-all uppercase cursor-pointer"
+                                        >
+                                            <option value="">SELECIONE A ETAPA...</option>
+                                            <option value="Pré-Escola">Pré-Escola</option>
+                                            <option value="Ensino Fundamental I e II">Ensino Fundamental I e II</option>
+                                            <option value="Ensino Médio">Ensino Médio</option>
+                                        </select>
+                                    </div>
+                                )}
+
+                                {categoria && (
+                                    <div className="space-y-2 animate-in slide-in-from-left-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Modalidade de Ensino</label>
+                                        <select
+                                            value={modalidade}
+                                            onChange={(e) => setModalidade(e.target.value)}
+                                            className="w-full bg-white border-2 border-slate-100 rounded-2xl px-6 py-4 text-xs font-black text-slate-900 outline-none focus:border-emerald-600 transition-all uppercase cursor-pointer"
+                                        >
+                                            <option value="">SELECIONE A MODALIDADE...</option>
+                                            <option value="indígena">Indígena</option>
+                                            <option value="quilombola">Quilombola</option>
+                                            {categoria === 'ENSINO' && (
+                                                <>
+                                                    <option value="EJA">EJA</option>
+                                                    <option value="Programa Mais Educação">Programa Mais Educação</option>
+                                                    <option value="Ensino Médio Integrado">Ensino Médio Integrado</option>
+                                                </>
+                                            )}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {categoria && (
+                                    <div className="space-y-2 animate-in slide-in-from-left-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Faixa Etária</label>
+                                        <select
+                                            value={faixaEtaria}
+                                            onChange={(e) => setFaixaEtaria(e.target.value)}
+                                            className="w-full bg-white border-2 border-slate-100 rounded-2xl px-6 py-4 text-xs font-black text-slate-900 outline-none focus:border-emerald-600 transition-all uppercase cursor-pointer"
+                                        >
+                                            <option value="">SELECIONE A FAIXA...</option>
+                                            {categoria === 'CRECHE' ? (
+                                                <>
+                                                    <option value="7 - 11 meses">7 - 11 meses</option>
+                                                    <option value="01 - 3 anos">01 - 3 anos</option>
+                                                </>
+                                            ) : (
+                                                <option value="da etapa de ensino correspondente">Da etapa de ensino correspondente</option>
+                                            )}
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
                         <div>
                             <div className="flex items-center gap-4 mb-10">
                                 <div className="w-1.5 h-6 bg-indigo-600 rounded-full"></div>
@@ -210,7 +321,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                         type="text"
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value.toUpperCase())}
-                                        className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-[24px] px-8 py-5 text-base font-black text-slate-900 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 transition-all shadow-2xl shadow-emerald-900/10 placeholder:text-slate-700/60"
+                                        className="w-full bg-slate-100 border-2 border-slate-200 rounded-[24px] px-8 py-5 text-base font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-600 focus:ring-8 focus:ring-indigo-500/10 transition-all shadow-sm placeholder:text-slate-300"
                                         placeholder="EX: ARROZ COLORIDO COM LEGUMES"
                                     />
                                 </div>
@@ -221,7 +332,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                             type="number"
                                             value={rendimento}
                                             onChange={(e) => setRendimento(parseInt(e.target.value) || 1)}
-                                            className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-[24px] px-8 py-5 text-base font-black text-slate-900 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 transition-all shadow-2xl shadow-emerald-900/10"
+                                            className="w-full bg-slate-100 border-2 border-slate-200 rounded-[24px] px-8 py-5 text-base font-black text-slate-900 outline-none focus:bg-white focus:border-indigo-600 transition-all shadow-sm"
                                         />
                                         <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400 uppercase">UN</span>
                                     </div>
@@ -231,7 +342,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                     <textarea
                                         value={descricao}
                                         onChange={(e) => setDescricao(e.target.value)}
-                                        className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-[24px] px-8 py-6 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 transition-all h-32 resize-none shadow-2xl shadow-emerald-900/10 placeholder:text-slate-700/60"
+                                        className="w-full bg-slate-100 border-2 border-slate-200 rounded-[24px] px-8 py-6 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-32 resize-none shadow-sm placeholder:text-slate-300"
                                         placeholder="Ex: Preparação rica em betacaroteno, servida no almoço das creches..."
                                     />
                                 </div>
@@ -266,7 +377,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                     autoFocus
                                                     value={searchTerm}
                                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                                    className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-2xl pl-14 pr-6 py-4 text-sm font-black text-slate-900 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 shadow-2xl shadow-emerald-900/10 placeholder:text-slate-700/60"
+                                                    className="w-full bg-white border-2 border-slate-200 rounded-2xl pl-14 pr-6 py-4 text-sm font-black text-slate-900 outline-none focus:border-indigo-600 shadow-sm"
                                                     placeholder="PESQUISAR ALIMENTO..."
                                                 />
                                                 {searchTerm && (
@@ -294,7 +405,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                 type="number"
                                                 value={quantidade}
                                                 onChange={(e) => setQuantidade(parseFloat(e.target.value) || 0)}
-                                                className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-2xl px-4 py-3 text-xs font-black text-slate-900 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 shadow-2xl shadow-emerald-900/10 placeholder:text-slate-700/60"
+                                                className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black text-slate-900 outline-none focus:border-indigo-600 shadow-sm"
                                                 placeholder="G"
                                             />
                                         </div>
@@ -324,9 +435,14 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-8">
-                                            <div className="text-right">
-                                                <span className="text-sm font-black text-slate-900">{ing.quantidade_per_capita}g</span>
-                                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">per capita</p>
+                                            <div className="flex items-center bg-slate-100 rounded-xl px-4 py-2 hover:bg-white border-2 border-transparent hover:border-emerald-500 transition-all">
+                                                <input
+                                                    type="number"
+                                                    value={ing.quantidade_per_capita}
+                                                    onChange={(e) => handleUpdateIngredient(idx, parseFloat(e.target.value) || 0)}
+                                                    className="w-16 bg-transparent text-sm font-black text-slate-900 text-right outline-none"
+                                                />
+                                                <span className="text-[10px] font-black text-slate-400 uppercase ml-2">g</span>
                                             </div>
                                             <button
                                                 onClick={() => handleRemoveIngredient(idx)}
@@ -352,7 +468,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                 <textarea
                                     value={modoPreparo}
                                     onChange={(e) => setModoPreparo(e.target.value)}
-                                    className="w-full bg-slate-300 border-2 border-emerald-700/40 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-emerald-600 focus:ring-8 focus:ring-emerald-500/10 transition-all h-64 resize-none shadow-2xl shadow-emerald-900/10 placeholder:text-slate-700/60"
+                                    className="w-full bg-slate-100 border-2 border-slate-200 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-64 resize-none shadow-sm placeholder:text-slate-300"
                                     placeholder="Descreva aqui o procedimento técnico de preparo..."
                                 />
                             </div>
@@ -424,6 +540,16 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
                                                     <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200/50">
+                                                            <Scale size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Magnésio</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{nutrientes.magnesio_mg.toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
                                                         <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600 shadow-sm border border-rose-200/50">
                                                             <Info size={20} />
                                                         </div>
@@ -435,7 +561,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                                             <div className="pt-10 border-t border-slate-100 text-center">
                                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-                                                    Cálculo automático baseado na<br />base de dados oficial 100g.
+                                                    Cálculo automático baseado na<br />base de dados oficial Maranhão/FNDE.
                                                 </p>
                                             </div>
                                         </div>

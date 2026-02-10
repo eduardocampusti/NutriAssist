@@ -6,6 +6,10 @@ export interface FNDEPreparacao {
     descricao?: string;
     modo_preparo?: string;
     rendimento_porcoes: number;
+    categoria_cardapio?: 'CRECHE' | 'ENSINO';
+    etapa_ensino?: string;
+    modalidade_ensino?: string;
+    faixa_etaria?: string;
     created_at?: string;
     updated_at?: string;
     created_by?: string;
@@ -20,6 +24,7 @@ export interface FNDEPreparacaoIngrediente {
     alimento?: {
         nome: string;
         grupo_alimentar: string;
+        fator_correcao?: number;
         composicao?: {
             energia_kcal: number;
             proteinas_g: number;
@@ -29,6 +34,12 @@ export interface FNDEPreparacaoIngrediente {
             sodio_mg: number;
             calcio_mg: number;
             ferro_mg: number;
+            gordura_saturada_g: number;
+            magnesio_mg: number;
+            zinco_mg: number;
+            vitamina_a_mcg: number;
+            vitamina_c_mg: number;
+            gordura_trans_mg: number;
         }[];
     };
 }
@@ -42,6 +53,12 @@ export interface PreparacaoNutrientes {
     sodio_mg: number;
     calcio_mg: number;
     ferro_mg: number;
+    gordura_saturada_g: number;
+    magnesio_mg: number;
+    zinco_mg: number;
+    vitamina_a_mcg: number;
+    vitamina_c_mg: number;
+    gordura_trans_mg: number;
 }
 
 export const fndePreparacaoService = {
@@ -65,6 +82,7 @@ export const fndePreparacaoService = {
                     alimento:fnde_alimentos(
                         nome:descricao, 
                         grupo_alimentar,
+                        fator_correcao,
                         composicao:fnde_composicao_nutricional(*)
                     )
                 )
@@ -147,7 +165,13 @@ export const fndePreparacaoService = {
             fibras_g: result.total_fibras_g,
             sodio_mg: result.total_sodio_mg,
             calcio_mg: result.total_calcio_mg,
-            ferro_mg: result.total_ferro_mg
+            ferro_mg: result.total_ferro_mg,
+            gordura_saturada_g: result.total_gordura_saturada_g,
+            magnesio_mg: result.total_magnesio_mg,
+            zinco_mg: result.total_zinco_mg,
+            vitamina_a_mcg: result.total_vitamina_a_mcg,
+            vitamina_c_mg: result.total_vitamina_c_mg,
+            gordura_trans_mg: result.total_gordura_trans_mg
         };
     }
 };

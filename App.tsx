@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { useAuth } from './contexts/AuthContext';
 import { AppProviders } from './contexts/AppProviders';
@@ -16,6 +16,25 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import AppShell from './components/Layout/AppShell';
 import { AccessGate } from './components/Security/AccessGate';
 import { ErrorBoundary } from './components/Security/ErrorBoundary';
+
+/**
+ * Trava de Segurança: Captura o hash de recuperação do Supabase (#type=recovery)
+ * e força o redirecionamento para a página de troca de senha.
+ * Impede que o usuário caia logado no dashboard ao clicar no e-mail.
+ */
+const SecurityRecoveryLock: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash.includes('type=recovery')) {
+      console.warn("🔐 Trava de Segurança: Link de recuperação detectado. Forçando redirecionamento.");
+      navigate('/reset-password', { replace: true });
+    }
+  }, [location.hash, navigate]);
+
+  return null;
+};
 
 // Page & Feature Components (Lazy Loaded)
 const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
@@ -210,6 +229,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <HelmetProvider>
         <AppProviders>
+          <SecurityRecoveryLock />
           <Suspense fallback={<LoadingScreen />}>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
