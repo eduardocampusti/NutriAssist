@@ -20,6 +20,7 @@ import {
 
 import { automateMenuPlanning, generateAdaptedMenu } from '../services/geminiService';
 import { generateAutomatedMenu, validateMenuCompliance, calculateNutritionalTargets, getItemNormativeStatus } from '../services/menuEngine';
+import { fndePreparacaoService, FNDEPreparacao } from '../services/fndePreparacaoService';
 import { useToast } from '../contexts/ToastContext';
 import { ConfirmModal } from './ConfirmModal';
 import { NutritionalOptimizationPanel } from './NutritionalOptimizationPanel';
@@ -108,6 +109,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
 
 
   const [selectedDay, setSelectedDay] = useState(1);
+  const [availablePreparacoes, setAvailablePreparacoes] = useState<FNDEPreparacao[]>([]);
   const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
 
   // COMPLIANCE STATE
@@ -131,6 +133,18 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
   const canManage = activeProfile?.role === UserRole.NUTRICIONISTA || activeProfile?.role === UserRole.ADMIN || activeProfile?.role === UserRole.SECRETARIO || activeProfile?.role === UserRole.SECRETARIA;
   // APROVAÇÃO OBRIGATÓRIA PELA SME: Apenas Admin e Secretário(a) podem dar o status final de APROVADO
   const isApprover = activeProfile?.role === UserRole.ADMIN || activeProfile?.role === UserRole.SECRETARIO || activeProfile?.role === UserRole.SECRETARIA;
+
+  useEffect(() => {
+    const loadPreps = async () => {
+      try {
+        const data = await fndePreparacaoService.list();
+        setAvailablePreparacoes(data);
+      } catch (err) {
+        console.error("Erro ao carregar fichas técnicas no manager:", err);
+      }
+    };
+    loadPreps();
+  }, []);
 
   // --- WIZARD NAVIGATION HANDLERS ---
   const handleNextStep = () => {
@@ -464,8 +478,38 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
         </h3>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="col-span-2">
+            <label className="text-[10px] font-bold text-indigo-600 uppercase mb-1 block">Importar de Ficha Técnica (Opcional)</label>
+            <select
+              onChange={async (e) => {
+                const prepId = e.target.value;
+                if (!prepId) return;
+                try {
+                  const prep = await fndePreparacaoService.getById(prepId);
+                  const newDish: Dish = {
+                    id: crypto.randomUUID(),
+                    nome: prep.nome,
+                    mealType: editorPlan.tipoRefeicaoPrincipal || MealType.ALMOCO,
+                    diaSemana: selectedDay,
+                    ingredientes: prep.ingredientes?.map(ing => ({
+                      itemId: ing.alimento_id, // Map FNDE ID to Item ID (assuming compatible or mapping needed)
+                      perCapitaGrams: ing.quantidade_per_capita
+                    })) || []
+                  };
+                  setEditorPlan(prev => ({ ...prev, preparacoes: [...prev.preparacoes, newDish] }));
+                  addToast(`Ficha "${prep.nome}" importada com sucesso!`, "success");
+                } catch (err) {
+                  addToast("Erro ao importar ficha técnica.", "error");
+                }
+              }}
+              className="w-full bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 text-xs font-bold uppercase text-indigo-700 focus:ring-2 focus:ring-indigo-500/20 outline-none"
+            >
+              <option value="">-- SELECIONE UMA RECEITA PADRÃO --</option>
+              {availablePreparacoes.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+            </select>
+          </div>
           <div>
-            <label className="text-[10px] font-bold text-slate-500 uppercase">Nome da Preparação</label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase">Nome da Preparação Personalizada</label>
             <input
               value={composerDish.nome}
               onChange={e => setComposerDish({ ...composerDish, nome: e.target.value.toUpperCase() })}
@@ -616,7 +660,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
       currentPlan,
       inventory,
       editorPlan.numAlunos!,
-      editorPlan.etapa!,
+      editorPlan.etapa as EducationalStage,
       { min: editorPlan.faixaEtariaMinMeses || 0, max: editorPlan.faixaEtariaMaxMeses || 999 }
     );
 
@@ -803,7 +847,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
         menuPlans={menuPlans}
         inventory={inventory}
         activeProfile={activeProfile}
-        onAddProcurement={async (data) => await addProcurement(data, activeProfile?.id || '')}
+        onSave={async (data) => await addProcurement(data, activeProfile?.id || '')}
         onRequestDocument={() => { }} // Placeholder or real logic
         onClose={() => setShowProcurement(false)}
       />
@@ -865,7 +909,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
                   <div className="mt-4 border-t border-slate-100 pt-4 animate-in slide-in-from-top-4 duration-300">
                     {/* Compliance Check (On-the-fly) */}
                     {(() => {
-                      const compliance = validateMenuCompliance(plan, inventory, plan.numAlunos, plan.etapa);
+                      const compliance = validateMenuCompliance(plan, inventory, plan.numAlunos, plan.etapa as EducationalStage);
                       const isFullyCompliant = !compliance.blockingViolations?.length && !compliance.warnings?.length;
 
                       if (isFullyCompliant) return (

@@ -126,6 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <SectionLabel label="Pedagógico & Nutricional" />
           {hasPermission(activeProfile?.role, 'VIEW_STUDENTS_SENSITIVE') && <MenuItem icon={Heart} label="Alunos" path="/alunos" />}
+          {hasPermission(activeProfile?.role, 'VIEW_REPORTS_TECHNICAL') && <MenuItem icon={ClipboardList} label="Fichas Técnicas" path="/fichas-tecnicas" />}
           {hasPermission(activeProfile?.role, 'USE_NUTRITIONAL_SIMULATOR') && <MenuItem icon={Zap} label="Simulador de Impacto" path="/simulador-nutricional" />}
 
           {(hasPermission(activeProfile?.role, 'VIEW_REPORTS_ADMIN') || hasPermission(activeProfile?.role, 'VIEW_REPORTS_TECHNICAL')) && (

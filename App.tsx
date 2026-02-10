@@ -63,6 +63,7 @@ const SchoolNutritionalDashboard = lazy(() => import('./components/SchoolNutriti
 const SecretaryExecutiveDashboard = lazy(() => import('./components/SecretaryExecutiveDashboard'));
 const PublicTransparencyPanel = lazy(() => import('./components/PublicTransparencyPanel'));
 const InternalEvolutionRanking = lazy(() => import('./components/InternalEvolutionRanking'));
+const PreparacoesManager = lazy(() => import('./components/PreparacoesManager'));
 
 // Types
 import { UserRole, DocStatus, FormalDocument } from './types';
@@ -159,6 +160,7 @@ const AppContent: React.FC = () => {
             <Route path="/alunos" element={<AccessGate permission="VIEW_STUDENTS_SENSITIVE" fallback={<Navigate to="/" />}><StudentManager schools={schools} activeProfile={activeProfile} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/importar-alunos" element={<AccessGate permission="MANAGE_STUDENTS_IMPORT" fallback={<Navigate to="/" />}><StudentImportManager activeProfile={activeProfile!} schools={schools} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/controle-nutricional" element={<AccessGate permission="VIEW_REPORTS_TECHNICAL" fallback={<Navigate to="/" />}><UnifiedNutritionalPanel onNavigate={(view) => navigate(`/${view}`)} /></AccessGate>} />
+            <Route path="/fichas-tecnicas" element={<AccessGate permission="VIEW_REPORTS_TECHNICAL" fallback={<Navigate to="/" />}><div className="p-4 sm:p-8"><PreparacoesManager onClose={() => navigate('/')} /></div></AccessGate>} />
             <Route path="/simulador-nutricional" element={<AccessGate permission="USE_NUTRITIONAL_SIMULATOR" fallback={<Navigate to="/" />}><div className="p-4 sm:p-8"><NutritionalImpactSimulator onClose={() => navigate('/controle-nutricional')} /></div></AccessGate>} />
             <Route path="/risco-nutricional" element={<AccessGate permission="VIEW_RISK_INDICATORS" fallback={<Navigate to="/" />}><div className="p-4 sm:p-8"><NutritionalRiskDashboard onClose={() => navigate('/controle-nutricional')} /></div></AccessGate>} />
             <Route path="/vigilancia-preventiva" element={<AccessGate permission="MANAGE_PREVENTIVE_REPORTS" fallback={<Navigate to="/" />}><div className="p-4 sm:p-8"><EarlyWarningCenter onClose={() => navigate('/controle-nutricional')} /></div></AccessGate>} />
