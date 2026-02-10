@@ -156,22 +156,22 @@ export const fndePreparacaoService = {
 
         if (error) throw error;
 
-        const result = data[0];
+        const result = data[0] || {};
         return {
-            energia_kcal: result.total_energia_kcal,
-            proteinas_g: result.total_proteinas_g,
-            carboidratos_g: result.total_carboidratos_g,
-            lipidios_g: result.total_lipidios_g,
-            fibras_g: result.total_fibras_g,
-            sodio_mg: result.total_sodio_mg,
-            calcio_mg: result.total_calcio_mg,
-            ferro_mg: result.total_ferro_mg,
-            gordura_saturada_g: result.total_gordura_saturada_g,
-            magnesio_mg: result.total_magnesio_mg,
-            zinco_mg: result.total_zinco_mg,
-            vitamina_a_mcg: result.total_vitamina_a_mcg,
-            vitamina_c_mg: result.total_vitamina_c_mg,
-            gordura_trans_mg: result.total_gordura_trans_mg
+            energia_kcal: result.total_energia_kcal || 0,
+            proteinas_g: result.total_proteinas_g || 0,
+            carboidratos_g: result.total_carboidratos_g || 0,
+            lipidios_g: result.total_lipidios_g || 0,
+            fibras_g: result.total_fibras_g || 0,
+            sodio_mg: result.total_sodio_mg || 0,
+            calcio_mg: result.total_calcio_mg || 0,
+            ferro_mg: result.total_ferro_mg || 0,
+            gordura_saturada_g: result.total_gordura_saturada_g || 0,
+            magnesio_mg: result.total_magnesio_mg || 0,
+            zinco_mg: result.total_zinco_mg || 0,
+            vitamina_a_mcg: result.total_vitamina_a_mcg || 0,
+            vitamina_c_mg: result.total_vitamina_c_mg || 0,
+            gordura_trans_mg: result.total_gordura_trans_mg || 0
         };
     }
 };

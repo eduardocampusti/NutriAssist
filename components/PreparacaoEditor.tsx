@@ -15,10 +15,12 @@ import {
     Info,
     ChevronDown,
     ArrowLeft,
-    RefreshCw as RefreshCwIcon
+    RefreshCw as RefreshCwIcon,
+    Sparkles
 } from 'lucide-react';
 import { fndePreparacaoService, FNDEPreparacao, FNDEPreparacaoIngrediente, PreparacaoNutrientes } from '../services/fndePreparacaoService';
 import { fndeService } from '../services/fndeService';
+import { aiService } from '../services/aiService';
 import { useToast } from '../contexts/ToastContext';
 
 interface PreparacaoEditorProps {
@@ -31,6 +33,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     const { addToast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
     // Preparação State
     const [nome, setNome] = useState('');
@@ -142,6 +145,26 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         const newIngs = [...ingredientes];
         newIngs[index] = { ...newIngs[index], quantidade_per_capita: quantity };
         setIngredientes(newIngs);
+    };
+
+    const handleAISuggestion = async () => {
+        if (ingredientes.length === 0) {
+            addToast("Adicione ingredientes antes de solicitar uma sugestão.", "warning");
+            return;
+        }
+
+        setIsGeneratingAI(true);
+        try {
+            const ingredientNames = ingredientes.map(ing => ing.alimento?.nome || "Ingrediente");
+            const suggestion = await aiService.generateRecipeSteps(nome || "Preparação sem nome", ingredientNames);
+            setModoPreparo(suggestion);
+            addToast("Sugestão da IA gerada com sucesso!", "success");
+        } catch (err: any) {
+            console.error("Erro IA:", err);
+            addToast(err.message || "Erro ao gerar sugestão.", "error");
+        } finally {
+            setIsGeneratingAI(false);
+        }
     };
 
     const handleSave = async () => {
@@ -462,13 +485,26 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                             {/* MODO DE PREPARO */}
                             <div className="pt-8 space-y-4">
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
-                                    <span className="w-8 h-px bg-slate-100"></span> Modo de Preparo (Passo a Passo)
-                                </h3>
+                                <div className="flex justify-between items-center">
+                                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
+                                        <span className="w-8 h-px bg-slate-100"></span> Modo de Preparo (Passo a Passo)
+                                    </h3>
+                                    <button
+                                        onClick={handleAISuggestion}
+                                        disabled={isGeneratingAI}
+                                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50"
+                                    >
+                                        {isGeneratingAI ? (
+                                            <><RefreshCwIcon className="w-3 h-3 animate-spin" /> Gerando...</>
+                                        ) : (
+                                            <><Sparkles className="w-3 h-3" /> Sugerir com IA</>
+                                        )}
+                                    </button>
+                                </div>
                                 <textarea
                                     value={modoPreparo}
                                     onChange={(e) => setModoPreparo(e.target.value)}
-                                    className="w-full bg-slate-100 border-2 border-slate-200 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-64 resize-none shadow-sm placeholder:text-slate-300"
+                                    className={`w-full bg-slate-100 border-2 border-slate-200 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-64 resize-none shadow-sm placeholder:text-slate-300 ${isGeneratingAI ? 'opacity-50' : ''}`}
                                     placeholder="Descreva aqui o procedimento técnico de preparo..."
                                 />
                             </div>
@@ -515,7 +551,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                         </div>
                                                         <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Proteínas</span>
                                                     </div>
-                                                    <span className="text-lg font-black text-slate-900">{nutrientes.proteinas_g.toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.proteinas_g || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
                                                 </div>
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
@@ -525,7 +561,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                         </div>
                                                         <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Lipídios</span>
                                                     </div>
-                                                    <span className="text-lg font-black text-slate-900">{nutrientes.lipidios_g.toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.lipidios_g || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
                                                 </div>
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
@@ -535,7 +571,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                         </div>
                                                         <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Fibras</span>
                                                     </div>
-                                                    <span className="text-lg font-black text-slate-900">{nutrientes.fibras_g.toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.fibras_g || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
                                                 </div>
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
@@ -545,7 +581,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                         </div>
                                                         <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Magnésio</span>
                                                     </div>
-                                                    <span className="text-lg font-black text-slate-900">{nutrientes.magnesio_mg.toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.magnesio_mg || 0).toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
                                                 </div>
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
