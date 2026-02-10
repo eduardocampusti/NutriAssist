@@ -68,7 +68,10 @@ export const fndePreparacaoService = {
             .select('*')
             .order('nome');
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error listing FNDE preparacoes:', error);
+            throw error;
+        }
         return data || [];
     },
 
@@ -81,17 +84,18 @@ export const fndePreparacaoService = {
                     *,
                     alimento:fnde_alimentos(
                         nome:descricao, 
-                        grupo_alimentar,
-                        fator_correcao,
-                        composicao:fnde_composicao_nutricional(*)
+                        grupo_alimentar
                     )
                 )
             `)
             .eq('id', id)
             .single();
 
-        if (error) throw error;
-        return data;
+        if (error) {
+            console.error('Error fetching preparation by id:', error);
+            throw error;
+        }
+        return data as any;
     },
 
     async save(preparacao: Partial<FNDEPreparacao>, ingredientes: Partial<FNDEPreparacaoIngrediente>[]) {
