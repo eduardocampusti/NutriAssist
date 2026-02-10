@@ -149,20 +149,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <MenuItem icon={Settings} label="Configurações" path="/configuracoes" />
           <MenuItem icon={Info} label="Sobre o Sistema" path="/sobre" />
 
-          <MenuItem icon={LogOut} label="Encerrar Sessão" path="/login" onClick={onLogout} variant="logout" />
         </div>
 
         {/* BOTTOM PROFILE - ORGANIC FEEL */}
         <div className="p-4 border-t border-[#065F46] bg-[#022c22]">
-          <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-900 transition-colors cursor-pointer group">
-            <div className="w-10 h-10 rounded-lg bg-emerald-800 flex items-center justify-center text-emerald-100 font-bold border border-emerald-700 group-hover:border-emerald-500 group-hover:text-white transition-colors">
-              {activeProfile?.nome?.charAt(0) || 'U'}
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-black/10 border border-white/5 shadow-inner">
+            <div className="w-10 h-10 rounded-lg bg-emerald-800 flex items-center justify-center text-emerald-100 font-bold border border-emerald-700 group-hover:border-emerald-500 transition-all overflow-hidden shadow-lg">
+              {activeProfile?.foto ? (
+                <img src={activeProfile.foto} alt={activeProfile.nome} className="w-full h-full object-cover" />
+              ) : (
+                activeProfile?.nome?.charAt(0) || 'U'
+              )}
             </div>
             <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-emerald-50 truncate">{activeProfile?.nome}</p>
-              <p className="text-[9px] font-bold text-[#22c55e] uppercase tracking-wider truncate">{activeProfile?.role?.replace('_', ' ')}</p>
+              <p className="text-xs font-black text-emerald-50 truncate uppercase tracking-tight">{activeProfile?.nome}</p>
+              <div className="flex flex-col gap-1 mt-0.5">
+                <p className="text-[9px] font-bold text-[#22c55e] uppercase tracking-[0.15em] truncate opacity-80">{activeProfile?.role?.replace('_', ' ')}</p>
+
+                <button
+                  onClick={onLogout}
+                  className="flex items-center gap-1.5 text-[9px] font-black text-rose-400 hover:text-white transition-all mt-1 w-fit group/logout uppercase tracking-widest"
+                >
+                  <LogOut size={10} className="text-rose-500 group-hover:text-white transition-colors" />
+                  Encerrar Sessão
+                </button>
+              </div>
             </div>
-            <Settings className="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors" />
+            <button
+              onClick={() => navigate('/usuarios')}
+              className="p-2 hover:bg-emerald-800/50 rounded-lg transition-colors text-emerald-600 hover:text-white"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
