@@ -680,18 +680,69 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
           {/* STATS */}
           <div className="bg-white p-6 rounded-[32px] border border-slate-200">
             <h3 className="text-sm font-black text-slate-800 uppercase mb-4">Métricas do Cardápio</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-2">
-                <span className="text-xs font-medium text-slate-500">Energia (Kcal)</span>
-                <span className="text-lg font-black text-slate-900">{compliance.stats.totalKcal.toFixed(0)}</span>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Energia</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalKcal.toFixed(0)} kcal</span>
               </div>
-              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-2">
-                <span className="text-xs font-medium text-slate-500">Custo Total (Estimado)</span>
-                <span className="text-lg font-black text-emerald-600">R$ {compliance.stats.totalCost.toFixed(2)}</span>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Proteína</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalProtein.toFixed(1)}g</span>
               </div>
-              <div className="flex justify-between items-end">
-                <span className="text-xs font-medium text-slate-500">Ultraprocessados</span>
-                <span className={`text-lg font-black ${compliance.stats.ultraProcessedCount > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{compliance.stats.ultraProcessedCount}</span>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Carboidratos</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalCarbs.toFixed(1)}g</span>
+              </div>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Lipídios</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalFats.toFixed(1)}g</span>
+              </div>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Fibras</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalFiber.toFixed(1)}g</span>
+              </div>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Sódio</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalSodium.toFixed(0)}mg</span>
+              </div>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Cálcio</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalCalcium.toFixed(1)}mg</span>
+              </div>
+              <div className="flex justify-between items-end border-b border-dashed border-slate-100 pb-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Ferro</span>
+                <span className="text-sm font-black text-slate-900">{compliance.stats.totalIron.toFixed(2)}mg</span>
+              </div>
+              {/* Micronutrients Toggle or secondary group */}
+              <div className="col-span-2 pt-2">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-3 opacity-60">
+                  <div className="flex justify-between items-end border-b border-slate-50 pb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Vit A</span>
+                    <span className="text-xs font-black text-slate-800">{compliance.stats.totalVitA.toFixed(1)}µg</span>
+                  </div>
+                  <div className="flex justify-between items-end border-b border-slate-50 pb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Vit C</span>
+                    <span className="text-xs font-black text-slate-800">{compliance.stats.totalVitC.toFixed(1)}mg</span>
+                  </div>
+                  <div className="flex justify-between items-end border-b border-slate-50 pb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Magnésio</span>
+                    <span className="text-xs font-black text-slate-800">{compliance.stats.totalMagnesium.toFixed(1)}mg</span>
+                  </div>
+                  <div className="flex justify-between items-end border-b border-slate-50 pb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">Zinco</span>
+                    <span className="text-xs font-black text-slate-800">{compliance.stats.totalZinc.toFixed(1)}mg</span>
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-2 mt-4 flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block leading-none">Custo Total (Estimado)</span>
+                  <span className="text-lg font-black text-emerald-600 leading-tight">R$ {compliance.stats.totalCost.toFixed(2)}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block leading-none">Ultraprocessados</span>
+                  <span className={`text-lg font-black leading-tight ${compliance.stats.ultraProcessedCount > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{compliance.stats.ultraProcessedCount}</span>
+                </div>
               </div>
             </div>
           </div>

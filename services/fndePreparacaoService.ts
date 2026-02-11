@@ -13,6 +13,7 @@ export interface FNDEPreparacao {
     created_at?: string;
     updated_at?: string;
     created_by?: string;
+    imagem_url?: string;
     ingredientes?: FNDEPreparacaoIngrediente[];
 }
 

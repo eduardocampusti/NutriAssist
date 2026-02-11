@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MenuPlan, School, Dish, InventoryItem } from '../types';
+import { MenuPlan, School, Dish, InventoryItem, EducationalStage } from '../types';
 
 interface MenuReportProps {
     plan: MenuPlan;
@@ -27,7 +27,7 @@ const MenuReport: React.FC<MenuReportProps> = ({ plan, school, inventory, onClos
 
     // CALCULATE REAL STATS
     const summary = calculateNutritionalSummary(plan, inventory);
-    const targets = calculateNutritionalTargets(plan.etapa || 'FUNDAMENTAL_I');
+    const targets = calculateNutritionalTargets(plan.etapa as EducationalStage || EducationalStage.FUNDAMENTAL_I);
 
     return (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] overflow-y-auto print:p-0 print:bg-white print:static">
@@ -117,53 +117,102 @@ const MenuReport: React.FC<MenuReportProps> = ({ plan, school, inventory, onClos
                                 <h4 className="text-sm font-black uppercase text-slate-800 border-b border-slate-200 pb-2 mb-4">Ficha Técnica Nutricional</h4>
                                 <table className="w-full text-[10px] border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-100 text-slate-700 uppercase">
+                                        <tr className="bg-slate-100 text-slate-700 uppercase font-black">
                                             <th className="border p-2 text-left">Preparação</th>
-                                            <th className="border p-2 text-left">Ingredientes (Per Capita)</th>
-                                            <th className="border p-2 text-center">Energia (Kcal)</th>
-                                            <th className="border p-2 text-center">Proteínas</th>
-                                            <th className="border p-2 text-center">Carboidratos</th>
-                                            <th className="border p-2 text-center">Lipídios</th>
+                                            <th className="border p-2 text-center">PB (g)</th>
+                                            <th className="border p-2 text-center">PL (g)</th>
+                                            <th className="border p-2 text-center">FC</th>
+                                            <th className="border p-2 text-center bg-slate-200">Kcal</th>
+                                            <th className="border p-2 text-center">PTN (g)</th>
+                                            <th className="border p-2 text-center">LPD (g)</th>
+                                            <th className="border p-2 text-center">Sat. (g)</th>
+                                            <th className="border p-2 text-center">CHO (g)</th>
+                                            <th className="border p-2 text-center">Fibra (g)</th>
+                                            <th className="border p-2 text-center">Ca (mg)</th>
+                                            <th className="border p-2 text-center">Mg (mg)</th>
+                                            <th className="border p-2 text-center">Fe (mg)</th>
+                                            <th className="border p-2 text-center">Zn (mg)</th>
+                                            <th className="border p-2 text-center text-[8px]">Vit. A (mcg)</th>
+                                            <th className="border p-2 text-center text-[8px]">Vit. C (mg)</th>
+                                            <th className="border p-2 text-center">Na (mg)</th>
+                                            <th className="border p-2 text-center">Trans (mg)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {plan.preparacoes.map(dish => {
-                                            let dKcal = 0, dPtn = 0, dCho = 0, dLip = 0;
-                                            const ingText = dish.ingredientes.map(ing => {
-                                                // Smart Lookup: Try ID first, then Fallback for Dummy Data (bd-*)
-                                                let item = inventory.find(i => i.id === ing.itemId);
-                                                if (!item && ing.itemId.startsWith('bd-')) {
-                                                    // Fallback strategy: Match by name keywords if ID is a dummy placeholder
-                                                    if (ing.itemId.includes('arroz')) item = inventory.find(i => i.nome.includes('ARROZ'));
-                                                    if (ing.itemId.includes('feijao')) item = inventory.find(i => i.nome.includes('FEIJÃO'));
-                                                    if (ing.itemId.includes('frango')) item = inventory.find(i => i.nome.includes('FRANGO') || i.nome.includes('CARNE'));
-                                                }
+                                            let dKcal = 0, dPtn = 0, dCho = 0, dLip = 0, dFib = 0, dSod = 0, dCa = 0, dFe = 0;
+                                            let dSat = 0, dMg = 0, dZn = 0, dVa = 0, dVc = 0, dTrans = 0;
+                                            let totalPB = 0, totalPL = 0;
 
+                                            dish.ingredientes.forEach(ing => {
+                                                let item = inventory.find(i => i.id === ing.itemId);
                                                 const f = ing.perCapitaGrams / 100;
+                                                const fc = item?.correctionFactor || 1.0;
+
+                                                totalPL += ing.perCapitaGrams;
+                                                totalPB += ing.perCapitaGrams * fc;
+
                                                 dKcal += (item?.kcal || 0) * f;
                                                 dPtn += (item?.protein || 0) * f;
                                                 dCho += (item?.carbs || 0) * f;
                                                 dLip += (item?.fats || 0) * f;
-                                                return `${item?.nome || 'Item não encontrado'} (${ing.perCapitaGrams}g)`;
-                                            }).join(', ');
+                                                dFib += (item?.fiber || 0) * f;
+                                                dSod += (item?.sodium || 0) * f;
+                                                dCa += (item?.calcium || 0) * f;
+                                                dFe += (item?.iron || 0) * f;
+                                                // @ts-ignore
+                                                dSat += (item?.gordura_saturada_g || 0) * f;
+                                                // @ts-ignore
+                                                dMg += (item?.magnesio_mg || 0) * f;
+                                                // @ts-ignore
+                                                dZn += (item?.zinco_mg || 0) * f;
+                                                // @ts-ignore
+                                                dVa += (item?.vitamina_a_mcg || 0) * f;
+                                                // @ts-ignore
+                                                dVc += (item?.vitamina_c_mg || 0) * f;
+                                                // @ts-ignore
+                                                dTrans += (item?.gordura_trans_mg || 0) * f;
+                                            });
 
                                             return (
-                                                <tr key={dish.id}>
-                                                    <td className="border p-2 font-bold">{dish.nome}</td>
-                                                    <td className="border p-2 text-slate-600">{ingText}</td>
-                                                    <td className="border p-1 text-center font-mono">{dKcal.toFixed(0)}</td>
-                                                    <td className="border p-1 text-center font-mono">{dPtn.toFixed(1)}</td>
-                                                    <td className="border p-1 text-center font-mono">{dCho.toFixed(1)}</td>
-                                                    <td className="border p-1 text-center font-mono">{dLip.toFixed(1)}</td>
+                                                <tr key={dish.id} className="text-center font-mono">
+                                                    <td className="border p-2 font-bold text-left font-sans">{dish.nome}</td>
+                                                    <td className="border p-1">{totalPB.toFixed(1)}</td>
+                                                    <td className="border p-1">{totalPL.toFixed(1)}</td>
+                                                    <td className="border p-1 text-[8px]">{(totalPB / (totalPL || 1)).toFixed(2)}</td>
+                                                    <td className="border p-1 font-black bg-slate-50">{dKcal.toFixed(0)}</td>
+                                                    <td className="border p-1">{dPtn.toFixed(1)}</td>
+                                                    <td className="border p-1">{dLip.toFixed(1)}</td>
+                                                    <td className="border p-1">{dSat.toFixed(1)}</td>
+                                                    <td className="border p-1">{dCho.toFixed(1)}</td>
+                                                    <td className="border p-1">{dFib.toFixed(1)}</td>
+                                                    <td className="border p-1">{dCa.toFixed(1)}</td>
+                                                    <td className="border p-1">{dMg.toFixed(1)}</td>
+                                                    <td className="border p-1">{dFe.toFixed(2)}</td>
+                                                    <td className="border p-1">{dZn.toFixed(2)}</td>
+                                                    <td className="border p-1">{dVa.toFixed(1)}</td>
+                                                    <td className="border p-1">{dVc.toFixed(1)}</td>
+                                                    <td className="border p-1">{Math.round(dSod)}</td>
+                                                    <td className="border p-1">{dTrans.toFixed(1)}</td>
                                                 </tr>
                                             )
                                         })}
-                                        <tr className="bg-slate-800 text-white font-bold uppercase">
-                                            <td className="border p-2 text-right" colSpan={2}>Média Diária Calculada</td>
-                                            <td className="border p-2 text-center">{summary.averages.kcal.toFixed(0)}</td>
+                                        <tr className="bg-slate-800 text-white font-bold uppercase text-[9px]">
+                                            <td className="border p-2 text-right" colSpan={4}>Média Diária Planejada</td>
+                                            <td className="border p-2 text-center bg-slate-700">{summary.averages.kcal.toFixed(0)}</td>
                                             <td className="border p-2 text-center">{summary.averages.protein.toFixed(1)}g</td>
-                                            <td className="border p-2 text-center">{summary.averages.carbs.toFixed(1)}g</td>
                                             <td className="border p-2 text-center">{summary.averages.fats.toFixed(1)}g</td>
+                                            <td className="border p-2 text-center">--</td>
+                                            <td className="border p-2 text-center">{summary.averages.carbs.toFixed(1)}g</td>
+                                            <td className="border p-2 text-center">{summary.averages.fiber.toFixed(1)}g</td>
+                                            <td className="border p-2 text-center">{summary.averages.calcium.toFixed(1)}mg</td>
+                                            <td className="border p-2 text-center">--</td>
+                                            <td className="border p-2 text-center">{summary.averages.iron.toFixed(2)}mg</td>
+                                            <td className="border p-2 text-center">--</td>
+                                            <td className="border p-2 text-center">{summary.averages.vitA.toFixed(1)}mcg</td>
+                                            <td className="border p-2 text-center">--</td>
+                                            <td className="border p-2 text-center">{Math.round(summary.averages.sodium)}mg</td>
+                                            <td className="border p-2 text-center">--</td>
                                         </tr>
                                     </tbody>
                                 </table>

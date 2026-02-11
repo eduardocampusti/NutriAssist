@@ -41,6 +41,15 @@ export interface MenuComplianceResult {
         totalProtein: number;
         totalFats: number;
         totalSodium: number;
+        totalFiber: number;
+        totalCalcium: number;
+        totalIron: number;
+        totalSatFat: number;
+        totalMagnesium: number;
+        totalZinc: number;
+        totalVitA: number;
+        totalVitC: number;
+        totalTransFat: number;
         totalCost: number;
         ultraProcessedCount: number;
     };
@@ -177,9 +186,18 @@ export const validateMenuCompliance = (
     let totalProtein = 0;
     let totalFats = 0;
     let totalSodium = 0;
+    let totalFiber = 0;
+    let totalCalcium = 0;
+    let totalIron = 0;
+    let totalSatFat = 0;
+    let totalMagnesium = 0;
+    let totalZinc = 0;
+    let totalVitA = 0;
+    let totalVitC = 0;
+    let totalTransFat = 0;
     let totalCost = 0;
     let ultraProcessedCount = 0;
-    let totalSugar = 0; // New tracking
+    let totalSugar = 0;
 
     // RULE 0: AGE SPECIFIC NORMS (Resolução FNDE 06/2020)
     const isCreche = stage === EducationalStage.CRECHE; // < 3 years
@@ -235,7 +253,27 @@ export const validateMenuCompliance = (
             totalProtein += (item.protein || 0) * factor;
             totalFats += (item.fats || 0) * factor;
             totalSodium += (item.sodium || 0) * factor;
-            totalSugar += (item.sugar || 0) * factor; // Track Sugar
+            totalSugar += (item.sugar || 0) * factor;
+
+            // New nutrients (using aliases or direct properties if mapped)
+            // @ts-ignore - Some might be in normative_data or extended
+            totalFiber += (item.fiber || 0) * factor;
+            // @ts-ignore
+            totalCalcium += (item.calcium || 0) * factor;
+            // @ts-ignore
+            totalIron += (item.iron || 0) * factor;
+            // @ts-ignore
+            totalSatFat += (item.gordura_saturada_g || 0) * factor;
+            // @ts-ignore
+            totalMagnesium += (item.magnesio_mg || 0) * factor;
+            // @ts-ignore
+            totalZinc += (item.zinco_mg || 0) * factor;
+            // @ts-ignore
+            totalVitA += (item.vit_a || item.vitamina_a_mcg || 0) * factor;
+            // @ts-ignore
+            totalVitC += (item.vitamina_c_mg || 0) * factor;
+            // @ts-ignore
+            totalTransFat += (item.gordura_trans_mg || 0) * factor;
 
             // Calculate Cost
             // cost = (grams / 1000) * costPerKg
@@ -272,7 +310,16 @@ export const validateMenuCompliance = (
             totalProtein,
             totalFats,
             totalSodium,
-            totalCost: totalCost * studentCount, // Total cost for the population per meal
+            totalFiber,
+            totalCalcium,
+            totalIron,
+            totalSatFat,
+            totalMagnesium,
+            totalZinc,
+            totalVitA,
+            totalVitC,
+            totalTransFat,
+            totalCost: totalCost * studentCount,
             ultraProcessedCount
         }
     };

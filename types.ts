@@ -216,6 +216,22 @@ export interface MenuPlan {
   data_criacao?: string;
   data_aprovacao?: string;
 
+  // Consolidado Nutricional (14 Nutrientes)
+  total_energia_kcal?: number;
+  total_proteinas_g?: number;
+  total_carboidratos_g?: number;
+  total_lipidios_g?: number;
+  total_fibras_g?: number;
+  total_sodio_mg?: number;
+  total_calcio_mg?: number;
+  total_ferro_mg?: number;
+  total_gordura_saturada_g?: number;
+  total_magnesio_mg?: number;
+  total_zinco_mg?: number;
+  total_vitamina_a_mcg?: number;
+  total_vitamina_c_mg?: number;
+  total_gordura_trans_mg?: number;
+
   // Joins/UI Helpers
   itens?: Dish[];
   alertas?: Alerta[];

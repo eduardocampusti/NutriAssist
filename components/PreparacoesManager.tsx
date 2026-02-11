@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card } from './UI/Card';
 import { Button } from './UI/Button';
 import { PageHeader } from './UI/PageHeader';
@@ -23,8 +24,12 @@ const PreparacoesManager: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const [preparacoes, setPreparacoes] = useState<FNDEPreparacao[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [editingPrepId, setEditingPrepId] = useState<string | null>(null);
-    const [isEditorOpen, setIsEditorOpen] = useState(false);
+
+    // Persistência via URL para evitar fechamento involuntário
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isEditorOpen = searchParams.get('editor') === 'true';
+    const editingPrepId = searchParams.get('id');
+
     const [reportPrep, setReportPrep] = useState<FNDEPreparacao | null>(null);
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -77,18 +82,15 @@ const PreparacoesManager: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
 
     const handleEdit = (id: string) => {
-        setEditingPrepId(id);
-        setIsEditorOpen(true);
+        setSearchParams({ editor: 'true', id });
     };
 
     const handleCreate = () => {
-        setEditingPrepId(null);
-        setIsEditorOpen(true);
+        setSearchParams({ editor: 'true', id: 'new' });
     };
 
     const handleSaveSuccess = () => {
-        setIsEditorOpen(false);
-        setEditingPrepId(null);
+        setSearchParams({}); // Fecha o editor limpando a URL
         loadPreparacoes();
     };
 
@@ -106,8 +108,8 @@ const PreparacoesManager: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (isEditorOpen) {
         return (
             <PreparacaoEditor
-                id={editingPrepId}
-                onClose={() => setIsEditorOpen(false)}
+                id={editingPrepId === 'new' ? null : editingPrepId}
+                onClose={() => setSearchParams({})}
                 onSave={handleSaveSuccess}
             />
         );

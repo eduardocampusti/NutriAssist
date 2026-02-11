@@ -128,3 +128,66 @@ BEGIN
     FROM calculos_individuais;
 END;
 $$;
+-- 6. Expand cardapio_tecnico for 14 nutrients
+ALTER TABLE cardapio_tecnico
+ADD COLUMN IF NOT EXISTS total_gordura_saturada_g NUMERIC DEFAULT 0,
+ADD COLUMN IF NOT EXISTS total_magnesio_mg NUMERIC DEFAULT 0,
+ADD COLUMN IF NOT EXISTS total_zinco_mg NUMERIC DEFAULT 0,
+ADD COLUMN IF NOT EXISTS total_vitamina_a_mcg NUMERIC DEFAULT 0,
+ADD COLUMN IF NOT EXISTS total_vitamina_c_mg NUMERIC DEFAULT 0,
+ADD COLUMN IF NOT EXISTS total_gordura_trans_mg NUMERIC DEFAULT 0;
+
+-- 7. Update fnde_get_preparacao_nutrientes for 14 nutrients
+CREATE OR REPLACE FUNCTION fnde_get_preparacao_nutrientes(p_preparacao_id UUID)
+RETURNS TABLE (
+    energia_kcal NUMERIC,
+    proteinas_g NUMERIC,
+    carboidratos_g NUMERIC,
+    lipidios_g NUMERIC,
+    fibras_g NUMERIC,
+    sodio_mg NUMERIC,
+    calcio_mg NUMERIC,
+    ferro_mg NUMERIC,
+    gordura_saturada_g NUMERIC,
+    magnesio_mg NUMERIC,
+    zinco_mg NUMERIC,
+    vitamina_a_mcg NUMERIC,
+    vitamina_c_mg NUMERIC,
+    gordura_trans_mg NUMERIC
+) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH lista_ingredientes AS (
+        SELECT 
+            alimento_id,
+            quantidade_per_capita as quantidade_g
+        FROM fnde_preparacao_ingredientes
+        WHERE preparacao_id = p_preparacao_id
+    ),
+    calculos AS (
+        SELECT 
+            calc.*
+        FROM lista_ingredientes l
+        CROSS JOIN LATERAL fnde_calcular_nutrientes_por_porcao(l.alimento_id, l.quantidade_g) calc
+    )
+    SELECT 
+        SUM(c.energia_kcal),
+        SUM(c.proteinas_g),
+        SUM(c.carboidratos_g),
+        SUM(c.lipidios_g),
+        SUM(c.fibras_g),
+        SUM(c.sodio_mg),
+        SUM(c.calcio_mg),
+        SUM(c.ferro_mg),
+        SUM(c.gordura_saturada_g),
+        SUM(c.magnesio_mg),
+        SUM(c.zinco_mg),
+        SUM(c.vitamina_a_mcg),
+        SUM(c.vitamina_c_mg),
+        SUM(c.gordura_trans_mg)
+    FROM calculos c;
+END;
+$$;

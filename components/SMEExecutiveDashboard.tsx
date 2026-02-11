@@ -47,6 +47,22 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
         const approvedPlans = menuPlans.filter(p => p.status === DocStatus.APROVADO).length;
         const complianceRate = totalPlans > 0 ? (approvedPlans / totalPlans) * 100 : 0;
 
+        // 1.1 Média Nutricional da Rede (Baseado nos 14 Nutrientes)
+        const avgNutrition = menuPlans.reduce((acc, p) => {
+            acc.energy += p.total_energia_kcal || 0;
+            acc.sodium += p.total_sodio_mg || 0;
+            acc.fiber += p.total_fibras_g || 0;
+            acc.satFat += p.total_gordura_saturada_g || 0;
+            if ((p.total_gordura_trans_mg || 0) > 0) acc.transFatAlerts++;
+            return acc;
+        }, { energy: 0, sodium: 0, fiber: 0, satFat: 0, transFatAlerts: 0 });
+
+        const networkStats = {
+            avgKcal: totalPlans > 0 ? (avgNutrition.energy / totalPlans) : 0,
+            avgSodium: totalPlans > 0 ? (avgNutrition.sodium / totalPlans) : 0,
+            transFatRisk: totalPlans > 0 ? (avgNutrition.transFatAlerts / totalPlans) * 100 : 0
+        };
+
         // 2. Saúde Nutricional (SISVAN)
         const totalEvals = evaluations.length;
         const eutrofiaCount = evaluations.filter(e => e.classificacaoImc === SisvanClassification.EUTROFIA).length;
@@ -101,6 +117,7 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
 
         return {
             complianceRate,
+            networkStats,
             healthRate,
             avgSLA: avgSLA.toFixed(1),
             criticalOccurrences,
@@ -113,7 +130,7 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
     }, [menuPlans, inventory, evaluations, schools, audits, requests, occurrences]);
 
     const KPICard = ({ title, value, subValue, icon: Icon, color, trend }: any) => {
-        // Extract color name (e.g., 'emerald' from 'bg-emerald-500')
+        // ... (Rest of component remains same)
         const colorName = color.split('-')[1];
 
         // Soft Glass Style
@@ -267,22 +284,38 @@ const SMEExecutiveDashboard: React.FC<SMEExecutiveDashboardProps> = ({
                     <div className="w-full h-px bg-stone-100 my-4 relative z-10"></div>
 
                     <div className="p-8 pt-4 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
-                        <div>
-                            <div className="flex justify-between items-end mb-3">
-                                <h4 className="text-xs font-bold uppercase tracking-widest text-stone-500">Execução do Planejamento</h4>
-                                <span className="text-xs font-bold text-[#16A34A] bg-emerald-50 px-2 py-1 rounded-full">+12.5%</span>
+                        {/* SEÇÃO DE AUDITORIA NUTRICIONAL (NOVA) */}
+                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
+                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <ShieldCheck size={14} className="text-emerald-500" /> Auditoria Nutricional da Rede
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase">Energia Média</p>
+                                    <p className="text-lg font-black text-slate-900">{analytics.networkStats.avgKcal.toFixed(0)} <small className="text-[10px] opacity-40">kcal</small></p>
+                                </div>
+                                <div>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase">Sódio Médio</p>
+                                    <p className="text-lg font-black text-slate-900">{analytics.networkStats.avgSodium.toFixed(0)} <small className="text-[10px] opacity-40">mg</small></p>
+                                </div>
+                                <div className="col-span-2 pt-2 border-t border-slate-200">
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Risco de Gordura Trans</p>
+                                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${analytics.networkStats.transFatRisk > 0 ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                                            {analytics.networkStats.transFatRisk > 0 ? 'ALERTA' : 'SEGURO'}
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden">
+                                        <div className={`h-full transition-all ${analytics.networkStats.transFatRisk > 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min(100, analytics.networkStats.transFatRisk || 5)}%` }}></div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-brand-500 shadow-[0_0_10px_rgba(16,185,129,0.2)] transition-all duration-1000" style={{ width: '92%' }}></div>
-                            </div>
-                            <p className="text-[11px] text-slate-500 font-medium mt-3 leading-relaxed">
-                                Meta baseada no cronograma de 200 dias letivos e distribuição semanal.
-                            </p>
                         </div>
-                        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors">
+
+                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 flex flex-col justify-center">
                             <CheckCircle2 className="text-brand-600 w-6 h-6 mb-3" />
                             <h5 className="text-sm font-bold text-slate-800 mb-1">Transparência PNAE</h5>
-                            <p className="text-xs text-slate-500 leading-relaxed">Dados consolidados prontos para prestação de contas ao FNDE.</p>
+                            <p className="text-xs text-slate-500 leading-relaxed italic">"Dados consolidados em tempo real com os 14 nutrientes normativos do FNDE."</p>
                         </div>
                     </div>
                 </Card>

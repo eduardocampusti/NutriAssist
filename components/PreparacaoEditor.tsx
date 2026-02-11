@@ -16,7 +16,8 @@ import {
     ChevronDown,
     ArrowLeft,
     RefreshCw as RefreshCwIcon,
-    Sparkles
+    Sparkles,
+    Image as ImageIcon
 } from 'lucide-react';
 import { fndePreparacaoService, FNDEPreparacao, FNDEPreparacaoIngrediente, PreparacaoNutrientes } from '../services/fndePreparacaoService';
 import { fndeService } from '../services/fndeService';
@@ -34,19 +35,30 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+    const [aiCooldown, setAiCooldown] = useState(0); // Segundos restantes de cooldown
 
     // Preparação State
     const [nome, setNome] = useState('');
     const [descricao, setDescricao] = useState('');
     const [modoPreparo, setModoPreparo] = useState('');
     const [rendimento, setRendimento] = useState(1);
+    const [imagemUrl, setImagemUrl] = useState('');
     const [ingredientes, setIngredientes] = useState<Partial<FNDEPreparacaoIngrediente>[]>([]);
+    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
     // PNAE Classifications
     const [categoria, setCategoria] = useState<'CRECHE' | 'ENSINO' | ''>('');
     const [etapa, setEtapa] = useState('');
     const [modalidade, setModalidade] = useState('');
     const [faixaEtaria, setFaixaEtaria] = useState('');
+
+    // AI Cooldown effect
+    useEffect(() => {
+        if (aiCooldown > 0) {
+            const timer = setTimeout(() => setAiCooldown(prev => prev - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [aiCooldown]);
 
     // FNDE Food selection state
     const [fndeAlimentos, setFndeAlimentos] = useState<any[]>([]);
@@ -76,6 +88,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                     setEtapa(prep.etapa_ensino || '');
                     setModalidade(prep.modalidade_ensino || '');
                     setFaixaEtaria(prep.faixa_etaria || '');
+                    setImagemUrl(prep.imagem_url || '');
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados:", err);
@@ -156,14 +169,41 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         setIsGeneratingAI(true);
         try {
             const ingredientNames = ingredientes.map(ing => ing.alimento?.nome || "Ingrediente");
+            // Agora o aiService faz 3 tentativas internas com delay de 5s entre elas
             const suggestion = await aiService.generateRecipeSteps(nome || "Preparação sem nome", ingredientNames);
             setModoPreparo(suggestion);
             addToast("Sugestão da IA gerada com sucesso!", "success");
+            setAiCooldown(0);
         } catch (err: any) {
             console.error("Erro IA:", err);
-            addToast(err.message || "Erro ao gerar sugestão.", "error");
+            const message = err.message || "Erro ao gerar sugestão.";
+            addToast(message, "error");
+
+            // Se falhou mesmo após as retentativas internas do serviço
+            if (message.includes("demanda") || message.includes("Limite") || message.includes("indisponível") || message.includes("liberados")) {
+                setAiCooldown(60); // Aguarda 1 minuto se o Google bloquear de vez
+            }
         } finally {
             setIsGeneratingAI(false);
+        }
+    };
+
+    const handleGenerateImage = async () => {
+        if (!nome) {
+            addToast("Dê um nome à preparação antes de gerar a imagem.", "warning");
+            return;
+        }
+        setIsGeneratingImage(true);
+        try {
+            const ingredientNames = ingredientes.map(ing => ing.alimento?.nome || "Ingrediente");
+            const url = await aiService.generateRecipeImage(nome, ingredientNames);
+            setImagemUrl(url);
+            addToast("Imagem gerada com sucesso!", "success");
+        } catch (err: any) {
+            console.error("Erro Imagem:", err);
+            addToast(err.message || "Erro ao gerar imagem.", "error");
+        } finally {
+            setIsGeneratingImage(false);
         }
     };
 
@@ -193,7 +233,8 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                     categoria_cardapio: categoria as 'CRECHE' | 'ENSINO',
                     etapa_ensino: etapa,
                     modalidade_ensino: modalidade,
-                    faixa_etaria: faixaEtaria
+                    faixa_etaria: faixaEtaria,
+                    imagem_url: imagemUrl
                 },
                 ingredientes.map(ing => ({
                     alimento_id: ing.alimento_id,
@@ -491,22 +532,63 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                     </h3>
                                     <button
                                         onClick={handleAISuggestion}
-                                        disabled={isGeneratingAI}
-                                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50"
+                                        disabled={isGeneratingAI || aiCooldown > 0}
+                                        className={`flex items-center gap-2 px-4 py-2 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 ${aiCooldown > 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/20'}`}
                                     >
                                         {isGeneratingAI ? (
                                             <><RefreshCwIcon className="w-3 h-3 animate-spin" /> Gerando...</>
+                                        ) : aiCooldown > 0 ? (
+                                            <><RefreshCwIcon className="w-3 h-3" /> Aguarde {aiCooldown}s</>
                                         ) : (
                                             <><Sparkles className="w-3 h-3" /> Sugerir com IA</>
                                         )}
                                     </button>
                                 </div>
-                                <textarea
-                                    value={modoPreparo}
-                                    onChange={(e) => setModoPreparo(e.target.value)}
-                                    className={`w-full bg-slate-100 border-2 border-slate-200 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-64 resize-none shadow-sm placeholder:text-slate-300 ${isGeneratingAI ? 'opacity-50' : ''}`}
-                                    placeholder="Descreva aqui o procedimento técnico de preparo..."
-                                />
+                                <div className="flex flex-col lg:flex-row gap-6">
+                                    <div className="flex-1">
+                                        <textarea
+                                            value={modoPreparo}
+                                            onChange={(e) => setModoPreparo(e.target.value)}
+                                            className={`w-full bg-slate-100 border-2 border-slate-200 rounded-[32px] px-8 py-8 text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition-all h-64 lg:h-80 resize-none shadow-sm placeholder:text-slate-300 ${isGeneratingAI ? 'opacity-50' : ''}`}
+                                            placeholder="Descreva aqui o procedimento técnico de preparo..."
+                                        />
+                                    </div>
+
+                                    <div className="lg:w-80 flex flex-col gap-4">
+                                        <div className="aspect-square bg-white rounded-[32px] border-2 border-slate-200 overflow-hidden relative group shadow-sm">
+                                            {imagemUrl ? (
+                                                <>
+                                                    <img src={imagemUrl} alt="Visual da Receita" className="w-full h-full object-cover" />
+                                                    <button
+                                                        onClick={() => setImagemUrl('')}
+                                                        className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </>
+                                            ) : isGeneratingImage ? (
+                                                <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400">
+                                                    <RefreshCwIcon className="w-10 h-10 animate-spin text-indigo-500" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">IA em ação...</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-300 p-8 text-center">
+                                                    <ImageIcon className="w-16 h-16 opacity-20" />
+                                                    <p className="text-[10px] font-black uppercase tracking-widest">Sem Imagem</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            onClick={handleGenerateImage}
+                                            disabled={isGeneratingImage || !nome}
+                                            className="flex items-center justify-center gap-3 w-full py-4 px-6 bg-indigo-50 text-indigo-600 rounded-2xl border-2 border-indigo-100 hover:bg-indigo-100 transition-all font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
+                                        >
+                                            <ImageIcon className="w-4 h-4" />
+                                            {isGeneratingImage ? "Gerando..." : "Gerar Foto com IA"}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

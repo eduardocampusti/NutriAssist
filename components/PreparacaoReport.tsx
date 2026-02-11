@@ -116,32 +116,32 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                             </div>
                         </div>
 
-                        {/* TABELA DE COMPOSIÇÃO - MODELO MARANHÃO */}
-                        <div className="border-2 border-slate-900 rounded-xl overflow-hidden">
-                            <table className="w-full text-[8px] border-collapse">
+                        {/* TABELA DE COMPOSIÇÃO - MODELO MARANHÃO REFINADO */}
+                        <div className="border-2 border-slate-900 rounded-xl overflow-hidden shadow-sm">
+                            <table className="w-full text-[7.5px] border-collapse bg-white">
                                 <thead>
-                                    <tr className="bg-slate-200 text-slate-900 border-b-2 border-slate-900 font-black uppercase tracking-tight">
-                                        <th className="p-2 border-r border-slate-400 text-left w-[15%]">INGREDIENTES</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">PB (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">PL (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">FC</th>
-                                        <th className="p-2 border-r border-slate-400 text-center bg-slate-300">ENERGIA (Kcal)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">PTN (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">LPD (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Sat. (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">CHO (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Fibra (g)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Ca (mg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Mg (mg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Fe (mg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Zn (mg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Vit. A (mcg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Vit. C (mg)</th>
-                                        <th className="p-2 border-r border-slate-400 text-center">Na (mg)</th>
-                                        <th className="p-2 text-center">Trans (mg)</th>
+                                    <tr className="bg-slate-100 text-slate-900 border-b-2 border-slate-900 font-black uppercase tracking-tight">
+                                        <th className="p-2 border-r border-slate-400 text-left w-[18%] bg-slate-200">INGREDIENTES</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">PB (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">PL (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">FC</th>
+                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-200">ENERGIA (Kcal)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">PTN (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">LPD (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Sat. (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">CHO (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Fibra (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Ca (mg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Mg (mg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Fe (mg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Zn (mg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Vit. A (mcg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Vit. C (mg)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center">Na (mg)</th>
+                                        <th className="p-1 text-center">Trans (mg)</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-400">
+                                <tbody className="divide-y divide-slate-300">
                                     {preparacao.ingredientes?.map((ing, idx) => {
                                         const comp = ing.alimento?.composicao?.[0];
                                         const fc = ing.alimento?.fator_correcao || 1.0;
@@ -149,94 +149,127 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                         const calc = (val: number | undefined) => (val ? (val * ing.quantidade_per_capita / 100).toFixed(2) : '0,00');
 
                                         return (
-                                            <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                                <td className="p-2 border-r border-slate-400 font-bold text-slate-900 uppercase truncate">{ing.alimento?.nome}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center font-bold">{pb.toFixed(2)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center font-bold">{ing.quantidade_per_capita.toFixed(2)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center text-slate-500">{fc.toFixed(2)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center font-black bg-slate-50">{calc(comp?.energia_kcal)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.proteinas_g)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.lipidios_g)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.gordura_saturada_g)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.carboidratos_g)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.fibras_g)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.calcio_mg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.magnesio_mg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.ferro_mg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.zinco_mg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.vitamina_a_mcg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.vitamina_c_mg)}</td>
-                                                <td className="p-2 border-r border-slate-400 text-center">{calc(comp?.sodio_mg)}</td>
-                                                <td className="p-2 text-center">{calc(comp?.gordura_trans_mg)}</td>
+                                            <tr key={idx} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} transition-colors`}>
+                                                <td className="p-1.5 border-r border-slate-300 font-bold text-slate-800 uppercase truncate">{ing.alimento?.nome}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{pb.toFixed(2)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{ing.quantidade_per_capita.toFixed(2)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{fc.toFixed(2)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-black bg-slate-100/50 text-slate-900">{calc(comp?.energia_kcal)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.proteinas_g)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.lipidios_g)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.gordura_saturada_g)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.carboidratos_g)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.fibras_g)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.calcio_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.magnesio_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.ferro_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.zinco_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.vitamina_a_mcg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.vitamina_c_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.sodio_mg)}</td>
+                                                <td className="p-1 text-center">{calc(comp?.gordura_trans_mg)}</td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-slate-200 text-slate-900 font-black border-t-2 border-slate-900">
-                                        <td className="p-2 border-r border-slate-400 text-right uppercase">TOTAL</td>
-                                        <td className="p-2 border-r border-slate-400"></td>
-                                        <td className="p-2 border-r border-slate-400"></td>
-                                        <td className="p-2 border-r border-slate-400"></td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.energia_kcal.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.proteinas_g.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.lipidios_g.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.gordura_saturada_g.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.carboidratos_g.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.fibras_g.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.calcio_mg.toFixed(1)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.magnesio_mg.toFixed(1)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.ferro_mg.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.zinco_mg.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.vitamina_a_mcg.toFixed(1)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{nutrientes?.vitamina_c_mg.toFixed(2)}</td>
-                                        <td className="p-2 border-r border-slate-400 text-center">{Math.round(nutrientes?.sodio_mg || 0)}</td>
-                                        <td className="p-2 text-center">{nutrientes?.gordura_trans_mg.toFixed(2)}</td>
+                                    <tr className="bg-slate-200 text-slate-900 font-extrabold border-t-2 border-slate-900">
+                                        <td className="p-2 border-r border-slate-400 text-right uppercase text-[9px]">TOTAL ACUMULADO</td>
+                                        <td className="p-1 border-r border-slate-400"></td>
+                                        <td className="p-1 border-r border-slate-400"></td>
+                                        <td className="p-1 border-r border-slate-400"></td>
+                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{nutrientes?.energia_kcal.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.proteinas_g.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.lipidios_g.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.gordura_saturada_g.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.carboidratos_g.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.fibras_g.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.calcio_mg.toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.magnesio_mg.toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.ferro_mg.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.zinco_mg.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.vitamina_a_mcg.toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.vitamina_c_mg.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{Math.round(nutrientes?.sodio_mg || 0)}</td>
+                                        <td className="p-1 text-center">{nutrientes?.gordura_trans_mg.toFixed(2)}</td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
 
-                        {/* MODO DE PREPARO */}
-                        <div className="space-y-3 break-inside-avoid">
-                            <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest border-b-2 border-slate-900 pb-2">
-                                MODO DE PREPARO:
-                            </h4>
-                            <div className="text-[10px] text-slate-800 leading-relaxed font-medium pl-2">
-                                {preparacao.modo_preparo ? (
-                                    <div className="space-y-1">
-                                        {preparacao.modo_preparo.split('\n').map((line, i) => (
-                                            <p key={i} className="flex gap-2">
-                                                <span className="font-bold">{i + 1}.</span> {line.trim().replace(/^\d+\.|^\d+\)/, '')}
-                                            </p>
-                                        ))}
+                        {/* MODO DE PREPARO E IMAGEM - NANA BANANA PREMIUM STYLE */}
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start pt-4">
+                            <div className="md:col-span-7 space-y-4">
+                                <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3">
+                                    <span className="w-8 h-px bg-slate-900"></span> MODO DE PREPARO TÉCNICO
+                                </h4>
+                                <div className="text-[10px] text-slate-700 leading-relaxed font-medium bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
+                                    {preparacao.modo_preparo ? (
+                                        <div className="space-y-3">
+                                            {preparacao.modo_preparo.split('\n').filter(l => l.trim()).map((line, i) => (
+                                                <p key={i} className="flex gap-4">
+                                                    <span className="font-black text-slate-400 shrink-0 w-4 italic">{String(i + 1).padStart(2, '0')}</span>
+                                                    <span className="border-l border-slate-200 pl-4">{line.trim().replace(/^\d+\.|^\d+\)/, '')}</span>
+                                                </p>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="italic text-slate-400">Procedimento operacional não detalhado.</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="md:col-span-5 space-y-4 print:mt-0">
+                                <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3 justify-end">
+                                    ILUSTRAÇÃO DA RECEITA <span className="w-8 h-px bg-slate-900"></span>
+                                </h4>
+                                <div className="relative group">
+                                    <div className="rounded-[40px] overflow-hidden border-[6px] border-white shadow-2xl shadow-slate-200/50 aspect-square bg-slate-100 flex items-center justify-center transform rotate-1">
+                                        {preparacao.imagem_url ? (
+                                            <img
+                                                src={preparacao.imagem_url}
+                                                alt={preparacao.nome}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="text-center p-8 opacity-20">
+                                                <p className="text-[9px] font-black uppercase tracking-widest mt-2">Sem Imagem</p>
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    "Nenhum modo de preparo detalhado registrado."
-                                )}
-                            </div>
-                        </div>
-
-                        {/* ASSINATURAS E RODAPÉ */}
-                        <div className="mt-auto pt-10 grid grid-cols-2 gap-16 break-inside-avoid">
-                            <div className="text-center space-y-2">
-                                <div className="border-t-2 border-slate-900 w-full pt-2">
-                                    <p className="text-[10px] font-black uppercase text-slate-900">RESPONSÁVEL TÉCNICO</p>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">NUTRICIONISTA ESCOLAR</p>
-                                </div>
-                            </div>
-                            <div className="text-center space-y-2">
-                                <div className="border-t-2 border-slate-900 w-full pt-2">
-                                    <p className="text-[10px] font-black uppercase text-slate-900">RECEBIMENTO / PRODUÇÃO</p>
-                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">SERVIÇO DE ALIMENTAÇÃO</p>
+                                    {/* Subtítulo Estilizado */}
+                                    <div className="mt-4 text-right">
+                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic pr-4">
+                                            * Imagem ilustrativa gerada via IA
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="pt-8 text-center opacity-30">
-                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-[0.3em]">
-                                DOCUMENTO INSTITUCIONAL GERADO PELO SISTEMA BROTAR • ASSISTENTE TÉCNICO DE NUTRIÇÃO
-                            </p>
+                        {/* ASSINATURAS E RODAPÉ - ESTILO INSTITUCIONAL MODERNO */}
+                        <div className="mt-auto pt-16 border-t border-slate-100">
+                            <div className="grid grid-cols-2 gap-16 break-inside-avoid">
+                                <div className="text-center">
+                                    <div className="w-full h-px bg-slate-900 mb-2"></div>
+                                    <p className="text-[9px] font-black uppercase text-slate-900 tracking-widest">Responsável Técnico</p>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1">RT / NUTRICIONISTA</p>
+                                </div>
+                                <div className="text-center">
+                                    <div className="w-full h-px bg-slate-900 mb-2"></div>
+                                    <p className="text-[9px] font-black uppercase text-slate-900 tracking-widest">Coordenador de Unidade</p>
+                                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1">PNAE / SEDUC</p>
+                                </div>
+                            </div>
+
+                            <div className="mt-12 text-center">
+                                <p className="text-[8px] font-black text-slate-900 uppercase tracking-[0.4em]">
+                                    SISTEMA BROTAR • ASSISTÊNCIA TÉCNICA À ALIMENTAÇÃO ESCOLAR
+                                </p>
+                                <p className="text-[6px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">
+                                    PROTOCOLO DE SEGURANÇA ALIMENTAR E NUTRICIONAL • BROTAS DE MACAÚBAS/BA
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
