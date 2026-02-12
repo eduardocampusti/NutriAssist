@@ -82,6 +82,25 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         padding: 0 !important;
                         border-radius: 0 !important;
                     }
+
+                    /* HARDCORE PRINT LAYOUT ENFORCEMENT */
+                    #report-grid-container {
+                        display: grid !important;
+                        grid-template-columns: 7fr 5fr !important;
+                        gap: 2rem !important; /* gap-8 approx */
+                        align-items: start !important;
+                        margin-top: 1rem !important;
+                    }
+                    
+                    #report-text-column {
+                        width: 100% !important;
+                    }
+                    
+                    #report-image-column {
+                        width: 100% !important;
+                        margin-top: 0 !important;
+                        page-break-inside: avoid !important;
+                    }
                 }
             `}</style>
 
@@ -233,9 +252,9 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         </div>
 
                         {/* MODO DE PREPARO E IMAGEM - NANA BANANA PREMIUM STYLE */}
-                        {/* Print: Stack Vertical to allow breaking. Screen: Grid side-by-side */}
-                        <div className="flex flex-col md:grid md:grid-cols-12 gap-10 items-start pt-4 print:block">
-                            <div className="md:col-span-7 print:w-full space-y-4">
+                        {/* Print: Enforced by ID styles above to match exact screen layout */}
+                        <div id="report-grid-container" className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start pt-4">
+                            <div id="report-text-column" className="md:col-span-7 space-y-4">
                                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3">
                                     <span className="w-8 h-px bg-slate-900"></span> MODO DE PREPARO TÉCNICO
                                 </h4>
@@ -262,7 +281,7 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                 </div>
                             </div>
 
-                            <div className="md:col-span-5 print:w-full space-y-4 print:mt-8 print:break-inside-avoid">
+                            <div id="report-image-column" className="md:col-span-5 space-y-4">
                                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3 justify-end print:justify-start">
                                     ILUSTRAÇÃO DA RECEITA <span className="w-8 h-px bg-slate-900"></span>
                                 </h4>
