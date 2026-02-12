@@ -16,7 +16,13 @@ RETURNS TABLE (
     fibras_g NUMERIC,
     sodio_mg NUMERIC,
     calcio_mg NUMERIC,
-    ferro_mg NUMERIC
+    ferro_mg NUMERIC,
+    gordura_saturada_g NUMERIC,
+    magnesio_mg NUMERIC,
+    zinco_mg NUMERIC,
+    vitamina_a_mcg NUMERIC,
+    vitamina_c_mg NUMERIC,
+    gordura_trans_mg NUMERIC
 ) 
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -36,7 +42,13 @@ BEGIN
         ROUND(c.fibras_g * v_factor, 2),
         ROUND(c.sodio_mg * v_factor, 2),
         ROUND(c.calcio_mg * v_factor, 2),
-        ROUND(c.ferro_mg * v_factor, 2)
+        ROUND(c.ferro_mg * v_factor, 2),
+        ROUND(c.gordura_saturada_g * v_factor, 2),
+        ROUND(c.magnesio_mg * v_factor, 2),
+        ROUND(c.zinco_mg * v_factor, 2),
+        ROUND(c.vitamina_a_mcg * v_factor, 2),
+        ROUND(c.vitamina_c_mg * v_factor, 2),
+        ROUND(c.gordura_trans_mg * v_factor, 2)
     FROM fnde_composicao_nutricional c
     WHERE c.alimento_id = p_alimento_id;
 END;
@@ -58,6 +70,12 @@ RETURNS TABLE (
     total_sodio_mg NUMERIC,
     total_calcio_mg NUMERIC,
     total_ferro_mg NUMERIC,
+    total_gordura_saturada_g NUMERIC,
+    total_magnesio_mg NUMERIC,
+    total_zinco_mg NUMERIC,
+    total_vitamina_a_mcg NUMERIC,
+    total_vitamina_c_mg NUMERIC,
+    total_gordura_trans_mg NUMERIC,
     itens_contados INT
 ) 
 LANGUAGE plpgsql
@@ -86,6 +104,12 @@ BEGIN
         SUM(sodio_mg),
         SUM(calcio_mg),
         SUM(ferro_mg),
+        SUM(gordura_saturada_g),
+        SUM(magnesio_mg),
+        SUM(zinco_mg),
+        SUM(vitamina_a_mcg),
+        SUM(vitamina_c_mg),
+        SUM(gordura_trans_mg),
         COUNT(*)::INT
     FROM calculos_individuais;
 END;

@@ -8,6 +8,11 @@ CREATE TABLE IF NOT EXISTS fnde_preparacoes (
     descricao TEXT,
     modo_preparo TEXT,
     rendimento_porcoes INT DEFAULT 1,
+    categoria_cardapio TEXT, -- CRECHE, ENSINO
+    etapa_ensino TEXT,
+    modalidade_ensino TEXT,
+    faixa_etaria TEXT,
+    imagem_url TEXT,
     created_by UUID REFERENCES profiles(id),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -47,7 +52,13 @@ RETURNS TABLE (
     fibras_g NUMERIC,
     sodio_mg NUMERIC,
     calcio_mg NUMERIC,
-    ferro_mg NUMERIC
+    ferro_mg NUMERIC,
+    gordura_saturada_g NUMERIC,
+    magnesio_mg NUMERIC,
+    zinco_mg NUMERIC,
+    vitamina_a_mcg NUMERIC,
+    vitamina_c_mg NUMERIC,
+    gordura_trans_mg NUMERIC
 ) 
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -75,7 +86,13 @@ BEGIN
         SUM(c.fibras_g),
         SUM(c.sodio_mg),
         SUM(c.calcio_mg),
-        SUM(c.ferro_mg)
+        SUM(c.ferro_mg),
+        SUM(c.gordura_saturada_g),
+        SUM(c.magnesio_mg),
+        SUM(c.zinco_mg),
+        SUM(c.vitamina_a_mcg),
+        SUM(c.vitamina_c_mg),
+        SUM(c.gordura_trans_mg)
     FROM calculos c;
 END;
 $$;

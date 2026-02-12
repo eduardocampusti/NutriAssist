@@ -1,74 +1,46 @@
-
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
+import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Carregar variáveis do .env.local
-const envPath = path.resolve(process.cwd(), '.env.local');
-const envContent = fs.readFileSync(envPath, 'utf-8');
-const envLines = envContent.split('\n');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const getEnv = (key) => {
-    const line = envLines.find(l => l.startsWith(key));
-    return line ? line.split('=')[1].trim() : null;
-};
+dotenv.config({ path: path.join(__dirname, '.env.local') });
 
-const supabaseUrl = getEnv('VITE_SUPABASE_URL');
-const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY');
-
-if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Erro: VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não encontradas.');
-    process.exit(1);
-}
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function checkTable(tableName) {
-    // Check existence by selecting 1 row
-    const { count, error } = await supabase.from(tableName).select('*', { count: 'exact', head: true });
+async function listTables() {
+    console.log('--- LISTANDO TABELAS DO BANCO ---');
+
+    // Consulta ao information_schema via RPC se possível, 
+    // ou tentamos acessar tabelas comuns para ver o que responde.
+
+    // Tenta uma query de sistema
+    const { data, error } = await supabase.rpc('exec_sql', {
+        sql_query: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
+    });
 
     if (error) {
-        if (error.code === '42P01') { // Undefined Table
-            return `❌ ${tableName.padEnd(25)}: NÃO EXISTE`;
+        console.error('Erro ao listar via RPC:', error.message);
+
+        console.log('Tentando acesso direto a tabelas conhecidas...');
+        const commonTables = ['profiles', 'fnde_preparacoes', 'fnde_alimentos', 'schools', 'escolas', 'preparacoes'];
+        for (const t of commonTables) {
+            const { error: e } = await supabase.from(t).select('*').limit(0);
+            if (e) {
+                console.log(`❌ ${t}: ${e.message}`);
+            } else {
+                console.log(`✅ ${t}: Existe`);
+            }
         }
-        return `⚠️ ${tableName.padEnd(25)}: ERRO ${error.code} - ${error.message}`;
+    } else {
+        console.log('Tabelas encontradas:');
+        data.forEach(t => console.log(`- ${t.table_name}`));
     }
-
-    // Check columns if it exists
-    const { data, error: colError } = await supabase.from(tableName).select('*').limit(1);
-    const columns = data && data.length > 0 ? Object.keys(data[0]).join(', ') : '(vazia ou sem permissão de leitura de colunas)';
-
-    return `✅ ${tableName.padEnd(25)}: ${count} registros. Cols: [${columns.substring(0, 50)}...]`;
 }
 
-async function runDiagnosis() {
-    console.log('--- DIAGNÓSTICO DE TABELAS ---');
-
-
-    // MENUS
-    console.log(await checkTable('cardapios'));
-    console.log(await checkTable('menu_plans'));
-
-    // EXECUCOES
-    console.log(await checkTable('menu_executions'));
-    console.log(await checkTable('execucoes_cardapio'));
-
-    // ESTOQUE
-    console.log(await checkTable('estoque_movimentacoes'));
-    console.log(await checkTable('inventory_movements'));
-    console.log(await checkTable('estoque_produtos'));
-    console.log(await checkTable('inventory_items'));
-
-    // ESCOLAS
-    console.log(await checkTable('escolas'));
-    console.log(await checkTable('schools'));
-
-    // COMPRAS
-    console.log(await checkTable('licitacoes'));
-    console.log(await checkTable('purchases'));
-    console.log(await checkTable('procurement_processes'));
-
-    console.log('--- FIM DO DIAGNÓSTICO ---');
-}
-
-runDiagnosis();
+listTables();

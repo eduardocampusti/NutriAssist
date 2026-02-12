@@ -1,0 +1,8 @@
+
+ALTER TABLE fnde_preparacoes 
+ADD COLUMN IF NOT EXISTS categoria_cardapio TEXT,
+ADD COLUMN IF NOT EXISTS etapa_ensino TEXT,
+ADD COLUMN IF NOT EXISTS modalidade_ensino TEXT,
+ADD COLUMN IF NOT EXISTS faixa_etaria TEXT,
+ADD COLUMN IF NOT EXISTS imagem_url TEXT,
+ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES profiles(id);

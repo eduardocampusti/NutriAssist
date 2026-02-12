@@ -23,11 +23,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // 1. Check active sessions (Supabase)
+        // Estabilização: Carrega a sessão silenciosamente se possível
         supabase.auth.getSession().then(({ data: { session: sbSession } }) => {
             if (sbSession) {
                 setSession(sbSession);
                 setUser(sbSession.user);
             }
+            // Só libera o loading após a primeira verificação de sessão
             setLoading(false);
         });
 

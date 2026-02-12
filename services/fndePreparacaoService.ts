@@ -102,8 +102,11 @@ export const fndePreparacaoService = {
     async save(preparacao: Partial<FNDEPreparacao>, ingredientes: Partial<FNDEPreparacaoIngrediente>[]) {
         const isUpdate = !!preparacao.id;
 
-        // 1. Save Preparation Header
-        const { data: prepData, error: prepError } = await supabase
+        // 1. Save Preparation Header with Fallback for missing columns
+        let prepData;
+        let prepError;
+
+        const { data: d, error: e } = await supabase
             .from('fnde_preparacoes')
             .upsert({
                 ...preparacao,
@@ -112,7 +115,35 @@ export const fndePreparacaoService = {
             .select()
             .single();
 
-        if (prepError) throw prepError;
+        prepData = d;
+        prepError = e;
+
+        // Fallback: If migration was not applied, retry without the new columns
+        if (prepError && prepError.message.includes('column') && prepError.message.includes('does not exist')) {
+            console.warn('⚠️ Fallback: Colunas PNAE não encontradas no banco. Salvando apenas campos básicos.');
+            const basicPrep = { ...preparacao };
+            delete (basicPrep as any).categoria_cardapio;
+            delete (basicPrep as any).etapa_ensino;
+            delete (basicPrep as any).modalidade_ensino;
+            delete (basicPrep as any).faixa_etaria;
+
+            const { data: d2, error: e2 } = await supabase
+                .from('fnde_preparacoes')
+                .upsert({
+                    ...basicPrep,
+                    updated_at: new Date().toISOString()
+                })
+                .select()
+                .single();
+
+            prepData = d2;
+            prepError = e2;
+        }
+
+        if (prepError) {
+            console.error('❌ Erro Supabase (Header):', prepError);
+            throw prepError;
+        }
 
         const prepId = prepData.id;
 
@@ -122,7 +153,10 @@ export const fndePreparacaoService = {
                 .from('fnde_preparacao_ingredientes')
                 .delete()
                 .eq('preparacao_id', prepId);
-            if (delError) throw delError;
+            if (delError) {
+                console.error('❌ Erro Supabase (Delete Ings):', delError);
+                throw delError;
+            }
         }
 
         // 3. Save New Ingredients
@@ -133,7 +167,10 @@ export const fndePreparacaoService = {
                     ...ing,
                     preparacao_id: prepId
                 })));
-            if (ingError) throw ingError;
+            if (ingError) {
+                console.error('❌ Erro Supabase (Insert Ings):', ingError);
+                throw ingError;
+            }
         }
 
         return prepData;

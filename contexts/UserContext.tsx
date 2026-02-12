@@ -29,7 +29,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Initial Load & Migration
     useEffect(() => {
         const loadInitialData = async () => {
-            setIsLoading(true);
+            // Estabilização: Somente ativa o loading global se NÃO houver perfis.
+            // Isso impede o sistema de "piscar" e unmount/mount ao re-validar a sessão.
+            if (profiles.length === 0) {
+                setIsLoading(true);
+            }
             try {
                 // 1. Fetch from Supabase
                 const { data: dbProfiles, error } = await supabase

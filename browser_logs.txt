@@ -1,0 +1,26 @@
+
+[2026-02-11T19:36:15.456Z] [BROWSER LOG] [AI Service v3] Início: ARROZ COLORIDO COM LEGUMES (Tentativa 1)
+
+
+[2026-02-11T19:36:15.469Z] [BROWSER LOG] [AI Service] Enviando para modelo moderno: gemini-2.0-flash
+
+
+[2026-02-11T19:36:16.496Z] [BROWSER ERROR] [AI Service] Falha na tentativa 1: {"status":429,"statusText":"","errorDetails":[{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count","quotaId":"GenerateContentInputTokensPerModelPerMinute-FreeTier","quotaDimensions":{"model":"gemini-2.0-flash","location":"global"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}},{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash"}}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"43s"}]}
+Error
+    at console.error (http://localhost:3000/:118:31)
+    at Object.generateRecipeSteps (http://localhost:3000/assets/PreparacoesManager-WRPl89I5.js:227:173)
+    at async st (http://localhost:3000/assets/PreparacoesManager-WRPl89I5.js:230:2843)
+
+[2026-02-11T19:36:21.507Z] [BROWSER LOG] [AI Service v3] Início: ARROZ COLORIDO COM LEGUMES (Tentativa 2)
+
+
+[2026-02-11T19:36:21.509Z] [BROWSER LOG] [AI Service] Enviando para modelo moderno: gemini-2.5-flash
+
+
+[2026-02-11T19:36:39.787Z] [BROWSER LOG] [AI Service] Sucesso!
+
+
+[2026-02-11T19:38:19.507Z] [BROWSER ERROR] Erro ao salvar: {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'imagem_url' column of 'fnde_preparacoes' in the schema cache"}
+Error
+    at console.error (http://localhost:3000/:118:31)
+    at nt (http://localhost:3000/assets/PreparacoesManager-WRPl89I5.js:230:4104)

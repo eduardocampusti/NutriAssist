@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Card } from './UI/Card';
 import { OfficialLetterhead } from './OfficialLetterhead';
 import { fndePreparacaoService, FNDEPreparacao, PreparacaoNutrientes } from '../services/fndePreparacaoService';
@@ -48,10 +49,44 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
         window.print();
     };
 
-    return (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] overflow-y-auto print:p-0 print:bg-white print:static">
+    // PORTAL STRATEGY: Render directly to body to escape parent stacking contexts
+    return ReactDOM.createPortal(
+        <div id="preparacao-report-root" className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[99999] overflow-y-auto print:p-0 print:overflow-visible">
+
+            <style>{`
+                @media print {
+                    @page { margin: 1cm; size: auto; }
+                    
+                    /* Hide everything in the body by default */
+                    body > * { display: none !important; }
+                    
+                    /* EXCEPTION: Make the portal root visible */
+                    body > #preparacao-report-root { 
+                        display: block !important; 
+                        position: absolute !important; 
+                        top: 0 !important; 
+                        left: 0 !important; 
+                        width: 100% !important; 
+                        height: auto !important; 
+                        overflow: visible !important; 
+                        background: white !important;
+                        z-index: 99999 !important;
+                    }
+                    
+                    /* Ensure content is visible */
+                    #preparacao-report-content {
+                        width: 100% !important;
+                        max-width: none !important;
+                        box-shadow: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        border-radius: 0 !important;
+                    }
+                }
+            `}</style>
+
             <div className="min-h-full flex items-center justify-center p-4 print:p-0 print:block">
-                <div className="bg-white w-full max-w-5xl p-8 shadow-2xl rounded-xl relative print:shadow-none print:w-full print:max-w-none print:rounded-none print:p-0 overflow-hidden flex flex-col">
+                <div id="preparacao-report-content" className="bg-white w-full max-w-5xl p-8 shadow-2xl rounded-xl relative overflow-hidden flex flex-col print:rounded-none">
 
                     {/* ACTIONS */}
                     <div className="flex justify-between mb-8 print:hidden sticky top-0 bg-white/90 backdrop-blur pt-4 pb-4 z-10 border-b border-slate-100">
@@ -70,7 +105,7 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                     </div>
 
                     {/* REPORT CONTENT */}
-                    <div className="print:p-[1cm] space-y-6 flex-1">
+                    <div className="print:p-0 space-y-6 flex-1 print:overflow-visible">
                         <OfficialLetterhead
                             config={letterhead}
                             title="PROGRAMA NACIONAL DE ALIMENTAÇÃO ESCOLAR - PNAE"
@@ -78,25 +113,25 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         />
 
                         {/* CLASSIFICAÇÃO HEADER */}
-                        <div className={`${themeColor} text-white p-4 rounded-xl flex flex-wrap justify-between items-center gap-4 shadow-sm`}>
+                        <div className={`${themeColor} text-white p-4 rounded-xl flex flex-wrap justify-between items-center gap-4 shadow-sm print:border print:border-slate-300 print:text-black print:bg-white`}>
                             <div className="flex items-center gap-3">
-                                <div className="bg-white/20 p-2 rounded-lg">
+                                <div className="bg-white/20 p-2 rounded-lg print:hidden">
                                     <Zap size={20} className="fill-current" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Modalidade Oficial</p>
-                                    <h4 className="text-sm font-black uppercase tracking-tight">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80 print:text-slate-600">Modalidade Oficial</p>
+                                    <h4 className="text-sm font-black uppercase tracking-tight print:text-black">
                                         FICHA TÉCNICA DE PREPARAÇÕES DO {preparacao.categoria_cardapio === 'CRECHE' ? 'CARDÁPIO - CRECHE' : `CARDÁPIO - ${preparacao.etapa_ensino}`}
                                     </h4>
                                 </div>
                             </div>
                             <div className="text-right flex items-center gap-8">
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-80 text-left">Modalidade</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-80 text-left print:text-slate-600">Modalidade</p>
                                     <p className="text-[11px] font-black uppercase text-left">{preparacao.modalidade_ensino || 'GERAL'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-80 text-left">Faixa Etária</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-80 text-left print:text-slate-600">Faixa Etária</p>
                                     <p className="text-[11px] font-black uppercase text-left">{preparacao.faixa_etaria || 'PNAE'}</p>
                                 </div>
                             </div>
@@ -104,11 +139,11 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
 
                         {/* NOME E RENDIMENTO */}
                         <div className="grid grid-cols-4 border-2 border-slate-900 rounded-xl overflow-hidden divide-x-2 divide-slate-900">
-                            <div className="col-span-3 p-4 bg-slate-50">
+                            <div className="col-span-3 p-4 bg-slate-50 print:bg-white">
                                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">NOME DE PREPARAÇÃO:</label>
                                 <h3 className="text-lg font-black text-slate-900 uppercase leading-none">{preparacao.nome}</h3>
                             </div>
-                            <div className="p-4 bg-slate-50">
+                            <div className="p-4 bg-slate-50 print:bg-white">
                                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">RENDIMENTO:</label>
                                 <div className="text-lg font-black text-slate-900 leading-none">
                                     {preparacao.rendimento_porcoes} {preparacao.rendimento_porcoes === 1 ? 'PORÇÃO' : 'PORÇÕES'}
@@ -178,38 +213,46 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
-                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{nutrientes?.energia_kcal.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.proteinas_g.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.lipidios_g.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.gordura_saturada_g.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.carboidratos_g.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.fibras_g.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.calcio_mg.toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.magnesio_mg.toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.ferro_mg.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.zinco_mg.toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.vitamina_a_mcg.toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{nutrientes?.vitamina_c_mg.toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{(nutrientes?.energia_kcal || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.proteinas_g || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.lipidios_g || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.gordura_saturada_g || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.carboidratos_g || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.fibras_g || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.calcio_mg || 0).toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.magnesio_mg || 0).toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.ferro_mg || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.zinco_mg || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_a_mcg || 0).toFixed(1)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_c_mg || 0).toFixed(2)}</td>
                                         <td className="p-1 border-r border-slate-400 text-center">{Math.round(nutrientes?.sodio_mg || 0)}</td>
-                                        <td className="p-1 text-center">{nutrientes?.gordura_trans_mg.toFixed(2)}</td>
+                                        <td className="p-1 text-center">{(nutrientes?.gordura_trans_mg || 0).toFixed(2)}</td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
 
                         {/* MODO DE PREPARO E IMAGEM - NANA BANANA PREMIUM STYLE */}
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start pt-4">
-                            <div className="md:col-span-7 space-y-4">
+                        {/* Print: Stack Vertical to allow breaking. Screen: Grid side-by-side */}
+                        <div className="flex flex-col md:grid md:grid-cols-12 gap-10 items-start pt-4 print:block">
+                            <div className="md:col-span-7 print:w-full space-y-4">
                                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3">
                                     <span className="w-8 h-px bg-slate-900"></span> MODO DE PREPARO TÉCNICO
                                 </h4>
-                                <div className="text-[10px] text-slate-700 leading-relaxed font-medium bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
+                                <div className="text-[10px] text-slate-700 leading-relaxed font-medium bg-slate-50/50 p-6 rounded-2xl border border-slate-100 print:bg-white print:border-slate-300 print:rounded-none print:break-inside-auto">
                                     {preparacao.modo_preparo ? (
                                         <div className="space-y-3">
                                             {preparacao.modo_preparo.split('\n').filter(l => l.trim()).map((line, i) => (
-                                                <p key={i} className="flex gap-4">
+                                                <p key={i} className="flex gap-4 print:break-inside-avoid">
                                                     <span className="font-black text-slate-400 shrink-0 w-4 italic">{String(i + 1).padStart(2, '0')}</span>
-                                                    <span className="border-l border-slate-200 pl-4">{line.trim().replace(/^\d+\.|^\d+\)/, '')}</span>
+                                                    <span className="border-l border-slate-200 pl-4 print:border-slate-300">
+                                                        {/* Limpa markdown basico (**texto**) para impressao mais limpa */}
+                                                        {line.trim()
+                                                            .replace(/^\d+\.|^\d+\)/, '')
+                                                            .replace(/\*\*(.*?)\*\*/g, '$1') // Remove negrito markdown
+                                                            .replace(/\*/g, '') // Remove asteriscos soltos
+                                                        }
+                                                    </span>
                                                 </p>
                                             ))}
                                         </div>
@@ -219,17 +262,17 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                 </div>
                             </div>
 
-                            <div className="md:col-span-5 space-y-4 print:mt-0">
-                                <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3 justify-end">
+                            <div className="md:col-span-5 print:w-full space-y-4 print:mt-8 print:break-inside-avoid">
+                                <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] flex items-center gap-3 justify-end print:justify-start">
                                     ILUSTRAÇÃO DA RECEITA <span className="w-8 h-px bg-slate-900"></span>
                                 </h4>
                                 <div className="relative group">
-                                    <div className="rounded-[40px] overflow-hidden border-[6px] border-white shadow-2xl shadow-slate-200/50 aspect-square bg-slate-100 flex items-center justify-center transform rotate-1">
+                                    <div className="rounded-[40px] overflow-hidden border-[6px] border-white shadow-2xl shadow-slate-200/50 aspect-square bg-slate-100 flex items-center justify-center transform rotate-1 print:transform-none print:shadow-none print:border-2 print:border-slate-200 print:rounded-lg print:aspect-auto print:h-64 print:w-auto print:overflow-visible">
                                         {preparacao.imagem_url ? (
                                             <img
                                                 src={preparacao.imagem_url}
                                                 alt={preparacao.nome}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover print:object-contain print:h-full print:w-full"
                                             />
                                         ) : (
                                             <div className="text-center p-8 opacity-20">
@@ -238,7 +281,7 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                         )}
                                     </div>
                                     {/* Subtítulo Estilizado */}
-                                    <div className="mt-4 text-right">
+                                    <div className="mt-4 text-right print:text-left">
                                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic pr-4">
                                             * Imagem ilustrativa gerada via IA
                                         </p>
@@ -274,7 +317,8 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -37,7 +37,7 @@ export const OfficialLetterhead: React.FC<OfficialLetterheadProps> = ({
 
     return (
         <div className={`w-full ${className}`}>
-            <div className="flex items-center gap-8 text-left pb-8 border-b-2 border-slate-900 w-full mb-10">
+            <div className="flex items-center gap-8 text-left pb-8 border-b-2 border-slate-900 print:border-b-0 print:pb-0 w-full mb-10">
                 {config.headerImage ? (
                     <img src={config.headerImage} className="max-h-24 object-contain shadow-sm" alt="Logo" />
                 ) : (
@@ -77,7 +77,7 @@ export const OfficialLetterhead: React.FC<OfficialLetterheadProps> = ({
 
             {title && (
                 <div className="mt-10 mb-6">
-                    <h2 className="text-xl font-black uppercase text-center underline decoration-2 underline-offset-8">
+                    <h2 className="text-xl print:text-xs print:whitespace-nowrap font-black uppercase text-center underline decoration-2 underline-offset-8 leading-tight">
                         {title}
                     </h2>
                 </div>
@@ -89,7 +89,7 @@ export const OfficialLetterhead: React.FC<OfficialLetterheadProps> = ({
                 </p>
             )}
 
-            <div className="mt-6 border-b-2 border-slate-900 w-full"></div>
+            <div className="mt-6 border-b-2 border-slate-900 print:hidden w-full"></div>
         </div>
     );
 };

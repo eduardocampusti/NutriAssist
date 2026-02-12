@@ -24,6 +24,12 @@ CREATE TABLE IF NOT EXISTS fnde_composicao_nutricional (
     sodio_mg NUMERIC,
     calcio_mg NUMERIC,
     ferro_mg NUMERIC,
+    gordura_saturada_g NUMERIC DEFAULT 0,
+    magnesio_mg NUMERIC DEFAULT 0,
+    zinco_mg NUMERIC DEFAULT 0,
+    vitamina_a_mcg NUMERIC DEFAULT 0,
+    vitamina_c_mg NUMERIC DEFAULT 0,
+    gordura_trans_mg NUMERIC DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

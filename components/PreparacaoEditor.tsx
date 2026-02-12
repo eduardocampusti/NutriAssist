@@ -17,12 +17,14 @@ import {
     ArrowLeft,
     RefreshCw as RefreshCwIcon,
     Sparkles,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Upload
 } from 'lucide-react';
 import { fndePreparacaoService, FNDEPreparacao, FNDEPreparacaoIngrediente, PreparacaoNutrientes } from '../services/fndePreparacaoService';
 import { fndeService } from '../services/fndeService';
 import { aiService } from '../services/aiService';
 import { useToast } from '../contexts/ToastContext';
+import { useUsers } from '../contexts/UserContext';
 
 interface PreparacaoEditorProps {
     id: string | null;
@@ -32,10 +34,12 @@ interface PreparacaoEditorProps {
 
 const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave }) => {
     const { addToast } = useToast();
+    const { activeProfile } = useUsers();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [aiCooldown, setAiCooldown] = useState(0); // Segundos restantes de cooldown
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     // Preparação State
     const [nome, setNome] = useState('');
@@ -70,6 +74,51 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     // Nutritional Preview
     const [nutrientes, setNutrientes] = useState<PreparacaoNutrientes | null>(null);
 
+    // DRAFT SYSTEM: Persistência local para evitar perda de dados em refresh/focus loss
+    useEffect(() => {
+        const draftKey = `preparacao_draft_${id || 'new'}`;
+        const draft = {
+            nome, descricao, modoPreparo, rendimento, categoria, etapa, modalidade, faixaEtaria, ingredientes, imagemUrl
+        };
+        const hasContent = nome || modoPreparo || ingredientes.length > 0;
+
+        if (hasContent && !isLoading) {
+            localStorage.setItem(draftKey, JSON.stringify(draft));
+        }
+    }, [nome, descricao, modoPreparo, rendimento, categoria, etapa, modalidade, faixaEtaria, ingredientes, imagemUrl, id, isLoading]);
+
+    // Recuperar rascunho
+    const restoreDraft = () => {
+        const draftKey = `preparacao_draft_${id || 'new'}`;
+        const saved = localStorage.getItem(draftKey);
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                // Só restaura se houver algum conteúdo real
+                if (data.nome || data.modoPreparo || (data.ingredientes && data.ingredientes.length > 0)) {
+                    setNome(data.nome || '');
+                    setDescricao(data.descricao || '');
+                    setModoPreparo(data.modoPreparo || '');
+                    setRendimento(data.rendimento || 1);
+                    setCategoria(data.categoria || '');
+                    setEtapa(data.etapa || '');
+                    setModalidade(data.modalidade || '');
+                    setFaixaEtaria(data.faixaEtaria || '');
+                    setIngredientes(data.ingredientes || []);
+                    setImagemUrl(data.imagemUrl || '');
+                    addToast("Rascunho detectado e restaurado!", "info");
+                }
+            } catch (e) {
+                console.error("Erro ao restaurar rascunho:", e);
+            }
+        }
+    };
+
+    const clearDraft = () => {
+        const draftKey = `preparacao_draft_${id || 'new'}`;
+        localStorage.removeItem(draftKey);
+    };
+
     useEffect(() => {
         const loadInitialData = async () => {
             setIsLoading(true);
@@ -79,16 +128,25 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                 if (id) {
                     const prep = await fndePreparacaoService.getById(id);
-                    setNome(prep.nome);
-                    setDescricao(prep.descricao || '');
-                    setModoPreparo(prep.modo_preparo || '');
-                    setRendimento(prep.rendimento_porcoes);
-                    setIngredientes(prep.ingredientes || []);
-                    setCategoria(prep.categoria_cardapio || '');
-                    setEtapa(prep.etapa_ensino || '');
-                    setModalidade(prep.modalidade_ensino || '');
-                    setFaixaEtaria(prep.faixa_etaria || '');
-                    setImagemUrl(prep.imagem_url || '');
+                    // Prioridade: Rascunho se existir, senão dados do banco
+                    const draftKey = `preparacao_draft_${id}`;
+                    if (localStorage.getItem(draftKey)) {
+                        restoreDraft();
+                    } else {
+                        setNome(prep.nome);
+                        setDescricao(prep.descricao || '');
+                        setModoPreparo(prep.modo_preparo || '');
+                        setRendimento(prep.rendimento_porcoes);
+                        setIngredientes(prep.ingredientes || []);
+                        setCategoria(prep.categoria_cardapio || '');
+                        setEtapa(prep.etapa_ensino || '');
+                        setModalidade(prep.modalidade_ensino || '');
+                        setFaixaEtaria(prep.faixa_etaria || '');
+                        setImagemUrl(prep.imagem_url || '');
+                    }
+                } else {
+                    // Se for novo, tenta restaurar rascunho caso exista
+                    restoreDraft();
                 }
             } catch (err) {
                 console.error("Erro ao carregar dados:", err);
@@ -169,7 +227,6 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         setIsGeneratingAI(true);
         try {
             const ingredientNames = ingredientes.map(ing => ing.alimento?.nome || "Ingrediente");
-            // Agora o aiService faz 3 tentativas internas com delay de 5s entre elas
             const suggestion = await aiService.generateRecipeSteps(nome || "Preparação sem nome", ingredientNames);
             setModoPreparo(suggestion);
             addToast("Sugestão da IA gerada com sucesso!", "success");
@@ -179,9 +236,8 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
             const message = err.message || "Erro ao gerar sugestão.";
             addToast(message, "error");
 
-            // Se falhou mesmo após as retentativas internas do serviço
-            if (message.includes("demanda") || message.includes("Limite") || message.includes("indisponível") || message.includes("liberados")) {
-                setAiCooldown(60); // Aguarda 1 minuto se o Google bloquear de vez
+            if (message.includes("cota") || message.includes("Limite") || message.includes("indisponível") || message.includes("minutos")) {
+                setAiCooldown(30);
             }
         } finally {
             setIsGeneratingAI(false);
@@ -199,11 +255,37 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
             const url = await aiService.generateRecipeImage(nome, ingredientNames);
             setImagemUrl(url);
             addToast("Imagem gerada com sucesso!", "success");
+            setAiCooldown(0);
         } catch (err: any) {
             console.error("Erro Imagem:", err);
-            addToast(err.message || "Erro ao gerar imagem.", "error");
+            const message = err.message || "Erro ao gerar imagem.";
+
+            if (message.includes("cota") || message.includes("Limite") || message.includes("minutos")) {
+                addToast("Limite do Google atingido. Você pode subir uma foto manualmente ou aguardar 1 minuto.", "info");
+                setAiCooldown(60);
+            } else {
+                addToast(message, "error");
+            }
         } finally {
             setIsGeneratingImage(false);
+        }
+    };
+
+    const handleManualUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Check size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                addToast("A imagem deve ter no máximo 5MB.", "warning");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagemUrl(reader.result as string);
+                addToast("Imagem carregada com sucesso!", "success");
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -234,18 +316,22 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                     etapa_ensino: etapa,
                     modalidade_ensino: modalidade,
                     faixa_etaria: faixaEtaria,
-                    imagem_url: imagemUrl
+                    imagem_url: imagemUrl,
+                    created_by: id ? undefined : activeProfile?.id
                 },
                 ingredientes.map(ing => ({
                     alimento_id: ing.alimento_id,
                     quantidade_per_capita: ing.quantidade_per_capita
                 }))
             );
+
+            clearDraft(); // Limpa rascunho após salvar com sucesso
             addToast("Ficha técnica salva com sucesso!", "success");
             onSave();
-        } catch (err) {
+        } catch (err: any) {
             console.error("Erro ao salvar:", err);
-            addToast("Erro ao salvar ficha técnica.", "error");
+            const detail = err.message || err.details || "Verifique sua conexão ou permissões no Supabase.";
+            addToast(`Falha no Salvamento: ${detail}`, "error");
         } finally {
             setIsSaving(false);
         }
@@ -530,19 +616,29 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-3">
                                         <span className="w-8 h-px bg-slate-100"></span> Modo de Preparo (Passo a Passo)
                                     </h3>
-                                    <button
-                                        onClick={handleAISuggestion}
-                                        disabled={isGeneratingAI || aiCooldown > 0}
-                                        className={`flex items-center gap-2 px-4 py-2 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 ${aiCooldown > 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/20'}`}
-                                    >
-                                        {isGeneratingAI ? (
-                                            <><RefreshCwIcon className="w-3 h-3 animate-spin" /> Gerando...</>
-                                        ) : aiCooldown > 0 ? (
-                                            <><RefreshCwIcon className="w-3 h-3" /> Aguarde {aiCooldown}s</>
-                                        ) : (
-                                            <><Sparkles className="w-3 h-3" /> Sugerir com IA</>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={handleAISuggestion}
+                                            disabled={isGeneratingAI || (aiCooldown > 0 && !isGeneratingAI)}
+                                            className={`flex items-center gap-2 px-4 py-2 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 ${aiCooldown > 0 ? 'bg-slate-400' : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg hover:shadow-indigo-500/20'}`}
+                                        >
+                                            {isGeneratingAI ? (
+                                                <><RefreshCwIcon className="w-3 h-3 animate-spin" /> Gerando...</>
+                                            ) : aiCooldown > 0 ? (
+                                                <><RefreshCwIcon className="w-3 h-3" /> Aguarde {aiCooldown}s</>
+                                            ) : (
+                                                <><Sparkles className="w-3 h-3" /> Sugerir com IA</>
+                                            )}
+                                        </button>
+                                        {aiCooldown > 0 && !isGeneratingAI && (
+                                            <button
+                                                onClick={() => setAiCooldown(0)}
+                                                className="text-[9px] font-black text-indigo-600 uppercase tracking-tighter hover:underline"
+                                            >
+                                                Forçar Ativação
+                                            </button>
                                         )}
-                                    </button>
+                                    </div>
                                 </div>
                                 <div className="flex flex-col lg:flex-row gap-6">
                                     <div className="flex-1">
@@ -578,15 +674,41 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                                 </div>
                                             )}
                                         </div>
+                                         <div className="space-y-2">
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleManualUpload}
+                                            />
+                                            <button
+                                                onClick={handleGenerateImage}
+                                                disabled={isGeneratingImage || !nome || (aiCooldown > 0 && !isGeneratingImage)}
+                                                className={`flex items-center justify-center gap-3 w-full py-4 px-6 rounded-2xl border-2 transition-all font-black text-[10px] uppercase tracking-widest disabled:opacity-50 ${aiCooldown > 0 ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-indigo-50 text-indigo-600 border-indigo-100 hover:bg-indigo-100'}`}
+                                            >
+                                                <ImageIcon className="w-4 h-4" />
+                                                {isGeneratingImage ? "Gerando..." : aiCooldown > 0 ? `Aguarde ${aiCooldown}s` : "Gerar Foto com IA"}
+                                            </button>
+                                            
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="flex items-center justify-center gap-3 w-full py-3 px-6 rounded-2xl border-2 border-slate-100 bg-white text-slate-600 hover:bg-slate-50 transition-all font-black text-[10px] uppercase tracking-widest"
+                                            >
+                                                <Upload className="w-4 h-4 ml-1" />
+                                                Fazer Upload Manual
+                                            </button>
 
-                                        <button
-                                            onClick={handleGenerateImage}
-                                            disabled={isGeneratingImage || !nome}
-                                            className="flex items-center justify-center gap-3 w-full py-4 px-6 bg-indigo-50 text-indigo-600 rounded-2xl border-2 border-indigo-100 hover:bg-indigo-100 transition-all font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
-                                        >
-                                            <ImageIcon className="w-4 h-4" />
-                                            {isGeneratingImage ? "Gerando..." : "Gerar Foto com IA"}
-                                        </button>
+                                            {aiCooldown > 0 && !isGeneratingImage && (
+                                                <button
+                                                    onClick={() => setAiCooldown(0)}
+                                                    className="w-full text-center text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:text-indigo-600 transition-colors"
+                                                >
+                                                    Tentar IA Agora Mesmo
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -638,6 +760,16 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
                                                     <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-200/50">
+                                                            <Zap size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Carboidratos</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.carboidratos_g || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
                                                         <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200/50">
                                                             <Droplets size={20} />
                                                         </div>
@@ -658,6 +790,26 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
                                                     <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-600 shadow-sm border border-sky-200/50">
+                                                            <Droplets size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Cálcio</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.calcio_mg || 0).toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-sm border border-orange-200/50">
+                                                            <Scale size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Ferro</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.ferro_mg || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
                                                         <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200/50">
                                                             <Scale size={20} />
                                                         </div>
@@ -668,8 +820,58 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
                                                 <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
                                                     <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-slate-200 flex items-center justify-center text-slate-600 shadow-sm border border-slate-300/50">
+                                                            <Scale size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Zinco</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.zinco_mg || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-yellow-100 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-200/50">
+                                                            <Zap size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Vitamina A</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.vitamina_a_mcg || 0).toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mcg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-lime-100 flex items-center justify-center text-lime-600 shadow-sm border border-lime-200/50">
+                                                            <Droplets size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Vitamina C</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-slate-900">{(nutrientes.vitamina_c_mg || 0).toFixed(1)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-100 p-6 rounded-[28px] border border-rose-100/80 hover:bg-rose-50 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
                                                         <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600 shadow-sm border border-rose-200/50">
                                                             <Info size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-rose-800 uppercase tracking-widest">Gord. Saturada</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-rose-900">{(nutrientes.gordura_saturada_g || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">g</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-100 p-6 rounded-[28px] border border-rose-100/80 hover:bg-rose-50 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600 shadow-sm border border-rose-200/50">
+                                                            <Info size={20} />
+                                                        </div>
+                                                        <span className="text-[13px] font-black text-rose-800 uppercase tracking-widest">Gord. Trans</span>
+                                                    </div>
+                                                    <span className="text-lg font-black text-rose-900">{(nutrientes.gordura_trans_mg || 0).toFixed(2)}<small className="text-[10px] ml-1 opacity-40">mg</small></span>
+                                                </div>
+
+                                                <div className="flex justify-between items-center bg-slate-50 p-6 rounded-[28px] border border-slate-100/80 hover:bg-slate-100 transition-all hover:scale-[1.02] shadow-sm">
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-600 shadow-sm border border-rose-200/50">
+                                                            <Trash2 size={20} />
                                                         </div>
                                                         <span className="text-[13px] font-black text-slate-800 uppercase tracking-widest">Sódio</span>
                                                     </div>
