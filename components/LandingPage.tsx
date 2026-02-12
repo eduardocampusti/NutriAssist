@@ -33,8 +33,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterSystem }) => {
         <title>NutriAssist | Gestão Inteligente para Nutrição Escolar</title>
         <meta name="description" content="Automatize a gestão da nutrição escolar com o NutriAssist. Cardápios PNAE, controle de estoque e relatórios nutricionais em uma única plataforma gov." />
         <link rel="canonical" href="https://nutriassist.gov.br/" />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://nutriassist.gov.br/" />
+        <meta property="og:title" content="NutriAssist | Gestão Inteligente para Nutrição Escolar" />
+        <meta property="og:description" content="Automatize a gestão da nutrição escolar com o NutriAssist. Cardápios PNAE, controle de estoque e relatórios nutricionais." />
+        <meta property="og:image" content="https://nutriassist.gov.br/login-bg.jpg" />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://nutriassist.gov.br/" />
+        <meta property="twitter:title" content="NutriAssist | Gestão Inteligente para Nutrição Escolar" />
+        <meta property="twitter:description" content="Automatize a gestão da nutrição escolar com o NutriAssist. Cardápios PNAE, controle de estoque e relatórios nutricionais." />
+        <meta property="twitter:image" content="https://nutriassist.gov.br/login-bg.jpg" />
+
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "O NutriAssist é gratuito?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sim, o NutriAssist oferece uma versão gratuita para demonstração e pequenas redes municipais, com foco na conformidade ao PNAE."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "O sistema segue as normas do FNDE?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sim, todo o motor de cálculo e gerador de documentos foi treinado especificamente nas resoluções vigentes do FNDE e normas do PNAE."
+                }
+              }
+            ]
+          })}
         </script>
       </Helmet>
       {/* HEADER */}
@@ -92,7 +131,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterSystem }) => {
           <div className="relative animate-in zoom-in duration-1000">
             <div className="absolute -inset-4 bg-emerald-100/50 rounded-[40px] blur-3xl"></div>
             <img
-              src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200&auto=format&fit=crop"
               alt="Alimentação Saudável"
               className="relative rounded-[40px] shadow-2xl border-8 border-white object-cover aspect-[4/3] w-full"
             />
@@ -212,12 +251,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterSystem }) => {
                   </p>
                 </div>
                 <div className="flex items-center gap-4 pt-6 border-t border-slate-200/50">
-                  <img src={user.img} className="w-12 h-12 rounded-2xl grayscale" alt={user.name} />
+                  <img src={user.img} className="w-12 h-12 rounded-2xl grayscale" alt={user.name} loading="lazy" />
                   <div>
                     <p className="text-xs font-black text-slate-900 uppercase tracking-tighter">{user.name}</p>
                     <p className="text-[10px] text-emerald-600 font-bold uppercase">{user.role}</p>
                   </div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="py-24 bg-slate-50/50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">Dúvidas Frequentes</h2>
+            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Perguntas Comuns</h3>
+          </div>
+          <div className="space-y-6">
+            {[
+              { q: "O NutriAssist é gratuito?", a: "Sim, o NutriAssist oferece uma versão gratuita para demonstração e pequenas redes municipais, com foco na conformidade ao PNAE." },
+              { q: "O sistema segue as normas do FNDE?", a: "Sim, todo o motor de cálculo e gerador de documentos foi treinado especificamente nas resoluções vigentes do FNDE e normas do PNAE." },
+              { q: "Como é feito o controle de estoque?", a: "O sistema utiliza algoritmos de PEPS (Primeiro que Entra, Primeiro que Sai) e envia alertas automáticos de vencimento e estoque baixo." }
+            ].map((faq, i) => (
+              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                <h4 className="text-sm font-black text-slate-900 uppercase tracking-tight mb-3">{faq.q}</h4>
+                <p className="text-sm text-slate-500 leading-relaxed font-medium">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -285,8 +346,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnterSystem }) => {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 mt-20 pt-10 border-t border-slate-50 text-center">
+        <div className="max-w-7xl mx-auto px-6 mt-20 pt-10 border-t border-slate-50 text-center space-y-4">
           <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">© {new Date().getFullYear()} NutriAssist • {letterhead.secretaria || 'Secretaria Municipal de Educação'}</p>
+          <p className="text-[8px] font-bold text-slate-200 uppercase tracking-[0.1em]">Última atualização do sistema: {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
       </footer>
     </div>

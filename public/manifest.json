@@ -1,0 +1,22 @@
+{
+    "name": "NutriAssist | Gestão Nutricional",
+    "short_name": "NutriAssist",
+    "description": "Sistema de Gestão Técnica de Nutrição Escolar para conformidade técnica e transparência do PNAE.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8fafc",
+    "theme_color": "#10b981",
+    "icons": [
+        {
+            "src": "/header-sme.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/header-sme.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

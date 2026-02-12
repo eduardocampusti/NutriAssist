@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card } from './UI/Card';
 import { ShieldCheck, Award, Info, Search, SearchSlash } from 'lucide-react';
 import { nutritionalDashboardService, CertifiedSchool } from '../services/nutritionalDashboardService';
@@ -7,6 +8,30 @@ const PublicTransparencyPanel: React.FC = () => {
     const [certifiedSchools, setCertifiedSchools] = useState<CertifiedSchool[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const faqs = [
+        {
+            q: "O que é o Selo Escola em Conformidade Nutricional?",
+            a: "É um reconhecimento oficial às unidades de ensino que mantêm excelência técnica e rigor sanitário no PNAE."
+        },
+        {
+            q: "Como uma escola é certificada?",
+            a: "A avaliação é automatizada e considera regularidade de estoque, recebimento técnico e conformidade sanitária."
+        }
+    ];
+
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.a
+            }
+        }))
+    };
 
     useEffect(() => {
         const fetchPublicData = async () => {
@@ -34,13 +59,28 @@ const PublicTransparencyPanel: React.FC = () => {
 
     return (
         <div className="max-w-6xl mx-auto space-y-12 py-12 px-6 animate-in fade-in duration-1000">
+            <Helmet>
+                <title>Selo Escola em Conformidade | NutriAssist</title>
+                <meta name="description" content="Conheça as escolas certificadas pelo NutriAssist em conformidade nutricional e rigor sanitário do PNAE." />
+                <link rel="canonical" href="https://nutriassist.gov.br/transparencia-pnae" />
+
+                {/* OG Tags */}
+                <meta property="og:title" content="Selo Escola em Conformidade | NutriAssist" />
+                <meta property="og:description" content="Conheça as escolas certificadas em conformidade nutricional." />
+                <meta property="og:image" content="https://nutriassist.gov.br/header-sme.png" />
+                <meta property="og:url" content="https://nutriassist.gov.br/transparencia-pnae" />
+
+                <script type="application/ld+json">
+                    {JSON.stringify(faqJsonLd)}
+                </script>
+            </Helmet>
             {/* HERO SECTION */}
             <div className="text-center space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 mb-4">
                     <ShieldCheck className="w-4 h-4" />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">PNAE Compliance Transparência</span>
                 </div>
-                <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
+                <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none">
                     Selo Escola em Conformidade Nutricional
                 </h1>
                 <p className="max-w-2xl mx-auto text-slate-500 text-lg leading-relaxed">
@@ -85,7 +125,7 @@ const PublicTransparencyPanel: React.FC = () => {
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     placeholder="Pesquisar escola certificada..."
-                    className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-sm"
+                    className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-base md:text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-sm"
                 />
             </div>
 

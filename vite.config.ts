@@ -24,6 +24,20 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, '.'),
       }
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-utils': ['xlsx', 'lucide-react'],
+            'vendor-db': ['@supabase/supabase-js'],
+            'vendor-ai': ['@google/generative-ai', 'openai']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 600,
+      reportCompressedSize: true
+    },
 
   };
 });

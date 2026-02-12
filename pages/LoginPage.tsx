@@ -371,7 +371,7 @@ export const LoginPage = () => {
                         </>
                     )}
 
-                    <div className="pt-6 border-t border-slate-100 flex justify-between items-center text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                    <div className="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         <div className="flex gap-4">
                             <a href="https://wa.me/5577991290375" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 flex items-center gap-1 transition-colors">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
