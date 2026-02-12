@@ -55,7 +55,7 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
 
             <style>{`
                 @media print {
-                    @page { margin: 1cm; size: auto; }
+                    @page { margin: 0.5cm; size: A4 portrait; }
                     
                     /* Hide everything in the body by default */
                     body > * { display: none !important; }
@@ -67,13 +67,14 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         top: 0 !important; 
                         left: 0 !important; 
                         width: 100% !important; 
-                        height: auto !important; 
-                        overflow: visible !important; 
+                        height: 100% !important; 
                         background: white !important;
                         z-index: 99999 !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     
-                    /* Ensure content is visible */
+                    /* Ensure content is visible and SCALED to fit */
                     #preparacao-report-content {
                         width: 100% !important;
                         max-width: none !important;
@@ -81,13 +82,15 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         margin: 0 !important;
                         padding: 0 !important;
                         border-radius: 0 !important;
+                        /* SCALE DOWN to fit on one page */
+                        zoom: 0.70 !important; 
                     }
 
                     /* HARDCORE PRINT LAYOUT ENFORCEMENT */
                     #report-grid-container {
                         display: grid !important;
                         grid-template-columns: 7fr 5fr !important;
-                        gap: 2rem !important; /* gap-8 approx */
+                        gap: 2rem !important;
                         align-items: start !important;
                         margin-top: 1rem !important;
                     }
