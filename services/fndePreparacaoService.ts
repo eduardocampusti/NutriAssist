@@ -85,7 +85,8 @@ export const fndePreparacaoService = {
                     *,
                     alimento:fnde_alimentos(
                         nome:descricao, 
-                        grupo_alimentar
+                        grupo_alimentar,
+                        composicao:fnde_composicao_nutricional(*)
                     )
                 )
             `)

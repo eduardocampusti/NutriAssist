@@ -200,17 +200,24 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                 </thead>
                                 <tbody className="divide-y divide-slate-300">
                                     {preparacao.ingredientes?.map((ing, idx) => {
-                                        const comp = ing.alimento?.composicao?.[0];
-                                        const fc = ing.alimento?.fator_correcao || 1.0;
+                                        // Busca composição no alias 'composicao' ou no nome da tabela caso o alias falhe
+                                        const comp = (ing.alimento as any)?.composicao?.[0] || (ing.alimento as any)?.fnde_composicao_nutricional?.[0];
+                                        const fc = 1.0; // Fator de correção padrão (coluna não existe na base fnde_alimentos)
                                         const pb = ing.quantidade_per_capita * fc;
-                                        const calc = (val: number | undefined) => (val ? (val * ing.quantidade_per_capita / 100).toFixed(2) : '0,00');
+                                        
+                                        // Função de cálculo robusta: (Valor por 100g * Peso em g) / 100
+                                        const calc = (val: any) => {
+                                            const num = parseFloat(val);
+                                            if (isNaN(num)) return '0,00';
+                                            return ((num * ing.quantidade_per_capita) / 100).toFixed(2).replace('.', ',');
+                                        };
 
                                         return (
                                             <tr key={idx} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} transition-colors`}>
                                                 <td className="p-1.5 border-r border-slate-300 font-bold text-slate-800 uppercase truncate">{ing.alimento?.nome}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{pb.toFixed(2)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{ing.quantidade_per_capita.toFixed(2)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{fc.toFixed(2)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{pb.toFixed(2).replace('.', ',')}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{ing.quantidade_per_capita.toFixed(2).replace('.', ',')}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{fc.toFixed(2).replace('.', ',')}</td>
                                                 <td className="p-1 border-r border-slate-300 text-center font-black bg-slate-100/50 text-slate-900">{calc(comp?.energia_kcal)}</td>
                                                 <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.proteinas_g)}</td>
                                                 <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.lipidios_g)}</td>
@@ -235,20 +242,20 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
-                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{(nutrientes?.energia_kcal || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.proteinas_g || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.lipidios_g || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.gordura_saturada_g || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.carboidratos_g || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.fibras_g || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.calcio_mg || 0).toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.magnesio_mg || 0).toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.ferro_mg || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.zinco_mg || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_a_mcg || 0).toFixed(1)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_c_mg || 0).toFixed(2)}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{Math.round(nutrientes?.sodio_mg || 0)}</td>
-                                        <td className="p-1 text-center">{(nutrientes?.gordura_trans_mg || 0).toFixed(2)}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{(nutrientes?.energia_kcal || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.proteinas_g || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.lipidios_g || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.gordura_saturada_g || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.carboidratos_g || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.fibras_g || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.calcio_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.magnesio_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.ferro_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.zinco_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_a_mcg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_c_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.sodio_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className="p-1 text-center">{(nutrientes?.gordura_trans_mg || 0).toFixed(2).replace('.', ',')}</td>
                                     </tr>
                                 </tfoot>
                             </table>
