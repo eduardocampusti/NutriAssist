@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Card } from './UI/Card';
 import { OfficialLetterhead } from './OfficialLetterhead';
-import { fndePreparacaoService, FNDEPreparacao, PreparacaoNutrientes } from '../services/fndePreparacaoService';
+import { FNDEPreparacao } from '../services/fndePreparacaoService';
 import { usePNAE } from '../contexts/PNAEContext';
 import {
     Zap,
@@ -22,28 +22,92 @@ interface PreparacaoReportProps {
 
 const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose }) => {
     const { letterhead } = usePNAE();
-    const [nutrientes, setNutrientes] = React.useState<PreparacaoNutrientes | null>(null);
-    const [isLoading, setIsLoading] = React.useState(true);
-
     const isCreche = preparacao.categoria_cardapio === 'CRECHE';
     const themeColor = isCreche ? 'bg-orange-600' : 'bg-emerald-600';
     const themeBg = isCreche ? 'bg-orange-50' : 'bg-emerald-50';
     const themeText = isCreche ? 'text-orange-700' : 'text-emerald-700';
     const themeBorder = isCreche ? 'border-orange-200' : 'border-emerald-200';
+    const formatDecimal = (value: number) => value.toFixed(2).replace('.', ',');
+    const formatNutrient = (value: number) => Number(value || 0).toFixed(2).replace('.', ',');
+    const getNutrientCellClass = (value: number, isTotal = false) => {
+        const numericValue = Number(value || 0);
 
-    React.useEffect(() => {
-        const loadNutrients = async () => {
-            try {
-                const data = await fndePreparacaoService.getNutritionalInfo(preparacao.id);
-                setNutrientes(data);
-            } catch (err) {
-                console.error("Erro ao carregar nutrientes para relatório:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        loadNutrients();
-    }, [preparacao.id]);
+        if (numericValue === 0) {
+            return isTotal ? "text-slate-400 font-medium" : "text-slate-300 font-normal";
+        }
+
+        return isTotal ? "text-slate-950 font-black" : "text-slate-900 font-bold";
+    };
+
+    const nutrientCellClass = (value: number, isTotal = false, isPrimary = false) => [
+        "p-1 border-r text-center tabular-nums",
+        isTotal ? "border-slate-500" : "border-slate-300",
+        isPrimary ? (isTotal ? "bg-slate-300/90" : "bg-slate-100/70") : "",
+        getNutrientCellClass(value, isTotal)
+    ].filter(Boolean).join(" ");
+
+    const nutrientRows = React.useMemo(() => {
+        return (preparacao.ingredientes || []).map((ing) => {
+            const comp = (ing.alimento as any)?.composicao?.[0] || (ing.alimento as any)?.fnde_composicao_nutricional?.[0];
+            const calculate = (val: any) => {
+                const num = parseFloat(val);
+                if (isNaN(num)) return 0;
+                return (num * ing.quantidade_per_capita) / 100;
+            };
+
+            return {
+                ingrediente: ing,
+                energia_kcal: calculate(comp?.energia_kcal),
+                proteinas_g: calculate(comp?.proteinas_g),
+                lipidios_g: calculate(comp?.lipidios_g),
+                gordura_saturada_g: calculate(comp?.gordura_saturada_g),
+                carboidratos_g: calculate(comp?.carboidratos_g),
+                fibras_g: calculate(comp?.fibras_g),
+                calcio_mg: calculate(comp?.calcio_mg),
+                magnesio_mg: calculate(comp?.magnesio_mg),
+                ferro_mg: calculate(comp?.ferro_mg),
+                zinco_mg: calculate(comp?.zinco_mg),
+                vitamina_a_mcg: calculate(comp?.vitamina_a_mcg),
+                vitamina_c_mg: calculate(comp?.vitamina_c_mg),
+                sodio_mg: calculate(comp?.sodio_mg),
+                gordura_trans_mg: calculate(comp?.gordura_trans_mg),
+            };
+        });
+    }, [preparacao.ingredientes]);
+
+    const totalNutrients = React.useMemo(() => {
+        return nutrientRows.reduce((acc, row) => ({
+            energia_kcal: acc.energia_kcal + row.energia_kcal,
+            proteinas_g: acc.proteinas_g + row.proteinas_g,
+            lipidios_g: acc.lipidios_g + row.lipidios_g,
+            gordura_saturada_g: acc.gordura_saturada_g + row.gordura_saturada_g,
+            carboidratos_g: acc.carboidratos_g + row.carboidratos_g,
+            fibras_g: acc.fibras_g + row.fibras_g,
+            calcio_mg: acc.calcio_mg + row.calcio_mg,
+            magnesio_mg: acc.magnesio_mg + row.magnesio_mg,
+            ferro_mg: acc.ferro_mg + row.ferro_mg,
+            zinco_mg: acc.zinco_mg + row.zinco_mg,
+            vitamina_a_mcg: acc.vitamina_a_mcg + row.vitamina_a_mcg,
+            vitamina_c_mg: acc.vitamina_c_mg + row.vitamina_c_mg,
+            sodio_mg: acc.sodio_mg + row.sodio_mg,
+            gordura_trans_mg: acc.gordura_trans_mg + row.gordura_trans_mg,
+        }), {
+            energia_kcal: 0,
+            proteinas_g: 0,
+            lipidios_g: 0,
+            gordura_saturada_g: 0,
+            carboidratos_g: 0,
+            fibras_g: 0,
+            calcio_mg: 0,
+            magnesio_mg: 0,
+            ferro_mg: 0,
+            zinco_mg: 0,
+            vitamina_a_mcg: 0,
+            vitamina_c_mg: 0,
+            sodio_mg: 0,
+            gordura_trans_mg: 0,
+        });
+    }, [nutrientRows]);
 
     const handlePrint = () => {
         window.print();
@@ -177,16 +241,16 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                         <div className="border-2 border-slate-900 rounded-xl overflow-hidden shadow-sm">
                             <table className="w-full text-[7.5px] border-collapse bg-white">
                                 <thead>
-                                    <tr className="bg-slate-100 text-slate-900 border-b-2 border-slate-900 font-black uppercase tracking-tight">
-                                        <th className="p-2 border-r border-slate-400 text-left w-[18%] bg-slate-200">INGREDIENTES</th>
+                                    <tr className="bg-slate-200/90 text-slate-900 border-b-2 border-slate-600 font-black uppercase tracking-tight">
+                                        <th className="p-2 border-r border-slate-400 text-left w-[18%] bg-slate-300/80">INGREDIENTES</th>
                                         <th className="p-1 border-r border-slate-400 text-center">PB (g)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">PL (g)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">FC</th>
-                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-200">ENERGIA (Kcal)</th>
-                                        <th className="p-1 border-r border-slate-400 text-center">PTN (g)</th>
-                                        <th className="p-1 border-r border-slate-400 text-center">LPD (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-300/80">ENERGIA (Kcal)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-300/60">PTN (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-300/60">LPD (g)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">Sat. (g)</th>
-                                        <th className="p-1 border-r border-slate-400 text-center">CHO (g)</th>
+                                        <th className="p-1 border-r border-slate-400 text-center bg-slate-300/60">CHO (g)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">Fibra (g)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">Ca (mg)</th>
                                         <th className="p-1 border-r border-slate-400 text-center">Mg (mg)</th>
@@ -199,63 +263,55 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-300">
-                                    {preparacao.ingredientes?.map((ing, idx) => {
-                                        // Busca composição no alias 'composicao' ou no nome da tabela caso o alias falhe
-                                        const comp = (ing.alimento as any)?.composicao?.[0] || (ing.alimento as any)?.fnde_composicao_nutricional?.[0];
+                                    {nutrientRows.map((row, idx) => {
+                                        const { ingrediente: ing } = row;
                                         const fc = 1.0; // Fator de correção padrão (coluna não existe na base fnde_alimentos)
                                         const pb = ing.quantidade_per_capita * fc;
-                                        
-                                        // Função de cálculo robusta: (Valor por 100g * Peso em g) / 100
-                                        const calc = (val: any) => {
-                                            const num = parseFloat(val);
-                                            if (isNaN(num)) return '0,00';
-                                            return ((num * ing.quantidade_per_capita) / 100).toFixed(2).replace('.', ',');
-                                        };
 
                                         return (
                                             <tr key={idx} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} transition-colors`}>
                                                 <td className="p-1.5 border-r border-slate-300 font-bold text-slate-800 uppercase truncate">{ing.alimento?.nome}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{pb.toFixed(2).replace('.', ',')}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{ing.quantidade_per_capita.toFixed(2).replace('.', ',')}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{fc.toFixed(2).replace('.', ',')}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center font-black bg-slate-100/50 text-slate-900">{calc(comp?.energia_kcal)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.proteinas_g)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.lipidios_g)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.gordura_saturada_g)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.carboidratos_g)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.fibras_g)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.calcio_mg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.magnesio_mg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.ferro_mg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.zinco_mg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.vitamina_a_mcg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.vitamina_c_mg)}</td>
-                                                <td className="p-1 border-r border-slate-300 text-center">{calc(comp?.sodio_mg)}</td>
-                                                <td className="p-1 text-center">{calc(comp?.gordura_trans_mg)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{formatDecimal(pb)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{formatDecimal(ing.quantidade_per_capita)}</td>
+                                                <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{formatDecimal(fc)}</td>
+                                                <td className={nutrientCellClass(row.energia_kcal, false, true)}>{formatNutrient(row.energia_kcal)}</td>
+                                                <td className={nutrientCellClass(row.proteinas_g, false, true)}>{formatNutrient(row.proteinas_g)}</td>
+                                                <td className={nutrientCellClass(row.lipidios_g, false, true)}>{formatNutrient(row.lipidios_g)}</td>
+                                                <td className={nutrientCellClass(row.gordura_saturada_g)}>{formatNutrient(row.gordura_saturada_g)}</td>
+                                                <td className={nutrientCellClass(row.carboidratos_g, false, true)}>{formatNutrient(row.carboidratos_g)}</td>
+                                                <td className={nutrientCellClass(row.fibras_g)}>{formatNutrient(row.fibras_g)}</td>
+                                                <td className={nutrientCellClass(row.calcio_mg)}>{formatNutrient(row.calcio_mg)}</td>
+                                                <td className={nutrientCellClass(row.magnesio_mg)}>{formatNutrient(row.magnesio_mg)}</td>
+                                                <td className={nutrientCellClass(row.ferro_mg)}>{formatNutrient(row.ferro_mg)}</td>
+                                                <td className={nutrientCellClass(row.zinco_mg)}>{formatNutrient(row.zinco_mg)}</td>
+                                                <td className={nutrientCellClass(row.vitamina_a_mcg)}>{formatNutrient(row.vitamina_a_mcg)}</td>
+                                                <td className={nutrientCellClass(row.vitamina_c_mg)}>{formatNutrient(row.vitamina_c_mg)}</td>
+                                                <td className={nutrientCellClass(row.sodio_mg)}>{formatNutrient(row.sodio_mg)}</td>
+                                                <td className={`p-1 text-center tabular-nums ${getNutrientCellClass(row.gordura_trans_mg)}`}>{formatNutrient(row.gordura_trans_mg)}</td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-slate-200 text-slate-900 font-extrabold border-t-2 border-slate-900">
-                                        <td className="p-2 border-r border-slate-400 text-right uppercase text-[9px]">TOTAL ACUMULADO</td>
+                                    <tr className="bg-slate-300/90 text-slate-900 font-extrabold border-t-[3px] border-slate-900">
+                                        <td className="p-2 border-r border-slate-500 text-right uppercase text-[9px]">TOTAL ACUMULADO</td>
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
                                         <td className="p-1 border-r border-slate-400"></td>
-                                        <td className="p-1 border-r border-slate-400 text-center text-[9px] bg-slate-300">{(nutrientes?.energia_kcal || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.proteinas_g || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.lipidios_g || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.gordura_saturada_g || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.carboidratos_g || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.fibras_g || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.calcio_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.magnesio_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.ferro_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.zinco_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_a_mcg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.vitamina_c_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 border-r border-slate-400 text-center">{(nutrientes?.sodio_mg || 0).toFixed(2).replace('.', ',')}</td>
-                                        <td className="p-1 text-center">{(nutrientes?.gordura_trans_mg || 0).toFixed(2).replace('.', ',')}</td>
+                                        <td className={nutrientCellClass(totalNutrients.energia_kcal, true, true)}>{formatNutrient(totalNutrients.energia_kcal)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.proteinas_g, true, true)}>{formatNutrient(totalNutrients.proteinas_g)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.lipidios_g, true, true)}>{formatNutrient(totalNutrients.lipidios_g)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.gordura_saturada_g, true)}>{formatNutrient(totalNutrients.gordura_saturada_g)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.carboidratos_g, true, true)}>{formatNutrient(totalNutrients.carboidratos_g)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.fibras_g, true)}>{formatNutrient(totalNutrients.fibras_g)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.calcio_mg, true)}>{formatNutrient(totalNutrients.calcio_mg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.magnesio_mg, true)}>{formatNutrient(totalNutrients.magnesio_mg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.ferro_mg, true)}>{formatNutrient(totalNutrients.ferro_mg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.zinco_mg, true)}>{formatNutrient(totalNutrients.zinco_mg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.vitamina_a_mcg, true)}>{formatNutrient(totalNutrients.vitamina_a_mcg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.vitamina_c_mg, true)}>{formatNutrient(totalNutrients.vitamina_c_mg)}</td>
+                                        <td className={nutrientCellClass(totalNutrients.sodio_mg, true)}>{formatNutrient(totalNutrients.sodio_mg)}</td>
+                                        <td className={`p-1 text-center tabular-nums ${getNutrientCellClass(totalNutrients.gordura_trans_mg, true)}`}>{formatNutrient(totalNutrients.gordura_trans_mg)}</td>
                                     </tr>
                                 </tfoot>
                             </table>
