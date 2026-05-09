@@ -37,21 +37,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           isActive ? 'font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
         }`}
         style={{
-          backgroundColor: isActive ? '#e8f7f1' : undefined,
-          color: isActive ? '#0d4f2e' : undefined,
+          backgroundColor: isActive ? '#166534' : undefined,
+          color: isActive ? '#ffffff' : undefined,
         }}
       >
         <div className="flex items-center gap-2.5">
           <Icon
             className="w-[15px] h-[15px] flex-shrink-0 transition-colors"
-            style={{ color: isActive ? '#0d4f2e' : iconColor }}
+            style={{ color: isActive ? '#ffffff' : iconColor }}
           />
           <span className="text-[11.5px] font-medium leading-none">{label}</span>
         </div>
         {badge && (
           <span
             className="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider"
-            style={{ backgroundColor: isActive ? 'rgba(13,79,46,0.15)' : '#e8f7f1', color: '#0d4f2e' }}
+            style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : '#e8f7f1', color: isActive ? '#ffffff' : '#0d4f2e' }}
           >
             {badge}
           </span>
@@ -83,10 +83,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="h-16 flex items-center px-4 flex-shrink-0" style={{ borderBottom: '1px solid #eeecea' }}>
           <div className="flex items-center gap-3 w-full">
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[15px] flex-shrink-0"
+              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ backgroundColor: '#0d4f2e' }}
             >
-              {letterhead.logoEmoji || '🌿'}
+              <span className="text-white font-black text-[18px] leading-none tracking-tighter select-none">N</span>
             </div>
             <div className="flex flex-col flex-1 min-w-0">
               <span className="text-[13px] font-black text-slate-900 tracking-tight leading-none">
