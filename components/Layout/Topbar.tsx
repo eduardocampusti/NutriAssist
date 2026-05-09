@@ -42,13 +42,14 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
                 </Button>
 
                 <div className="hidden md:flex flex-col leading-tight">
-                    <h1 className="text-[19px] font-black text-slate-900 tracking-tight leading-none">
-                        {getPageTitle().toUpperCase()}.
-                    </h1>
-                    <p className="text-[12px] font-medium mt-0.5" style={{ color: '#999999' }}>
+                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                        <span>Dashboard</span>
+                        <span className="text-slate-200">/</span>
+                        <span className="text-slate-900">{getPageTitle()}</span>
+                    </div>
+                    <p className="text-[12px] font-bold mt-1" style={{ color: '#999999' }}>
                         Bom dia,{' '}
-                        <span className="font-semibold" style={{ color: '#333333' }}>{firstName}</span>.{' '}
-                        O que vamos analisar hoje?
+                        <span className="text-slate-700">{firstName}</span>.
                     </p>
                 </div>
 
