@@ -27,11 +27,11 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
 
     return (
         <header
-            className="sticky top-0 z-30 flex h-[52px] w-full items-center justify-between bg-white px-4 lg:px-6"
-            style={{ borderBottom: '0.5px solid #e8e8e6' }}
+            className="sticky top-0 z-30 flex h-[60px] w-full items-center justify-between bg-white px-4 lg:px-6"
+            style={{ borderBottom: '1px solid #f1f5f9' }}
         >
-            {/* LEFT: TITLE & GREETING */}
-            <div className="flex items-center gap-3">
+            {/* LEFT: BREADCRUMBS & GREETING */}
+            <div className="flex items-center gap-4">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -41,35 +41,27 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
                     <Menu className="w-5 h-5" />
                 </Button>
 
-                <div className="hidden md:flex flex-col leading-tight">
-                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-slate-400">
-                        <span>Dashboard</span>
-                        <span className="text-slate-200">/</span>
-                        <span className="text-slate-900">{getPageTitle()}</span>
+                <div className="flex flex-col leading-tight">
+                    <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                        <span>Início</span>
+                        <span className="text-slate-300">/</span>
+                        <span className="text-emerald-600 font-bold">Dashboard</span>
                     </div>
-                    <p className="text-[12px] font-bold mt-1" style={{ color: '#999999' }}>
-                        Bom dia,{' '}
-                        <span className="text-slate-700">{firstName}</span>.
+                    <p className="text-[13px] font-semibold text-slate-500 mt-0.5">
+                        Olá, {firstName}. Bem-vindo ao sistema de gestão.
                     </p>
-                </div>
-
-                <div className="md:hidden">
-                    <span className="font-bold text-slate-900 text-sm tracking-tight">{getPageTitle()}</span>
                 </div>
             </div>
 
             {/* RIGHT: SEARCH & ACTIONS */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
                 {/* Search */}
                 <div className="hidden lg:flex items-center relative">
-                    <Search className="absolute left-3 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <Search className="absolute left-4 w-4 h-4 text-slate-400 pointer-events-none" />
                     <input
                         type="text"
-                        placeholder="Pesquisar escola, alimento..."
-                        className="h-9 w-[180px] pl-9 pr-4 rounded-lg text-[12px] font-medium outline-none transition-all placeholder:text-slate-400 text-slate-700"
-                        style={{ backgroundColor: '#f5f5f4', border: '0.5px solid #e8e8e6' }}
-                        onFocus={e => { e.currentTarget.style.borderColor = '#1D9E75'; e.currentTarget.style.backgroundColor = '#fff'; }}
-                        onBlur={e => { e.currentTarget.style.borderColor = '#e8e8e6'; e.currentTarget.style.backgroundColor = '#f5f5f4'; }}
+                        placeholder="Buscar"
+                        className="h-10 w-[240px] pl-11 pr-4 rounded-xl text-[13px] font-bold outline-none transition-all placeholder:text-slate-400 text-slate-700 bg-slate-50 border border-slate-100 focus:bg-white focus:border-[#1D9E75] focus:shadow-sm"
                     />
                 </div>
 

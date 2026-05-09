@@ -31,26 +31,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return (
       <button
         onClick={() => { navigate(path); if (window.innerWidth < 1024) onClose(); }}
-        className="w-full flex items-center justify-between outline-none text-left transition-all duration-100"
+        className="w-full flex items-center justify-between outline-none text-left transition-all duration-200"
         style={{
-          padding: '6px 16px',
-          backgroundColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-          color: isActive ? '#FFFFFF' : '#94a3b8',
-          fontWeight: isActive ? 700 : 500,
-          borderRadius: '8px',
-          margin: '2px 8px',
+          padding: '6px 14px',
+          backgroundColor: isActive ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+          color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)',
+          fontWeight: isActive ? 600 : 400,
+          borderRadius: '6px',
+          margin: '1px 8px',
           width: 'calc(100% - 16px)',
         }}
-        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.04)'; }}
+        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.03)'; }}
         onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; }}
       >
-        <div className="flex items-center gap-2.5">
-          <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-500'}`} />
-          <span style={{ fontSize: 11, lineHeight: 1 }}>{label}</span>
+        <div className="flex items-center gap-3">
+          <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-emerald-400' : 'text-white/40'}`} />
+          <span style={{ fontSize: 12, letterSpacing: '-0.01em' }}>{label}</span>
         </div>
         {badge && (
           <span
-            className="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
+            className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
           >
             {badge}
           </span>
@@ -60,8 +60,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const SectionSep = ({ label }: { label: string }) => (
-    <div className="pt-4 px-4 pb-2">
-      <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.15em]">
+    <div className="pt-5 px-5 pb-1.5">
+      <span className="text-[10px] text-white/30 font-bold uppercase tracking-wider">
         {label}
       </span>
     </div>

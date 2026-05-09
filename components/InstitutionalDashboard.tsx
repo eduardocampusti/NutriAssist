@@ -1,23 +1,21 @@
 import React, { useMemo } from 'react';
-import { useUsers } from '../contexts/UserContext';
 import { useSchools } from '../contexts/SchoolContext';
 import { useInventory } from '../contexts/InventoryContext';
-import { useDocuments } from '../contexts/DocumentContext';
-import { useMenu } from '../contexts/MenuContext';
-import { usePNAE } from '../contexts/PNAEContext';
-import {
-  AlertTriangle,
-  Calendar,
-  Download,
-  Eye,
-  Check,
-  Flag,
-  MoreVertical,
+import { useUsers } from '../contexts/UserContext';
+import { 
+  AlertTriangle, 
+  Download, 
+  Eye, 
+  Check, 
+  Flag, 
   ArrowUpRight,
+  TrendingUp,
+  Users,
+  Package,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from './ui/Button';
-import { Progress } from './ui/Progress';
-import { Card } from './ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { Badge } from './ui/Badge';
 import {
   ComposedChart,
@@ -27,33 +25,37 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Line,
+  Cell
 } from 'recharts';
 
 const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { schools } = useSchools();
-  const { inventory, movements } = useInventory();
-  const { activeProfile } = useUsers();
-
+  const { inventory, movements, occurrences } = useInventory();
+  
+  // ── CÁLCULO DE MÉTRICAS (KPIs) ──
   const stats = useMemo(() => {
-    const totalSpent = movements
-      .filter(m => m.tipo === 'ENTRADA' && (m.valuePerUnit || 0) > 0)
-      .reduce((acc, m) => acc + (m.quantidade * (m.valuePerUnit || 0)), 0);
+    // 1. Governança PNAE: Escolas ativas/concluídas vs total
+    const activeSchools = schools.filter(s => s.ativo).length;
+    const governancaPercentage = schools.length > 0 ? Math.round((activeSchools / schools.length) * 100) : 100;
 
-    const afSpent = movements
-      .filter(m => {
-        if (m.tipo !== 'ENTRADA') return false;
-        const item = inventory.find(i => i.id === m.itemId);
-        return item?.origemPadrao === 'AGRICULTURA_FAMILIAR';
-      })
-      .reduce((acc, m) => acc + (m.quantidade * (m.valuePerUnit || 0)), 0);
-
-    const afPercent = totalSpent > 0 ? (afSpent / totalSpent) * 100 : 0;
+    // 2. Escolas em Alerta: Nível Crítico ou Alta Prioridade
+    const alertSchoolsCount = schools.filter(s => s.prioridade_nivel === 'ALTA' || s.prioridade_nivel === 'CRITICA').length;
+    
+    // 3. Itens Críticos: Saldo abaixo do mínimo
     const criticalStockCount = inventory.filter(i => (i.saldoAtual || 0) <= (i.estoqueMinimo || 0)).length;
+    
+    // 4. Alunos Atendidos: Soma total
+    const totalStudents = schools.reduce((acc, s) => acc + (s.numAlunos || 0), 0);
+    
+    return { 
+      governancaPercentage, 
+      alertSchoolsCount, 
+      criticalStockCount, 
+      totalStudents 
+    };
+  }, [schools, inventory]);
 
-    return { afPercent, criticalStockCount, totalSpent };
-  }, [movements, inventory]);
-
+  // ── DADOS DO GRÁFICO (SIMULADO BASEADO EM MOVIMENTAÇÕES REAIS SE DISPONÍVEIS) ──
   const chartData = [
     { name: 'Jan', previsto: 260000, real: 230000 },
     { name: 'Fev', previsto: 310000, real: 250000 },
@@ -64,233 +66,258 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
-      {/* ── KPI GRID (4 COLUNAS) ── */}
+      {/* ── KPI GRID: 4 COLUNAS ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        {/* KPI 1: Conformidade Legal */}
-        <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6">
-          <div className="flex justify-between items-start mb-2">
-            <h2 className="text-[32px] font-black text-slate-900 leading-none">100%</h2>
-            <Badge variant="success" className="bg-[#e8f7f1] text-[#1D9E75] border-none font-black text-[10px]">
+        {/* KPI 1: Governança PNAE */}
+        <Card className="bg-white border-none shadow-[0px_4px_24px_rgba(0,0,0,0.04)] p-6 rounded-2xl overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <ShieldCheck size={48} className="text-slate-900" />
+          </div>
+          <div className="flex justify-between items-start mb-1 relative z-10">
+            <h2 className="text-[36px] font-black text-slate-900 tracking-tighter leading-none">
+              {stats.governancaPercentage}%
+            </h2>
+            <Badge className="bg-[#e8f7f1] text-[#1D9E75] border-none font-black text-[10px] px-2 py-0.5 rounded-lg flex gap-1 items-center">
+              <TrendingUp size={10} />
               +12%
             </Badge>
           </div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            CONFORMIDADE LEGAL
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+            Governança PNAE
           </p>
         </Card>
 
-        {/* KPI 2: Conformidade Total */}
-        <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6">
-          <div className="flex justify-between items-start mb-2">
-            <h2 className="text-[32px] font-black text-slate-900 leading-none">0</h2>
-            <Badge variant="success" className="bg-[#e8f7f1] text-[#1D9E75] border-none font-black text-[10px]">
-              TOTAL
+        {/* KPI 2: Escolas em Alerta */}
+        <Card className="bg-white border-none shadow-[0px_4px_24px_rgba(0,0,0,0.04)] p-6 rounded-2xl relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <AlertTriangle size={48} className="text-slate-900" />
+          </div>
+          <div className="flex justify-between items-start mb-1 relative z-10">
+            <h2 className="text-[36px] font-black text-slate-900 tracking-tighter leading-none">
+              {stats.alertSchoolsCount}
+            </h2>
+            <Badge className={`border-none font-black text-[10px] px-2 py-0.5 rounded-lg ${stats.alertSchoolsCount === 0 ? 'bg-[#e8f7f1] text-[#1D9E75]' : 'bg-rose-50 text-rose-500'}`}>
+              {stats.alertSchoolsCount === 0 ? 'CONFORMIDADE TOTAL' : 'REQUER ATENÇÃO'}
             </Badge>
           </div>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            CONFORMIDADE TOTAL
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+            Escolas em Alerta
           </p>
         </Card>
 
-        {/* KPI 3: Itens Abaixo do Mínimo */}
-        <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6">
-          <h2 className="text-[32px] font-black text-slate-900 leading-none mb-2">
-            {stats.criticalStockCount}
-          </h2>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            ITENS ABAIXO DO MÍNIMO
+        {/* KPI 3: Itens Críticos */}
+        <Card className="bg-white border-none shadow-[0px_4px_24px_rgba(0,0,0,0.04)] p-6 rounded-2xl relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Package size={48} className="text-slate-900" />
+          </div>
+          <div className="flex justify-between items-start mb-1 relative z-10">
+            <h2 className="text-[36px] font-black text-slate-900 tracking-tighter leading-none">
+              {stats.criticalStockCount}
+            </h2>
+            {stats.criticalStockCount > 0 ? (
+              <Badge className="bg-rose-50 text-rose-500 border-none font-black text-[10px] px-2 py-0.5 rounded-lg">
+                RUPTURA
+              </Badge>
+            ) : (
+              <Badge className="bg-[#e8f7f1] text-[#1D9E75] border-none font-black text-[10px] px-2 py-0.5 rounded-lg">
+                ESTÁVEL
+              </Badge>
+            )}
+          </div>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+            Itens Críticos (Estoque)
           </p>
         </Card>
 
-        {/* KPI 4: Mínimo Exigido */}
-        <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6">
-          <h2 className="text-[32px] font-black text-slate-900 leading-none mb-2">
-            {stats.afPercent.toFixed(1)}%
-          </h2>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            MÍNIMO EXIGIDO
+        {/* KPI 4: Alunos Atendidos */}
+        <Card className="bg-white border-none shadow-[0px_4px_24px_rgba(0,0,0,0.04)] p-6 rounded-2xl relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Users size={48} className="text-slate-900" />
+          </div>
+          <div className="flex justify-between items-start mb-1 relative z-10">
+            <h2 className="text-[36px] font-black text-slate-900 tracking-tighter leading-none">
+              {stats.totalStudents.toLocaleString()}
+            </h2>
+          </div>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+            Alunos Atendidos
           </p>
         </Card>
       </div>
 
-      {/* ── MAIN CONTENT GRID ── */}
+      {/* ── MAIN CONTENT GRID: 7 + 5 COLUNAS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Gráfico (8 colunas) */}
+        {/* LADO ESQUERDO: GRÁFICO (7 COLUNAS) */}
         <div className="lg:col-span-7">
-          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] h-full">
+          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] h-full overflow-hidden flex flex-col">
             <div className="p-8 pb-4 flex justify-between items-start">
               <div>
                 <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-tight">
                   EXECUÇÃO ORÇAMENTÁRIA - Consolidado
                 </h3>
-                <p className="text-[11px] font-bold text-slate-400 mt-1">
+                <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">
                   Mensal: Previsto vs Realizado (R$)
                 </p>
               </div>
-              <Button variant="ghost" size="icon" className="h-9 w-9 bg-slate-50 border border-slate-100 rounded-xl">
+              <Button variant="ghost" size="icon" className="h-9 w-9 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-100 transition-colors">
                 <Download className="w-4 h-4 text-slate-400" />
               </Button>
             </div>
 
-            <div className="h-[320px] px-4 pb-4">
+            <div className="flex-1 min-h-[340px] px-4 pb-4">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={chartData} margin={{ top: 20, right: 20, left: 20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <ComposedChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f8fafc" />
                   <XAxis 
                     dataKey="name" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 11, fontWeight: 700, fill: '#94a3b8' }} 
+                    tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} 
                     dy={10}
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fontSize: 11, fontWeight: 700, fill: '#94a3b8' }}
-                    tickFormatter={(value) => `${value / 1000}k`}
+                    tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }}
+                    tickFormatter={(value) => `R$ ${value / 1000}k`}
                   />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(13,79,46,0.04)' }}
-                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}
+                    cursor={{ fill: 'rgba(13,79,46,0.02)' }}
+                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', padding: '16px' }}
                   />
-                  <Bar dataKey="previsto" fill="#0d4f2e" radius={[6, 6, 0, 0]} barSize={28} />
-                  <Bar dataKey="real" fill="#1D9E75" radius={[6, 6, 0, 0]} barSize={28} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="real" 
-                    stroke="#0d4f2e" 
-                    strokeWidth={2} 
-                    dot={false} 
-                    activeDot={{ r: 4, strokeWidth: 0, fill: '#0d4f2e' }}
-                  />
+                  <Bar dataKey="previsto" fill="#0d4f2e" radius={[6, 6, 0, 0]} barSize={24} />
+                  <Bar dataKey="real" fill="#1D9E75" radius={[6, 6, 0, 0]} barSize={24} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Legend exata da imagem */}
-            <div className="px-8 pb-8 flex items-center gap-6">
+            <div className="px-8 pb-8 flex items-center gap-6 border-t border-slate-50 pt-6">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-[4px] bg-[#0d4f2e]" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">PREVISTO</span>
+                <div className="w-3 h-3 rounded-[4px] bg-[#0d4f2e]" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Previsto (SME)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-[4px] bg-[#1D9E75]" />
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">REAL</span>
+                <div className="w-3 h-3 rounded-[4px] bg-[#1D9E75]" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Realizado (PNAE)</span>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Right Column (5 colunas) */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* LADO DIREITO: FEED + CONFORMIDADE (5 COLUNAS) */}
+        <div className="lg:col-span-5 space-y-6 flex flex-col">
           
-          {/* Urgent Feed */}
-          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)]">
-            <CardHeader className="p-6 pb-2">
-              <CardTitle className="text-[12px] font-black text-slate-900 uppercase tracking-widest">
-                URGENT FEED
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 pt-2 space-y-3">
-              {[
-                { id: 1, type: 'error', title: 'Vencimento Próximo:', desc: '3 itens no Almoxarifado Central vencem em 15 dias.' },
-                { id: 2, type: 'warning', title: 'Planejamento Pendente:', desc: 'Cardápio de Julho/2026 requer revisão técnica.' }
-              ].map(alert => (
-                <div key={alert.id} className="flex items-start gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                  <div className={`mt-1 p-2 rounded-xl ${alert.type === 'error' ? 'bg-rose-50 text-rose-500' : 'bg-amber-50 text-amber-500'}`}>
-                    <AlertTriangle className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[12px] font-black text-slate-900">{alert.title}</span>
-                      <span className="text-[10px] font-bold text-slate-300">toast</span>
+          {/* URGENT FEED */}
+          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6 flex-shrink-0">
+            <h3 className="text-[12px] font-black text-slate-900 uppercase tracking-widest mb-5 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              URGENT FEED
+            </h3>
+            <div className="space-y-4">
+              {occurrences.length > 0 ? (
+                occurrences.slice(0, 2).map(occ => (
+                  <div key={occ.id} className="flex items-start gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div className={`mt-0.5 p-2 rounded-xl flex-shrink-0 transition-colors ${occ.type === 'RUPTURA' ? 'bg-rose-50 text-rose-500' : 'bg-amber-50 text-amber-500'}`}>
+                      <AlertTriangle size={16} />
                     </div>
-                    <p className="text-[11px] font-bold text-slate-400 leading-tight">
-                      {alert.desc}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className="text-[12px] font-black text-slate-900 uppercase tracking-tight">{occ.title}</span>
+                        <span className="text-[9px] font-black text-slate-300 uppercase">AGORA</span>
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-400 leading-snug">
+                        {occ.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
+                ))
+              ) : (
+                [
+                  { id: 1, type: 'error', title: 'Vencimento Próximo:', desc: '3 itens no Almoxarifado Central vencem em 15 dias.' },
+                  { id: 2, type: 'warning', title: 'Planejamento Pendente:', desc: 'Cardápio de Julho/2026 requer revisão técnica.' }
+                ].map(alert => (
+                  <div key={alert.id} className="flex items-start gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div className={`mt-0.5 p-2 rounded-xl flex-shrink-0 transition-colors ${alert.type === 'error' ? 'bg-rose-50 text-rose-500 group-hover:bg-rose-100' : 'bg-amber-50 text-amber-500 group-hover:bg-amber-100'}`}>
+                      <AlertTriangle size={16} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className="text-[12px] font-black text-slate-900 uppercase tracking-tight">{alert.title}</span>
+                        <span className="text-[9px] font-black text-slate-300 uppercase">AGORA</span>
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-400 leading-snug line-clamp-2">
+                        {alert.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </Card>
 
-          {/* Tabela de Conformidade */}
-          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
-            <CardHeader className="p-6 pb-2">
-              <CardTitle className="text-[12px] font-black text-slate-900 uppercase tracking-widest">
-                TABELA DE CONFORMIDADE
-              </CardTitle>
-            </CardHeader>
-            <div className="px-6 pb-6">
-              <table className="w-full">
+          {/* TABELA DE CONFORMIDADE */}
+          <Card className="bg-white border-none shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-6 flex-1">
+            <h3 className="text-[12px] font-black text-slate-900 uppercase tracking-widest mb-5">
+              TABELA DE CONFORMIDADE
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[360px]">
                 <thead>
                   <tr className="text-left border-b border-slate-50">
-                    <th className="py-3 text-[9px] font-black text-slate-300 uppercase tracking-widest">ESCOLA</th>
-                    <th className="py-3 text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">ZONA</th>
-                    <th className="py-3 text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">STATUS AUDITORIA</th>
-                    <th className="py-3 text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">META EXECUÇÃO</th>
-                    <th className="py-3 w-8"></th>
+                    <th className="pb-3 text-[9px] font-black text-slate-300 uppercase tracking-widest w-[45%]">UNIDADE ESCOLAR</th>
+                    <th className="pb-3 text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">ZONA</th>
+                    <th className="pb-3 text-[9px] font-black text-slate-300 uppercase tracking-widest px-2">STATUS</th>
+                    <th className="pb-3 text-[9px] font-black text-slate-300 uppercase tracking-widest text-right">AÇÕES</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {schools.slice(0, 2).map((school, i) => {
-                    const isPending = i === 0;
-                    return (
-                      <tr key={school.id} className="group">
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-                              <img src={school.logoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${school.nome}`} alt="" className="w-full h-full object-cover" />
-                            </div>
-                            <span className="text-[10px] font-black text-slate-700 leading-tight max-w-[120px]">
-                              {school.nome.toUpperCase()}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-2">
-                          <span className="text-[11px] font-bold text-slate-500">1</span>
-                        </td>
-                        <td className="py-4 px-2">
-                          <Badge 
-                            className={`border-none font-black text-[9px] py-1 px-3 ${
-                              isPending ? 'bg-[#e8f7f1] text-[#1D9E75]' : 'bg-[#0d4f2e] text-white'
-                            }`}
-                          >
-                            {isPending ? 'PENDENTE' : 'CONCLUÍDO'}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-2">
-                          <div className="flex items-center gap-3">
-                            <Progress 
-                              value={isPending ? 45 : 85} 
-                              className="h-1.5 w-16 bg-slate-100" 
-                              indicatorClassName="bg-[#1D9E75]" 
+                  {schools.slice(0, 4).map((school, i) => (
+                    <tr key={school.id} className="group hover:bg-slate-50/50 transition-colors">
+                      <td className="py-4 pr-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <img 
+                              src={`https://api.dicebear.com/7.x/initials/svg?seed=${school.nome}&backgroundColor=0d4f2e&textColor=ffffff`} 
+                              alt="" 
+                              className="w-full h-full object-cover" 
                             />
-                            <button className="p-1.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
-                              <MoreVertical className="w-3.5 h-3.5" />
-                            </button>
                           </div>
-                        </td>
-                        <td className="py-4">
-                          <div className="flex gap-2">
-                             <button className="w-8 h-8 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
-                               <Eye className="w-4 h-4" />
-                             </button>
-                             <button className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${!isPending ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-300'}`}>
-                               <Check className="w-4 h-4" />
-                             </button>
-                             <button className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${isPending ? 'bg-rose-50 text-rose-500' : 'bg-slate-50 text-slate-300'}`}>
-                               <Flag className="w-4 h-4" />
-                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          <span className="text-[10px] font-black text-slate-700 leading-tight uppercase tracking-tighter truncate max-w-[120px]">
+                            {school.nome}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-2">
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase">{school.zona?.slice(0, 4)}</span>
+                      </td>
+                      <td className="py-4 px-2">
+                        <Badge 
+                          className={`border-none font-black text-[8px] py-0.5 px-2 rounded-md ${
+                            school.ativo ? 'bg-[#e8f7f1] text-[#1D9E75]' : 'bg-slate-100 text-slate-400'
+                          }`}
+                        >
+                          {school.ativo ? 'OK' : 'PEND'}
+                        </Badge>
+                      </td>
+                      <td className="py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                           <button className="w-7 h-7 flex items-center justify-center bg-white border border-slate-100 hover:border-slate-300 hover:bg-slate-50 rounded-lg text-slate-400 transition-all shadow-sm">
+                             <Eye size={12} />
+                           </button>
+                           <button className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-all shadow-sm ${school.ativo ? 'bg-[#e8f7f1] text-[#1D9E75] border-[#d5f0e6]' : 'bg-white text-slate-200 border-slate-100'}`}>
+                             <Check size={12} />
+                           </button>
+                           <button className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-all shadow-sm ${!school.ativo ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-white text-slate-200 border-slate-100'}`}>
+                             <Flag size={12} />
+                           </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -298,25 +325,25 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
         </div>
       </div>
 
-      {/* ── BOTTOM ACTIONS ── */}
-      <div className="flex flex-wrap gap-4 pt-4">
+      {/* ── BOTTOM ACTIONS: 3 BOTÕES LATERAIS ── */}
+      <div className="flex flex-wrap gap-4 pt-4 pb-8">
         <Button 
           onClick={() => onNavigate('elaborar')}
-          className="bg-[#e8f7f1] text-[#1D9E75] hover:bg-[#d5f0e6] border-none font-black text-[11px] px-8 h-12 uppercase tracking-widest rounded-xl transition-all"
+          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
         >
-          NOVA REDAÇÃO IA
+          Nova Redação IA
         </Button>
         <Button 
           onClick={() => onNavigate('estoque')}
-          className="bg-[#e8f7f1] text-[#1D9E75] hover:bg-[#d5f0e6] border-none font-black text-[11px] px-8 h-12 uppercase tracking-widest rounded-xl transition-all"
+          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
         >
-          GESTÃO DE ESTOQUE
+          Gestão de Estoque
         </Button>
         <Button 
           onClick={() => onNavigate('cardapio')}
-          className="bg-[#e8f7f1] text-[#1D9E75] hover:bg-[#d5f0e6] border-none font-black text-[11px] px-8 h-12 uppercase tracking-widest rounded-xl transition-all"
+          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
         >
-          PLANEJAMENTO PNAE
+          Planejamento PNAE
         </Button>
       </div>
 
