@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { usePNAE } from '../../contexts/PNAEContext';
 import { UserProfile } from '../../types';
 import {
   Sparkles, FileText, Utensils, ShoppingBag, Truck,
@@ -24,34 +23,45 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { letterhead } = usePNAE();
   const activeProfile = profiles.find(p => p.id === currentProfileId) || profiles[0];
 
-  const MenuItem = ({ icon: Icon, label, path, badge, iconColor = '#94a3b8' }: any) => {
+  const MenuItem = ({ icon: Icon, label, path, badge }: any) => {
     const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
 
     return (
       <button
         onClick={() => { navigate(path); if (window.innerWidth < 1024) onClose(); }}
-        className={`w-full flex items-center justify-between px-3 py-[7px] rounded-lg transition-all duration-150 outline-none group text-left ${
-          isActive ? 'font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-        }`}
+        className="w-full flex items-center justify-between outline-none text-left transition-colors duration-100"
         style={{
-          backgroundColor: isActive ? '#166534' : undefined,
-          color: isActive ? '#ffffff' : undefined,
+          padding: '7px 12px',
+          backgroundColor: isActive ? '#e8f7f1' : 'transparent',
+          color: isActive ? '#0d4f2e' : '#666666',
+          fontWeight: isActive ? 600 : 400,
+          borderLeft: isActive ? '3px solid #1D9E75' : '3px solid transparent',
+          borderTop: 'none',
+          borderRight: 'none',
+          borderBottom: 'none',
+          borderRadius: 0,
         }}
+        onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f5f5f3'; }}
+        onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; }}
       >
         <div className="flex items-center gap-2.5">
-          <Icon
-            className="w-[15px] h-[15px] flex-shrink-0 transition-colors"
-            style={{ color: isActive ? '#ffffff' : iconColor }}
-          />
-          <span className="text-[11.5px] font-medium leading-none">{label}</span>
+          <Icon className="w-[15px] h-[15px] flex-shrink-0" />
+          <span style={{ fontSize: 11.5, lineHeight: 1 }}>{label}</span>
         </div>
         {badge && (
           <span
-            className="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-wider"
-            style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : '#e8f7f1', color: isActive ? '#ffffff' : '#0d4f2e' }}
+            style={{
+              fontSize: 8,
+              padding: '2px 6px',
+              borderRadius: 99,
+              fontWeight: 800,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.08em',
+              backgroundColor: isActive ? 'rgba(13,79,46,0.12)' : '#e8f7f1',
+              color: '#0d4f2e',
+            }}
           >
             {badge}
           </span>
@@ -60,8 +70,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
-  const Separator = () => (
-    <div className="my-1.5 mx-1 h-px" style={{ backgroundColor: '#eeecea' }} />
+  const SectionSep = ({ label }: { label: string }) => (
+    <div style={{ paddingTop: 10, paddingLeft: 16, paddingRight: 16, paddingBottom: 4 }}>
+      <div style={{ borderTop: '0.5px solid #f0f0ee', marginBottom: 6 }} />
+      <span style={{ fontSize: 9, color: '#bbbbbb', textTransform: 'uppercase' as const, letterSpacing: '0.08em', fontWeight: 700 }}>
+        {label}
+      </span>
+    </div>
   );
 
   return (
@@ -77,91 +92,110 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className={`fixed inset-y-0 left-0 z-50 w-[220px] flex flex-col transition-transform duration-300 ease-out lg:relative lg:translate-x-0 h-full ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } shadow-lg lg:shadow-none`}
-        style={{ backgroundColor: '#fafaf9', borderRight: '1px solid #eeecea' }}
+        style={{ backgroundColor: '#ffffff', borderRight: '0.5px solid #e8e8e6' }}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center px-4 flex-shrink-0" style={{ borderBottom: '1px solid #eeecea' }}>
+        <div
+          className="flex items-center px-4 flex-shrink-0"
+          style={{ height: 52, borderBottom: '0.5px solid #e8e8e6' }}
+        >
           <div className="flex items-center gap-3 w-full">
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: '#0d4f2e' }}
+              className="flex items-center justify-center flex-shrink-0"
+              style={{ width: 30, height: 30, borderRadius: 8, backgroundColor: '#0d4f2e' }}
             >
-              <span className="text-white font-black text-[18px] leading-none tracking-tighter select-none">N</span>
+              <span style={{ color: '#fff', fontWeight: 900, fontSize: 16, lineHeight: 1, userSelect: 'none' }}>N</span>
             </div>
             <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-[13px] font-black text-slate-900 tracking-tight leading-none">
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#111111', letterSpacing: '-0.01em', lineHeight: 1 }}>
                 NUTRIASSIST
               </span>
-              <span className="text-[9px] font-medium text-slate-400 mt-0.5 font-mono tracking-wider">
+              <span style={{ fontSize: 9, color: '#999999', marginTop: 2, fontFamily: 'monospace' }}>
                 v{APP_VERSION}
               </span>
+              <span style={{ fontSize: 9, color: '#1D9E75', marginTop: 1, fontWeight: 600 }}>
+                ● SME DIGITAL
+              </span>
             </div>
-            <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="lg:hidden flex-shrink-0 transition-colors hover:opacity-60"
+              style={{ color: '#999999' }}
+            >
               <X size={15} />
             </button>
           </div>
         </div>
 
         {/* Nav */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-2 py-2 space-y-0.5">
-          <MenuItem icon={LayoutDashboard} label="Dashboard"       path="/"                   iconColor="#64748b" />
+        <div className="flex-1 overflow-y-auto custom-scrollbar py-2">
+          <MenuItem icon={LayoutDashboard} label="Dashboard"      path="/" />
           {hasPermission(activeProfile?.role, 'MANAGE_SCHOOLS') && (
-            <MenuItem icon={Building2}    label="Escolas"          path="/escolas"            iconColor="#3b82f6" />
+            <MenuItem icon={Building2}    label="Escolas"         path="/escolas" />
           )}
           {hasPermission(activeProfile?.role, 'VIEW_SECRETARY_PANEL') && (
-            <MenuItem icon={Shield}       label="Executivo"        path="/painel-secretario"  iconColor="#8b5cf6" />
+            <MenuItem icon={Shield}       label="Executivo"       path="/painel-secretario" />
           )}
 
-          <Separator />
+          <SectionSep label="Operações" />
 
           {hasPermission(activeProfile?.role, 'VIEW_MENUS') && (
-            <MenuItem icon={Utensils}     label="Cardápios"        path="/cardapio"           iconColor="#f97316" />
+            <MenuItem icon={Utensils}     label="Cardápios"       path="/cardapio" />
           )}
           {hasPermission(activeProfile?.role, 'VIEW_STOCK') && (
-            <MenuItem icon={Truck}        label="Estoque"          path="/estoque"            iconColor="#f59e0b" />
+            <MenuItem icon={Truck}        label="Estoque"         path="/estoque" />
           )}
           {hasPermission(activeProfile?.role, 'VIEW_PROCUREMENT') && (
-            <MenuItem icon={ShoppingBag}  label="Compras"          path="/pnae"               iconColor="#1D9E75" />
+            <MenuItem icon={ShoppingBag}  label="Compras"         path="/pnae" />
           )}
 
-          <Separator />
+          <SectionSep label="Pedagógico" />
 
           {hasPermission(activeProfile?.role, 'VIEW_STUDENTS_SENSITIVE') && (
-            <MenuItem icon={Heart}        label="Alunos"           path="/alunos"             iconColor="#ec4899" />
+            <MenuItem icon={Heart}        label="Alunos"          path="/alunos" />
           )}
           {hasPermission(activeProfile?.role, 'VIEW_REPORTS_TECHNICAL') && (
-            <MenuItem icon={FileText}     label="Fichas Técnicas"  path="/fichas-tecnicas"    iconColor="#3b82f6" />
+            <MenuItem icon={FileText}     label="Fichas Técnicas" path="/fichas-tecnicas" />
           )}
           {hasPermission(activeProfile?.role, 'USE_NUTRITIONAL_SIMULATOR') && (
-            <MenuItem icon={Zap}          label="Simulador"        path="/simulador-nutricional" iconColor="#a855f7" />
+            <MenuItem icon={Zap}          label="Simulador"       path="/simulador-nutricional" />
           )}
 
-          <Separator />
+          <SectionSep label="Ferramentas" />
 
-          <MenuItem icon={Sparkles}       label="Inteligência IA"  path="/elaborar"           iconColor="#1D9E75" badge="IA" />
-          <MenuItem icon={ShieldCheck}    label="Compliance"       path="/conformidade"       iconColor="#0d4f2e" />
-          <MenuItem icon={Award}          label="Transparência"    path="/transparencia-pnae" iconColor="#0d9488" />
-          <MenuItem icon={BarChart3}      label="Cockpit FNDE"     path="/painel-fnde"        iconColor="#6366f1" />
+          <MenuItem icon={Sparkles}   label="Inteligência IA"  path="/elaborar"           badge="IA" />
+          <MenuItem icon={ShieldCheck} label="Compliance"      path="/conformidade" />
+          <MenuItem icon={Award}       label="Transparência"   path="/transparencia-pnae" />
+          <MenuItem icon={BarChart3}   label="Cockpit FNDE"    path="/painel-fnde" />
 
-          <Separator />
+          <SectionSep label="Administração" />
 
           {hasPermission(activeProfile?.role, 'MANAGE_STAFF') && (
-            <MenuItem icon={Users2}       label="Equipe"           path="/merendeiras"        iconColor="#ec4899" />
+            <MenuItem icon={Users2}   label="Equipe"          path="/merendeiras" />
           )}
           {hasPermission(activeProfile?.role, 'MANAGE_USERS') && (
-            <MenuItem icon={Users}        label="Usuários"         path="/usuarios"           iconColor="#64748b" />
+            <MenuItem icon={Users}    label="Usuários"        path="/usuarios" />
           )}
-          <MenuItem icon={Settings}       label="Configurações"    path="/configuracoes"      iconColor="#64748b" />
+          <MenuItem icon={Settings}   label="Configurações"   path="/configuracoes" />
         </div>
 
         {/* Footer */}
-        <div className="px-3 py-3 flex-shrink-0" style={{ borderTop: '1px solid #eeecea' }}>
+        <div className="px-3 py-3 flex-shrink-0" style={{ borderTop: '0.5px solid #e8e8e6' }}>
           <button
             onClick={onLogout}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all"
+            style={{ color: '#999999', backgroundColor: 'transparent' }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#fff1f2';
+              (e.currentTarget as HTMLButtonElement).style.color = '#e11d48';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = '#999999';
+            }}
           >
             <LogOut size={14} />
-            <span className="text-[11.5px] font-medium">Encerrar sessão</span>
+            <span style={{ fontSize: 11.5, fontWeight: 500 }}>Encerrar sessão</span>
           </button>
         </div>
       </aside>

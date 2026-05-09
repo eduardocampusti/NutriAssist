@@ -27,8 +27,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
 
     return (
         <header
-            className="sticky top-0 z-30 flex h-16 w-full items-center justify-between bg-white px-4 lg:px-6"
-            style={{ borderBottom: '1px solid #eeecea' }}
+            className="sticky top-0 z-30 flex h-[52px] w-full items-center justify-between bg-white px-4 lg:px-6"
+            style={{ borderBottom: '0.5px solid #e8e8e6' }}
         >
             {/* LEFT: TITLE & GREETING */}
             <div className="flex items-center gap-3">
@@ -45,9 +45,9 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
                     <h1 className="text-[19px] font-black text-slate-900 tracking-tight leading-none">
                         {getPageTitle().toUpperCase()}.
                     </h1>
-                    <p className="text-[12px] text-slate-400 font-medium mt-0.5">
+                    <p className="text-[12px] font-medium mt-0.5" style={{ color: '#999999' }}>
                         Bom dia,{' '}
-                        <span className="text-slate-700 font-semibold">{firstName}</span>.{' '}
+                        <span className="font-semibold" style={{ color: '#333333' }}>{firstName}</span>.{' '}
                         O que vamos analisar hoje?
                     </p>
                 </div>
@@ -65,10 +65,10 @@ export const Topbar: React.FC<TopbarProps> = ({ onOpenMenu }) => {
                     <input
                         type="text"
                         placeholder="Pesquisar escola, alimento..."
-                        className="h-9 w-56 xl:w-72 pl-9 pr-4 rounded-lg text-[12px] font-medium outline-none transition-all placeholder:text-slate-400 text-slate-700"
-                        style={{ backgroundColor: '#f5f5f4', border: '1px solid #eeecea' }}
+                        className="h-9 w-[180px] pl-9 pr-4 rounded-lg text-[12px] font-medium outline-none transition-all placeholder:text-slate-400 text-slate-700"
+                        style={{ backgroundColor: '#f5f5f4', border: '0.5px solid #e8e8e6' }}
                         onFocus={e => { e.currentTarget.style.borderColor = '#1D9E75'; e.currentTarget.style.backgroundColor = '#fff'; }}
-                        onBlur={e => { e.currentTarget.style.borderColor = '#eeecea'; e.currentTarget.style.backgroundColor = '#f5f5f4'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = '#e8e8e6'; e.currentTarget.style.backgroundColor = '#f5f5f4'; }}
                     />
                 </div>
 
