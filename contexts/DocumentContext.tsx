@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { FormalDocument, HistoryItem, SystemLog, DocStatus, GeneratedContent, DocumentCategory, UserRole } from '../types';
 import { supabase } from '../services/supabase';
 import { useAuth } from './AuthContext';
+import { generateId } from '../utils/id';
+
 
 interface DocumentContextType {
     formalDocs: FormalDocument[];
@@ -192,7 +194,7 @@ export const DocumentProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
             // Auto-add to history
             const historyItem: HistoryItem = {
-                id: crypto.randomUUID(),
+                id: generateId(),
                 timestamp: Date.now(),
                 type: 'GERACAO_DOCUMENTO',
                 category: doc.document_type,
@@ -258,7 +260,7 @@ export const DocumentProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const addLog = async (log: Omit<SystemLog, 'id' | 'created_at'>) => {
         const timestamp = Date.now();
-        const id = crypto.randomUUID();
+        const id = generateId();
         const { error } = await supabase.from('system_logs').insert({
             id,
             usuario_id: log.usuario_id || null,

@@ -1,3 +1,19 @@
+export const APP_VERSION = '1.0.0';
+export const RELEASE_DATE = '2026-05-09';
+export const RELEASE_NOTES = [
+  {
+    version: '1.0.0',
+    date: '2026-05-09',
+    description: 'Lançamento oficial da versão estável.',
+    changes: [
+      'Centralização do sistema de versionamento.',
+      'Módulo de Ficha Técnica com cálculos FNDE automáticos.',
+      'Gestão de Inventário e Almoxarifado Escolar.',
+      'Painel de Conformidade e Auditoria PNAE.',
+      'Integração com IA para geração de documentos institucionais.'
+    ]
+  }
+];
 
 export enum DocumentCategory {
   OFICIO = 'OFICIO',
@@ -14,13 +30,13 @@ export enum DocumentCategory {
 }
 
 export const SYSTEM_INSTRUCTION = `
-Você é o NUTRIASSIST v1.1 — Sistema Institucional de Apoio à Gestão da Nutrição Escolar.
+Você é o NUTRIASSIST v${APP_VERSION} — Sistema Institucional de Apoio à Gestão da Nutrição Escolar.
 DADOS DO ENTE FEDERATIVO: {municipio} - {uf}.
 REGRAS GERAIS: Linguagem formal, institucional, pronto para impressão, sem dados sensíveis.
 `;
 
 export const MONTHLY_SCHOOL_REPORT_INSTRUCTION = `
-Você é o Gestor de Relatórios do NutriAssist v1.0.
+Você é o Gestor de Relatórios do NutriAssist v${APP_VERSION}.
 Tarefa: Gerar um RELATÓRIO MENSAL DE ALIMENTAÇÃO ESCOLAR.
 CONTEÚDO:
 - Identificação da Unidade e Mês.
@@ -31,7 +47,7 @@ ESTRUTURA: Texto institucional corrido e profissional.
 `;
 
 export const STOCK_CONSUMPTION_REPORT_INSTRUCTION = `
-Você é o Analista de Suprimentos do NutriAssist v1.0.
+Você é o Analista de Suprimentos do NutriAssist v${APP_VERSION}.
 Tarefa: Gerar um RELATÓRIO TÉCNICO DE ESTOQUE E CONSUMO.
 CONTEÚDO:
 - Balanço de Entradas e Saídas do Período.
@@ -41,7 +57,7 @@ CONTEÚDO:
 `;
 
 export const SPECIAL_DIET_IMPACT_REPORT_INSTRUCTION = `
-Você é o Especialista em Saúde Escolar do NutriAssist v1.0.
+Você é o Especialista em Saúde Escolar do NutriAssist v${APP_VERSION}.
 Tarefa: Gerar um RELATÓRIO DE ALUNOS COM NECESSIDADES ESPECIAIS E IMPACTO LOGÍSTICO.
 CONTEÚDO:
 - Quantitativo Geral de Restrições na Unidade.
@@ -51,7 +67,7 @@ CONTEÚDO:
 `;
 
 export const PROCUREMENT_PLANNING_REPORT_INSTRUCTION = `
-Você é o Consultor Licitatório do NutriAssist v1.0.
+Você é o Consultor Licitatório do NutriAssist v${APP_VERSION}.
 Tarefa: Gerar um RELATÓRIO DE PLANEJAMENTO DE COMPRAS / BASE PARA EDITAL.
 CONTEÚDO:
 - Projeção de Consumo para o Próximo Ciclo.

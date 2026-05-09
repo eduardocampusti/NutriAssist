@@ -13,6 +13,7 @@ import { useNutrition } from '../contexts/NutritionContext';
 import { useSchools } from '../contexts/SchoolContext';
 import { useUsers } from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { generateId } from '../utils/id';
 
 interface NutritionalEvaluationManagerProps {
   onClose: () => void;
@@ -251,7 +252,7 @@ const NutritionalEvaluationManager: React.FC<NutritionalEvaluationManagerProps> 
       new Date().getFullYear()
     );
     setPreviewDoc({
-      id: `report-${Date.now()}`,
+      id: generateId(),
       data: docContent
     });
   };
@@ -264,7 +265,7 @@ const NutritionalEvaluationManager: React.FC<NutritionalEvaluationManagerProps> 
     );
 
     setPreviewDoc({
-      id: `annual-report-${Date.now()}`,
+      id: generateId(),
       data: docContent
     });
   };

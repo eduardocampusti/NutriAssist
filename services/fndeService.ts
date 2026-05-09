@@ -16,6 +16,12 @@ export interface FNDEComposicao {
     sodio_mg: number;
     calcio_mg: number;
     ferro_mg: number;
+    gordura_saturada_g: number;
+    magnesio_mg: number;
+    zinco_mg: number;
+    vitamina_a_mcg: number;
+    vitamina_c_mg: number;
+    gordura_trans_mg: number;
 }
 
 export interface FNDEFonte {
@@ -68,6 +74,30 @@ export const fndeService = {
                     .maybeSingle();
 
                 if (existing) {
+                    // Se o alimento já existe, atualizamos apenas a composição nutricional
+                    // Isso garante que campos que estavam zerados anteriormente sejam corrigidos
+                    const { error: updateError } = await supabase
+                        .from('fnde_composicao_nutricional')
+                        .update({
+                            energia_kcal: item.energia_kcal,
+                            proteinas_g: item.proteinas_g,
+                            carboidratos_g: item.carboidratos_g,
+                            lipidios_g: item.lipidios_g,
+                            fibras_g: item.fibras_g,
+                            sodio_mg: item.sodio_mg,
+                            calcio_mg: item.calcio_mg,
+                            ferro_mg: item.ferro_mg,
+                            gordura_saturada_g: item.gordura_saturada_g || 0,
+                            magnesio_mg: item.magnesio_mg || 0,
+                            zinco_mg: item.zinco_mg || 0,
+                            vitamina_a_mcg: item.vitamina_a_mcg || 0,
+                            vitamina_c_mg: item.vitamina_c_mg || 0,
+                            gordura_trans_mg: item.gordura_trans_mg || 0
+                        })
+                        .eq('alimento_id', existing.id);
+
+                    if (updateError) throw updateError;
+
                     results.skipped++;
                     continue;
                 }
@@ -98,7 +128,13 @@ export const fndeService = {
                         fibras_g: item.fibras_g,
                         sodio_mg: item.sodio_mg,
                         calcio_mg: item.calcio_mg,
-                        ferro_mg: item.ferro_mg
+                        ferro_mg: item.ferro_mg,
+                        gordura_saturada_g: item.gordura_saturada_g || 0,
+                        magnesio_mg: item.magnesio_mg || 0,
+                        zinco_mg: item.zinco_mg || 0,
+                        vitamina_a_mcg: item.vitamina_a_mcg || 0,
+                        vitamina_c_mg: item.vitamina_c_mg || 0,
+                        gordura_trans_mg: item.gordura_trans_mg || 0
                     });
 
                 if (compError) throw compError;

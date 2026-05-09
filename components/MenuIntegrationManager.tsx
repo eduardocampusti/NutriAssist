@@ -23,6 +23,7 @@ import { generateAutomatedMenu, validateMenuCompliance, calculateNutritionalTarg
 import { fndePreparacaoService, FNDEPreparacao } from '../services/fndePreparacaoService';
 import { useToast } from '../contexts/ToastContext';
 import { ConfirmModal } from './ConfirmModal';
+import { generateId } from '../utils/id';
 import { NutritionalOptimizationPanel } from './NutritionalOptimizationPanel';
 import MenuReport from './MenuReport';
 import MenuWizard from './MenuWizard/MenuWizard';
@@ -424,7 +425,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
       return;
     }
     const newDish: Dish = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       ...composerDish,
       diaSemana: selectedDay
     };
@@ -487,7 +488,7 @@ const MenuIntegrationManager: React.FC<{ onClose: () => void, initialTab?: strin
                 try {
                   const prep = await fndePreparacaoService.getById(prepId);
                   const newDish: Dish = {
-                    id: crypto.randomUUID(),
+                    id: generateId(),
                     nome: prep.nome,
                     mealType: editorPlan.tipoRefeicaoPrincipal || MealType.ALMOCO,
                     diaSemana: selectedDay,

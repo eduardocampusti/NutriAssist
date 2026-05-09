@@ -3,6 +3,7 @@ import { Student, School, StudentNutritionalNeeds, FoodNeedType } from '../../ty
 import { Save, X, Activity, User, BookOpen, Users as UsersIcon, Upload, Trash2, FileText, Check, Paperclip, AlertCircle, Download } from 'lucide-react';
 import { studentService } from '../../services/studentService'; // Use existing service
 import { useToast } from '../../contexts/ToastContext';
+import { generateId } from '../../utils/id';
 
 // Extended Internal Types for Form State (mapping JSONB)
 interface StudentFormState extends Partial<Student> {
@@ -151,7 +152,7 @@ export const StudentForm: React.FC<RegistrationFormProps> = ({ onSuccess, onCanc
             const reader = new FileReader();
             reader.onloadend = () => {
                 const newDoc = {
-                    id: crypto.randomUUID(),
+                    id: generateId(),
                     type: docType,
                     fileName: file.name,
                     url: reader.result as string, // Ideally URL from storage

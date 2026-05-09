@@ -11,6 +11,7 @@ import { useMenu } from './contexts/MenuContext';
 import { usePNAE } from './contexts/PNAEContext';
 import { useToast } from './contexts/ToastContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { generateId } from './utils/id';
 
 // Layout Components
 import AppShell from './components/Layout/AppShell';
@@ -78,6 +79,7 @@ const ComplianceDashboard = lazy(() => import('./components/ComplianceDashboard'
 const EvolutionDashboard = lazy(() => import('./components/EvolutionDashboard'));
 const TransparencyPanel = lazy(() => import('./pages/public/TransparencyPanel'));
 const FNDEImportManager = lazy(() => import('./components/FNDEImportManager'));
+const TACOImportManager = lazy(() => import('./components/TACOImportManager'));
 const SchoolNutritionalDashboard = lazy(() => import('./components/SchoolNutritionalDashboard'));
 const SecretaryExecutiveDashboard = lazy(() => import('./components/SecretaryExecutiveDashboard'));
 const PublicTransparencyPanel = lazy(() => import('./components/PublicTransparencyPanel'));
@@ -115,7 +117,7 @@ const AppContent: React.FC = () => {
       const { generateTechnicalDocument } = await import('./services/geminiService');
       const content = await generateTechnicalDocument(type, category, context, details, activeProfile?.role || UserRole.NUTRICIONISTA, letterhead);
 
-      const newDocId = crypto.randomUUID();
+      const newDocId = generateId();
       const newDoc: FormalDocument = {
         id: newDocId,
         document_type: category,
@@ -201,6 +203,7 @@ const AppContent: React.FC = () => {
             <Route path="/manual" element={<UserManual activeProfile={activeProfile} onClose={() => navigate('/')} />} />
             <Route path="/sobre" element={<AboutSystem config={letterhead} onClose={() => navigate('/')} />} />
             <Route path="/importar-fnde" element={<AccessGate permission="MANAGE_FNDE_IMPORT" fallback={<Navigate to="/" />}><FNDEImportManager activeProfile={activeProfile!} onClose={() => navigate('/')} /></AccessGate>} />
+            <Route path="/importar-taco" element={<AccessGate permission="MANAGE_FNDE_IMPORT" fallback={<Navigate to="/" />}><TACOImportManager activeProfile={activeProfile!} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/projeto/tr" element={<SystemTR />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

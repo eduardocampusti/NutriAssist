@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { generateId } from '../utils/id';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -10,7 +11,7 @@ interface Toast {
 }
 
 interface ToastContextType {
-    addToast: (message: string, type?: ToastType) => void;
+    addToast: (message: string, type?: ToastType, duration?: number) => void;
     removeToast: (id: string) => void;
 }
 
@@ -19,14 +20,14 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
-    const addToast = useCallback((message: string, type: ToastType = 'info') => {
-        const id = crypto.randomUUID();
+    const addToast = useCallback((message: string, type: ToastType = 'info', duration?: number) => {
+        const id = generateId();
         setToasts(prev => [...prev, { id, message, type }]);
 
-        // Auto remove after 4 seconds
+        // Auto remove after specified duration or 4 seconds
         setTimeout(() => {
             setToasts(prev => prev.filter(t => t.id !== id));
-        }, 4000);
+        }, duration || 4000);
     }, []);
 
     const removeToast = useCallback((id: string) => {

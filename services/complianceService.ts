@@ -1,3 +1,4 @@
+import { generateId } from '../utils/id';
 import { supabase } from './supabase';
 import {
     ComplianceReport,
@@ -124,7 +125,7 @@ export const complianceService = {
             // else >= 85 é ALTA (VERDE)
 
             const report: ComplianceReport = {
-                id: crypto.randomUUID(),
+                id: generateId(),
                 escola_id: schoolId,
                 periodo: month,
                 score_geral,

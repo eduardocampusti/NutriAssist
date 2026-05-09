@@ -5,6 +5,8 @@ import { useToast } from './ToastContext';
 import { useDocuments } from './DocumentContext';
 import { useAuth } from './AuthContext';
 
+import { generateId } from '../utils/id';
+
 interface SchoolContextType {
     schools: School[];
     cooks: Cook[];
@@ -107,7 +109,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const addSchool = async (s: Omit<School, 'id' | 'created_at' | 'ativo'>) => {
         const newSchool: School = {
             ...s,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now(),
             ativo: true
         };
@@ -197,7 +199,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const addCook = async (c: Omit<Cook, 'id' | 'created_at'>) => {
         const newCook: Cook = {
             ...c,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now()
         };
 
@@ -252,7 +254,7 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const addStudentNE = async (s: Omit<StudentNE, 'id' | 'created_at'>) => {
         const newStudent: StudentNE = {
             ...s,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now()
         };
 

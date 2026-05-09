@@ -4,6 +4,8 @@ import { supabase } from '../services/supabase';
 import { useDocuments } from './DocumentContext';
 import { useAuth } from './AuthContext';
 
+import { generateId } from '../utils/id';
+
 interface PNAEContextType {
     procurements: ProcurementPlan[];
     letterhead: LetterheadConfig;
@@ -127,7 +129,7 @@ export const PNAEProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const addProcurement = async (p: Omit<ProcurementPlan, 'id' | 'created_at' | 'authorId'>, authorId: string) => {
         const newPlan: ProcurementPlan = {
             ...p,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now(),
             authorId
         };

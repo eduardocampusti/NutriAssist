@@ -1,5 +1,6 @@
 
 import { MenuPlan, Dish, StudentNutritionalNeeds, GeneratedContent } from '../types';
+import { generateId } from '../utils/id';
 
 export const documentGenerator = {
     /**
@@ -172,7 +173,7 @@ Protocolo: ${assessment.id.substring(0, 12).toUpperCase()}
             destinatario: cookName,
             corpo: `Certificamos que ${cookName.toUpperCase()} participou da capacitação técnica sobre o tema "${session.tema.toUpperCase()}", realizada em ${new Date(session.data).toLocaleDateString('pt-BR')}, com carga horária total de ${session.cargaHoraria} horas.\n\nCONTEÚDO PROGRAMÁTICO:\n${session.conteudoProgramatico}`,
             conclusao: "O presente treinamento atende às exigências de formação permanente previstas nas diretrizes do Programa Nacional de Alimentação Escolar (PNAE).",
-            observacoes: `Validação Eletrônica: ${crypto.randomUUID().substring(0, 8).toUpperCase()}`
+            observacoes: `Validação Eletrônica: ${generateId().toUpperCase()}`
         };
     },
     /**

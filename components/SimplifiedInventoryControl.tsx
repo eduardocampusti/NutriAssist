@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { UserProfile, UserRole, GeneratedContent, School, DocStatus } from '../types';
 import { generateSimplifiedInventoryReport } from '../services/geminiService';
+import { generateId } from '../utils/id';
 
 interface InventoryEntry {
   id: string;
@@ -32,7 +32,7 @@ const SimplifiedInventoryControl: React.FC<SimplifiedInventoryControlProps> = ({
 
   const addItem = () => {
     const newItem: InventoryEntry = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       nome: '',
       unidade: 'KG',
       inicial: 0,

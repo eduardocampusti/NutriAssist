@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useUsers } from '../contexts/UserContext';
+import { generateId } from '../utils/id';
 import {
     NormativeFood,
     NovaClassification,
@@ -111,7 +112,7 @@ const NormativeBaseManager: React.FC<NormativeBaseManagerProps> = ({ onClose, in
         if (currentFood.id) {
             setFoods(prev => prev.map(f => f.id === currentFood.id ? { ...f, ...currentFood } as NormativeFood : f));
         } else {
-            setFoods(prev => [...prev, { ...currentFood, id: crypto.randomUUID(), versao: 1, ativo: true } as NormativeFood]);
+            setFoods(prev => [...prev, { ...currentFood, id: generateId(), versao: 1, ativo: true } as NormativeFood]);
         }
         setIsEditing(false);
         setCurrentFood({});

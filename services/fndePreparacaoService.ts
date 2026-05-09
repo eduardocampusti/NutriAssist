@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { tacoService } from './tacoService';
 
 export interface FNDEPreparacao {
     id: string;
@@ -26,6 +27,13 @@ export interface FNDEPreparacaoIngrediente {
         nome: string;
         grupo_alimentar: string;
         fator_correcao?: number;
+        taco_composicao?: {
+            energia_kcal: number; proteinas_g: number; lipidios_g: number;
+            carboidratos_g: number; fibras_g: number; calcio_mg: number;
+            ferro_mg: number; sodio_mg: number; magnesio_mg: number;
+            zinco_mg: number; vitamina_a_mcg: number; vitamina_c_mg: number;
+            gordura_saturada_g: number; gordura_trans_g: number; fator_coccao: number;
+        }[];
         composicao?: {
             energia_kcal: number;
             proteinas_g: number;
@@ -97,6 +105,16 @@ export const fndePreparacaoService = {
             console.error('Error fetching preparation by id:', error);
             throw error;
         }
+
+        // Enrich with TACO complementary data (graceful — fails silently if table absent)
+        if (data?.ingredientes?.length) {
+            try {
+                data.ingredientes = await tacoService.enrichIngredientes(data.ingredientes);
+            } catch {
+                // TACO not imported yet — proceed with FNDE-only data
+            }
+        }
+
         return data as any;
     },
 

@@ -4,6 +4,8 @@ import { supabase } from '../services/supabase';
 import { useDocuments } from './DocumentContext';
 import { useAuth } from './AuthContext';
 
+import { generateId } from '../utils/id';
+
 interface NutritionContextType {
     evaluations: NutritionalEvaluation[];
     trainings: TrainingSession[];
@@ -129,7 +131,7 @@ export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const addEvaluation = async (e: Omit<NutritionalEvaluation, 'id' | 'created_at' | 'authorId'>, authorId: string) => {
         const newEval: NutritionalEvaluation = {
             ...e,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now(),
             authorId
         };
@@ -167,7 +169,7 @@ export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const addTraining = async (t: Omit<TrainingSession, 'id' | 'created_at' | 'authorId'>, authorId: string) => {
         const newTraining: TrainingSession = {
             ...t,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now(),
             authorId
         };

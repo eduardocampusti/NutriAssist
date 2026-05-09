@@ -4,6 +4,8 @@ import { supabase } from '../services/supabase';
 import { useToast } from './ToastContext';
 import { useDocuments } from './DocumentContext';
 import { useAuth } from './AuthContext';
+import { generateId } from '../utils/id';
+
 
 interface InventoryContextType {
     inventory: InventoryItem[];
@@ -70,23 +72,22 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     } else {
                         // Seeding if both are empty
                         const initialSuppliersList: Supplier[] = [
-                            { id: crypto.randomUUID(), nome: 'SUPERMERCADO CENTRAL', tipo: 'PESSOA_JURIDICA', documento: '00.000.000/0001-00', ativo: true, created_at: Date.now() },
-                            { id: crypto.randomUUID(), nome: 'ASSOCIAÇÃO DE AGRICULTORES DE BROTAS', tipo: 'AGRICULTURA_FAMILIAR', documento: '11.111.111/0001-11', ativo: true, created_at: Date.now() }
+                            { id: generateId(), nome: 'SUPERMERCADO CENTRAL', tipo: 'PESSOA_JURIDICA', documento: '00.000.000/0001-00', ativo: true, created_at: Date.now() },
+                            { id: generateId(), nome: 'ASSOCIAÇÃO DE AGRICULTORES DE BROTAS', tipo: 'AGRICULTURA_FAMILIAR', documento: '11.111.111/0001-11', ativo: true, created_at: Date.now() }
                         ];
                         await supabase.from('suppliers').insert(initialSuppliersList);
                         setSuppliers(initialSuppliersList);
 
                         const initialInventory: InventoryItem[] = [
-                            { id: 'bd-arroz', nome: 'ARROZ PARBOILIZADO', categoria: InventoryCategory.SECO, saldoAtual: 500, estoqueMinimo: 50, unidadeMedida: 'KG', kcal: 350, protein: 7, carbs: 78, fats: 1, correctionFactor: 1, costPerUnit: 5.50, isUltraProcessed: false, ativo: true, created_at: Date.now() },
-                            { id: 'bd-feijao', nome: 'FEIJÃO CARIOCA', categoria: InventoryCategory.SECO, saldoAtual: 300, estoqueMinimo: 30, unidadeMedida: 'KG', kcal: 330, protein: 20, carbs: 60, fats: 1.5, correctionFactor: 1, costPerUnit: 7.20, isUltraProcessed: false, ativo: true, created_at: Date.now() },
-                            { id: 'bd-leite', nome: 'LEITE EM PÓ INTEGRAL', categoria: InventoryCategory.SECO, saldoAtual: 100, estoqueMinimo: 20, unidadeMedida: 'KG', kcal: 500, protein: 25, carbs: 38, fats: 27, correctionFactor: 1, costPerUnit: 25.00, isUltraProcessed: false, ativo: true, created_at: Date.now() }
-
+                            { id: generateId(), nome: 'ARROZ PARBOILIZADO', categoria: InventoryCategory.SECO, saldoAtual: 500, estoqueMinimo: 50, unidadeMedida: 'KG', kcal: 350, protein: 7, carbs: 78, fats: 1, correctionFactor: 1, costPerUnit: 5.50, isUltraProcessed: false, ativo: true, created_at: Date.now() },
+                            { id: generateId(), nome: 'FEIJÃO CARIOCA', categoria: InventoryCategory.SECO, saldoAtual: 300, estoqueMinimo: 30, unidadeMedida: 'KG', kcal: 330, protein: 20, carbs: 60, fats: 1.5, correctionFactor: 1, costPerUnit: 7.20, isUltraProcessed: false, ativo: true, created_at: Date.now() },
+                            { id: generateId(), nome: 'LEITE EM PÓ INTEGRAL', categoria: InventoryCategory.SECO, saldoAtual: 100, estoqueMinimo: 20, unidadeMedida: 'KG', kcal: 500, protein: 25, carbs: 38, fats: 27, correctionFactor: 1, costPerUnit: 25.00, isUltraProcessed: false, ativo: true, created_at: Date.now() }
                         ];
                         await supabase.from('inventory_items').insert(initialInventory);
                         setInventory(initialInventory);
 
                         const initialBatches: InventoryBatch[] = initialInventory.map(item => ({
-                            id: crypto.randomUUID(),
+                            id: generateId(),
                             itemId: item.id,
                             supplierId: initialSuppliersList[0].id,
                             dataEntrada: Date.now(),
@@ -157,7 +158,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
         const newItem: InventoryItem = {
             ...item,
-            id: crypto.randomUUID(),
+            id: generateId(),
             created_at: Date.now(),
             saldoAtual: 0,
             ativo: true
@@ -220,7 +221,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const addMovement = async (mov: Omit<InventoryMovement, 'id' | 'authorId'>, authorId: string) => {
         const newMovement: InventoryMovement = {
             ...mov,
-            id: crypto.randomUUID(),
+            id: generateId(),
             authorId: authorId || 'system',
             created_at: Date.now()
         } as any;
@@ -257,7 +258,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const addBatch = async (batchInput: Omit<InventoryBatch, 'id' | 'created_at' | 'ativo' | 'saldoAtual'>) => {
         const newBatch: InventoryBatch = {
-            id: crypto.randomUUID(),
+            id: generateId(),
             itemId: batchInput.itemId,
             supplierId: batchInput.supplierId,
             loteCod: batchInput.loteCod,
@@ -312,7 +313,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
 
     const addSupplier = async (s: Omit<Supplier, 'id' | 'created_at' | 'ativo'>) => {
-        const newSupplier = { ...s, id: crypto.randomUUID(), created_at: Date.now(), ativo: true };
+        const newSupplier = { ...s, id: generateId(), created_at: Date.now(), ativo: true };
         const { error } = await supabase.from('suppliers').insert(newSupplier);
         if (!error) {
             setSuppliers(prev => [...prev, newSupplier]);

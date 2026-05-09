@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Student, School, StudentNutritionalNeeds, FoodNeedType } from '../../types';
+import { generateId } from '../../utils/id';
 import { studentService } from '../../services/studentService';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -63,7 +64,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ student, schools, onSave, onC
         const needToAdd = {
             ...newNeed,
             // Temp ID for display if we are creating new student
-            id: crypto.randomUUID(),
+            id: generateId(),
             alunoId: student?.id || 'temp', // If temp, we must handle in parent
             created_at: Date.now()
         } as StudentNutritionalNeeds;

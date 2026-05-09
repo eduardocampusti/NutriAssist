@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MenuPlan, InventoryItem, EducationalStage, Dish, MenuIngredient, MealType } from '../../types';
 import { getItemNormativeStatus, calculateNutritionalTargets } from '../../services/menuEngine';
 import { useToast } from '../../contexts/ToastContext';
+import { generateId } from '../../utils/id';
 
 interface Step2Props {
     plan: Partial<MenuPlan>;
@@ -59,7 +60,7 @@ export const Step2_Composition: React.FC<Step2Props> = ({ plan, inventory, onCha
         }
 
         const newDish: Dish = {
-            id: crypto.randomUUID(),
+            id: generateId(),
             nome: dishName.toUpperCase(),
             mealType,
             diaSemana: selectedDay,

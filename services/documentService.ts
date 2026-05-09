@@ -1,4 +1,4 @@
-
+import { generateId } from '../utils/id';
 import { supabase } from './supabase';
 import { DocStatus, FormalDocument, GeneratedContent } from '../types';
 
@@ -36,7 +36,7 @@ export const documentService = {
 
         if (error) {
             console.warn("Supabase Insert Failed (Formal Doc), switching to LocalStorage Fallback.", error);
-            const fallbackId = 'local-' + crypto.randomUUID();
+            const fallbackId = generateId();
             const localDoc = {
                 id: fallbackId,
                 document_type: type,

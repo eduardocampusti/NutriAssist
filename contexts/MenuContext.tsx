@@ -5,6 +5,8 @@ import { supabase } from '../services/supabase';
 import { useToast } from './ToastContext';
 import { useDocuments } from './DocumentContext';
 import { useAuth } from './AuthContext';
+import { generateId } from '../utils/id';
+
 
 interface MenuContextType {
     menuPlans: MenuPlan[];
@@ -204,7 +206,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const addMenuPlan = async (plan: Omit<MenuPlan, 'id' | 'created_at' | 'authorId'>, authorId: string) => {
-        const id = crypto.randomUUID();
+        const id = generateId();
         const timestamp = Date.now();
         const newPlan: MenuPlan = {
             ...plan,
@@ -312,8 +314,7 @@ export const MenuProvider: React.FC<{ children: React.ReactNode }> = ({ children
             addToast(`Estoque insuficiente: ${missingItems[0]}...`, 'error');
             return;
         }
-
-        const id = crypto.randomUUID();
+        const id = generateId();
         const fullExecution: MenuExecution = {
             ...execution,
             id,

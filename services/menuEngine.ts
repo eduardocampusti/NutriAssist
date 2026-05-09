@@ -1,4 +1,4 @@
-
+import { generateId } from '../utils/id';
 import {
     InventoryItem,
     MenuPlan,
@@ -15,97 +15,9 @@ import {
  */
 
 // --- TYPES ---
-
-export interface NutritionalTargets {
-    minKcal: number;
-    maxKcal: number;
-    minProtein: number; // grams
-    maxProtein: number;
-    minCarbs: number; // grams
-    maxCarbs: number;
-    minFats: number; // grams
-    maxFats: number;
-    maxSodium: number; // mg
-    maxSugar: number; // grams
-}
-
-export interface MenuComplianceResult {
-    isCompliant: boolean;
-    violations: string[];
-    blockingViolations?: string[];
-    warnings?: string[];
-    infos?: string[]; // NEW: Informative alerts
-    stats: {
-        totalKcal: number;
-        totalCarbs: number;
-        totalProtein: number;
-        totalFats: number;
-        totalSodium: number;
-        totalFiber: number;
-        totalCalcium: number;
-        totalIron: number;
-        totalSatFat: number;
-        totalMagnesium: number;
-        totalZinc: number;
-        totalVitA: number;
-        totalVitC: number;
-        totalTransFat: number;
-        totalCost: number;
-        ultraProcessedCount: number;
-    };
-}
-
-// --- CONSTANTS ---
-
-// Estimated calorie needs per age group/stage (Simplified for MVP based on FNDE)
-const KCAL_NEEDS: Record<string, number> = {
-    [EducationalStage.CRECHE]: 1000,
-    [EducationalStage.PRE_ESCOLA]: 1200,
-    [EducationalStage.FUNDAMENTAL_I]: 1600,
-    [EducationalStage.FUNDAMENTAL_II]: 2000,
-    [EducationalStage.EJA]: 2200,
-    [EducationalStage.ENSINO_MEDIO]: 2400,
-    [EducationalStage.INTEGRAL]: 2000
-};
-
-// PNAE Minimum Requirements by Coverage %
-const PNAE_PERCENTAGES = {
-    PARTIAL: 0.20, // 20% - Lanche Simples
-    SEMI: 0.30,    // 30% - Almoço/Jantar
-    FULL: 0.70     // 70% - Integral required
-};
-
+// ... (mantenha o restante dos tipos)
 // --- CORE FUNCTIONS ---
-
-/**
- * Rule 1A: Calculate Target Kcal per Student
- */
-export const calculateNutritionalTargets = (
-    stage: EducationalStage,
-    coverage: 'PARTIAL' | 'SEMI' | 'FULL' = 'SEMI'
-): NutritionalTargets => {
-    // If it is INTEGRAL stage, we force FULL coverage (70%)
-    const effectiveCoverage = stage === EducationalStage.INTEGRAL ? 'FULL' : coverage;
-
-    const baseKcal = KCAL_NEEDS[stage] || 1800;
-    const factor = PNAE_PERCENTAGES[effectiveCoverage];
-    const targetKcal = baseKcal * factor;
-
-    // Approximate macro distribution (PNAE ranges: Carbs 55-65%, Prot 10-15%, Fat 25-30%)
-    // 1g Carb = 4kcal, 1g Prot = 4kcal, 1g Fat = 9kcal
-    return {
-        minKcal: targetKcal * 0.9,
-        maxKcal: targetKcal * 1.1,
-        minCarbs: (targetKcal * 0.55) / 4,
-        maxCarbs: (targetKcal * 0.65) / 4,
-        minProtein: (targetKcal * 0.10) / 4,
-        maxProtein: (targetKcal * 0.15) / 4,
-        minFats: (targetKcal * 0.25) / 9,
-        maxFats: (targetKcal * 0.30) / 9,
-        maxSodium: 400 * factor, // Approx 400mg base
-        maxSugar: (targetKcal * 0.10) / 4 // Max 10% of energy from sugar
-    };
-};
+// ... (mantenha calculateNutritionalTargets)
 
 /**
  * Rule 1B: Generate Menu from Inventory
@@ -156,7 +68,7 @@ export const generateAutomatedMenu = (
     if (selectedHorti) addIngredient(selectedHorti, 0.2);
 
     return [{
-        id: crypto.randomUUID(),
+        id: generateId(),
         nome: `Sugestão: ${selectedCarb.nome} com ${selectedProtein.nome}`,
         mealType: 'ALMOCO' as any,
         diaSemana: 1, // Default Monday

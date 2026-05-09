@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MenuPlan, UserProfile, School, InventoryItem, DocStatus, EducationalStage } from '../../types';
+import { generateId } from '../../utils/id';
 import { Step1_Identification } from './Step1_Identification';
 import { Step2_Composition } from './Step2_Composition';
 import { Step3_Review } from './Step3_Review';
@@ -70,7 +71,7 @@ const MenuWizard: React.FC<MenuWizardProps> = ({ schools, inventory, activeProfi
         // Construct Final Object
         const finalPlan = {
             ...plan,
-            id: plan.id || crypto.randomUUID(),
+            id: plan.id || generateId(),
             status: status,
             created_at: plan.created_at || Date.now(),
             authorId: plan.authorId || activeProfile?.id || 'system'

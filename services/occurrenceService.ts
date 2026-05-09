@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { OperationalOccurrence, OccurrenceStatus } from '../types';
+import { generateId } from '../utils/id';
 
 export const occurrenceService = {
     async create(occurrence: Partial<OperationalOccurrence>): Promise<OperationalOccurrence> {
@@ -14,7 +15,7 @@ export const occurrenceService = {
             // Fallback para mock local se a tabela não existir
             return {
                 ...occurrence,
-                id: Math.random().toString(36).substr(2, 9),
+                id: generateId(),
                 created_at: new Date().toISOString()
             } as OperationalOccurrence;
         }

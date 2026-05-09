@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LetterheadConfig } from '../types';
+import { APP_VERSION, RELEASE_DATE, RELEASE_NOTES } from '../constants';
 import {
   ShieldCheck,
   Cpu,
@@ -68,7 +69,7 @@ const AboutSystem: React.FC<AboutSystemProps> = ({ config, onClose }) => {
                 🥗
               </div>
               <span className="px-3 py-1 rounded-full border border-emerald-400/30 bg-emerald-900/30 text-emerald-100 text-[10px] font-bold uppercase tracking-widest backdrop-blur-sm">
-                Versão {config.sistemaVersao || '2.6.0'}
+                Versão {APP_VERSION}
               </span>
             </div>
 
@@ -237,6 +238,40 @@ const AboutSystem: React.FC<AboutSystemProps> = ({ config, onClose }) => {
             </div>
           </div>
 
+        </div>
+
+        {/* RELEASE HISTORY - NEW SECTION */}
+        <div className="bg-white dark:bg-slate-800/50 rounded-[24px] p-8 border border-slate-100 dark:border-slate-700 shadow-sm">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center rounded-xl">
+              <ClipboardList className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Registro de Mudanças</h3>
+              <h2 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">Histórico de Releases</h2>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {RELEASE_NOTES.map((release, idx) => (
+              <div key={release.version} className="relative pl-8 pb-6 border-l-2 border-slate-100 dark:border-slate-700 last:pb-0">
+                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-slate-800 border-2 border-emerald-500 shadow-sm"></div>
+                <div className="flex flex-wrap items-baseline gap-3 mb-2">
+                  <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 uppercase">v{release.version}</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{release.date}</span>
+                </div>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3">{release.description}</p>
+                <ul className="space-y-2">
+                  {release.changes.map((change, cIdx) => (
+                    <li key={cIdx} className="text-xs text-slate-500 dark:text-slate-400 flex items-start gap-2">
+                      <span className="mt-1 w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                      {change}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* FOOTER */}

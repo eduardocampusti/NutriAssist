@@ -1,6 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { FormalDocument, UserProfile } from '../types';
+import { generateId } from '../utils/id';
 import {
   ShieldCheck,
   Download,
@@ -70,7 +71,7 @@ const BackupManager: React.FC<BackupManagerProps> = ({ documents, profiles, onRe
 
     // Save to history automatically
     const newEntry: InternalBackup = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       timestamp: new Date().toISOString(),
       filename,
       data: backupData
