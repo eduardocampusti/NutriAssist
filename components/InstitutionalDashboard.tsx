@@ -14,9 +14,9 @@ import {
   Package,
   ShieldCheck
 } from 'lucide-react';
-import { Button } from './ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
-import { Badge } from './ui/Badge';
+import { Button } from './UI/Button';
+import { Card, CardHeader, CardTitle, CardContent } from './UI/Card';
+import { Badge } from './UI/Badge';
 import {
   ComposedChart,
   Bar,
