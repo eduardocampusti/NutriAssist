@@ -90,23 +90,24 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({
       <div className="flex h-screen w-full bg-[#F8FAFC] overflow-hidden font-sans text-slate-900">
          {/* NEW SIDEBAR */}
          <aside
-            className={`${isSidebarOpen ? 'w-72' : 'w-20'} h-full bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ease-in-out z-30 shadow-xl shadow-slate-200/50`}
+            style={{background:'#fff',borderRight:'1px solid #e2e8f0',boxShadow:'4px 0 20px rgba(0,0,0,0.06)'}}
+            className={`${isSidebarOpen ? 'w-72' : 'w-20'} h-full flex flex-col transition-all duration-300 ease-in-out z-30`}
          >
             {/* BRANDING */}
-            <div className="p-6 flex items-center gap-3 border-b border-slate-50">
-               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+            <div className="p-4 flex items-center gap-3" style={{borderBottom:'1px solid #f1f5f9',background:'#fafafa',flexShrink:0}}>
+               <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{background:'linear-gradient(135deg,#1e40af,#1d4ed8)',boxShadow:'0 4px 14px rgba(29,78,216,0.3)',flexShrink:0}}>
                   <Package className="w-6 h-6" />
                </div>
                {isSidebarOpen && (
                   <div className="animate-in fade-in slide-in-from-left-2 duration-300">
-                     <h1 className="text-sm font-black uppercase tracking-tight text-slate-800">PNAE Logística</h1>
-                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Controle de Estoque</p>
+                     <h1 className="text-sm font-black uppercase tracking-tight" style={{color:'#0f172a',letterSpacing:'-0.01em'}}>PNAE Logística</h1>
+                     <p className="text-[9px] font-bold uppercase tracking-widest" style={{color:'#1d4ed8'}}>Controle de Estoque</p>
                   </div>
                )}
             </div>
 
             {/* NAVIGATION */}
-            <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto custom-scrollbar">
                {menuItems.filter(item => {
                   if (isRestricted) {
                      // Diretor e Núcleo não compram merenda (SME envia), logo não vêem Dashboard Global nem Base Legal (Gestão Técnica)
@@ -126,51 +127,50 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({
                   <button
                      key={item.id}
                      onClick={() => setActiveTab(item.id)}
-                     className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${activeTab === item.id
-                        ? 'bg-blue-50 text-blue-700 shadow-sm'
-                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                     style={{background: activeTab === item.id ? '#eff6ff' : 'transparent', marginBottom:2, border:'none', cursor:'pointer', fontFamily:'inherit', width:'100%', display:'flex', alignItems:'center', gap:9, padding:'7px 10px', borderRadius:9, transition:'all 0.15s', boxShadow: activeTab === item.id ? '0 1px 4px rgba(29,78,216,0.10)' : 'none'}} className={`flex items-center gap-3 rounded-xl transition-all group ${activeTab === item.id
+                        ? 'text-blue-700' : 'text-slate-500 hover:text-slate-800'
                         }`}
                   >
-                     <item.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${activeTab === item.id ? item.color : 'text-slate-400'}`} />
+                     <item.icon style={{width:15,height:15,color: activeTab === item.id ? '#1d4ed8' : '#94a3b8',flexShrink:0}} />
                      {isSidebarOpen && (
-                        <span className="text-sm font-bold uppercase tracking-tight flex-1 text-left">
+                        <span style={{fontSize:12,fontWeight:600,flex:1,textAlign:'left',letterSpacing:'-0.01em'}}>
                            {item.label}
                         </span>
                      )}
                      {isSidebarOpen && activeTab === item.id && (
-                        <ChevronRight className="w-4 h-4 opacity-50" />
+                        <ChevronRight style={{width:13,height:13,opacity:0.5,color:'#1d4ed8'}} />
                      )}
                   </button>
                ))}
             </nav>
 
             {/* USER PROFILE & FOOTER */}
-            <div className="p-4 border-t border-slate-50 space-y-4">
+            <div className="p-3 space-y-2" style={{borderTop:'1px solid #f1f5f9',flexShrink:0}}>
                {isSidebarOpen && activeProfile && (
-                  <div className="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
-                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-xs font-black text-blue-600 border border-slate-200 shadow-sm">
+                  <div className="p-2 rounded-xl flex items-center gap-2" style={{background:'#f8fafc',border:'1px solid #e2e8f0'}}>
+                     <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black" style={{background:'linear-gradient(135deg,#1e40af,#1d4ed8)',color:'#fff',flexShrink:0}}>
                         {activeProfile.nome.substring(0, 2).toUpperCase()}
                      </div>
                      <div className="flex-1 overflow-hidden">
-                        <p className="text-[10px] font-black uppercase text-slate-700 truncate">{activeProfile.nome}</p>
-                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{activeProfile.role}</p>
+                        <p className="text-[10px] font-black uppercase truncate" style={{color:'#0f172a'}}>{activeProfile.nome}</p>
+                        <p className="text-[8px] font-bold uppercase tracking-widest" style={{color:'#94a3b8'}}>{activeProfile.role}</p>
                      </div>
                   </div>
                )}
 
                <button
                   onClick={onClose}
-                  className={`w-full flex items-center gap-3 p-3 rounded-2xl text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all group`}
+                  className="w-full flex items-center gap-3 rounded-xl transition-all group" style={{padding:'7px 10px',background:'transparent',border:'none',cursor:'pointer',fontFamily:'inherit',color:'#94a3b8',fontSize:12,fontWeight:600}}
                >
-                  <LogOut className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" />
+                  <LogOut style={{width:14,height:14}} />
                   {isSidebarOpen && (
-                     <span className="text-sm font-bold uppercase tracking-tight">Sair do Módulo</span>
+                     <span className="text-xs font-bold uppercase tracking-tight" style={{color:'inherit'}}>Sair do Módulo</span>
                   )}
                </button>
 
                <button
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className="w-full flex items-center justify-center p-2 text-slate-300 hover:text-slate-600 transition-colors"
+                  className="w-full flex items-center justify-center p-2 transition-colors" style={{color:'#cbd5e1',fontSize:10,border:'none',background:'transparent',cursor:'pointer'}}
                >
                   {isSidebarOpen ? 'Esconder Menu' : 'Expandir'}
                </button>
@@ -180,13 +180,13 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({
          {/* MAIN CONTENT AREA */}
          <main className="flex-1 flex flex-col h-full overflow-hidden relative">
             {/* TOOLBAR */}
-            <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-20 shadow-sm shrink-0">
+            <header className="bg-white flex items-center justify-between px-6 z-20 shrink-0" style={{height:56,borderBottom:'1px solid #f1f5f9',boxShadow:'0 1px 8px rgba(0,0,0,0.04)'}}>
                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-slate-50 rounded-xl">
+                  <div className="p-2 rounded-lg" style={{background:'#f0fdf4'}}>
                      {React.createElement(menuItems.find(m => m.id === activeTab)?.icon || LayoutDashboard, { className: "w-5 h-5 text-slate-600" })}
                   </div>
                   <div>
-                     <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight">
+                     <h2 className="font-black text-slate-900 uppercase tracking-tight" style={{fontSize:15,letterSpacing:'-0.01em'}}>
                         {menuItems.find(m => m.id === activeTab)?.label}
                      </h2>
                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Portal de Gestão Logística</p>
@@ -207,7 +207,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({
                      <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                   </button>
                   <div className="h-8 w-px bg-slate-200 mx-2"></div>
-                  <button onClick={onClose} className="p-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors">
+                  <button onClick={onClose} className="p-2 text-white rounded-lg transition-colors" style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',boxShadow:'0 2px 8px rgba(0,0,0,0.2)'}}>
                      <X className="w-5 h-5" />
                   </button>
                </div>

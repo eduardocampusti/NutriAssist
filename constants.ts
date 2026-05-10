@@ -1,6 +1,18 @@
-export const APP_VERSION = '1.0.0';
-export const RELEASE_DATE = '2026-05-09';
+export const APP_VERSION = '1.1.0';
+export const RELEASE_DATE = '2026-05-10';
 export const RELEASE_NOTES = [
+  {
+    version: '1.1.0',
+    date: '2026-05-10',
+    description: 'Redesign Premium do Dashboard e Melhorias Nutricionais.',
+    changes: [
+      'Redesign completo da interface com estética vibrante e moderna.',
+      'Novos campos de Peso Bruto, Líquido e Fator de Correção na Ficha Técnica.',
+      'Correção crítica no carregamento de ingredientes e integração com a base TACO.',
+      'Otimização da Sidebar e navegação lateral.',
+      'Melhoria na performance do cálculo nutricional em tempo real.'
+    ]
+  },
   {
     version: '1.0.0',
     date: '2026-05-09',

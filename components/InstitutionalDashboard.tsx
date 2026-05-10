@@ -325,26 +325,88 @@ const InstitutionalDashboard: React.FC<{ onNavigate: (view: string) => void }> =
         </div>
       </div>
 
-      {/* ── BOTTOM ACTIONS: 3 BOTÕES LATERAIS ── */}
-      <div className="flex flex-wrap gap-4 pt-4 pb-8">
-        <Button 
-          onClick={() => onNavigate('elaborar')}
-          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
-        >
-          Nova Redação IA
-        </Button>
-        <Button 
-          onClick={() => onNavigate('estoque')}
-          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
-        >
-          Gestão de Estoque
-        </Button>
-        <Button 
-          onClick={() => onNavigate('cardapio')}
-          className="bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 font-black text-[10px] px-8 h-12 uppercase tracking-[0.15em] rounded-2xl shadow-sm hover:shadow-md transition-all"
-        >
-          Planejamento PNAE
-        </Button>
+      {/* ── AÇÕES RÁPIDAS PREMIUM ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pb-8">
+        {[
+          {
+            label: 'Nova Redação IA',
+            desc: 'Gerar documentos institucionais com inteligência artificial',
+            icon: ArrowUpRight,
+            accentColor: '#7c3aed',
+            bgColor: '#f5f3ff',
+            borderColor: '#ddd6fe',
+            path: 'elaborar',
+          },
+          {
+            label: 'Gestão de Estoque',
+            desc: 'Controlar entrada, saída e alertas de insumos escolares',
+            icon: Package,
+            accentColor: '#0891b2',
+            bgColor: '#ecfeff',
+            borderColor: '#a5f3fc',
+            path: 'estoque',
+          },
+          {
+            label: 'Planejamento PNAE',
+            desc: 'Cardápios escolares e conformidade com as normas FNDE',
+            icon: ShieldCheck,
+            accentColor: '#059669',
+            bgColor: '#f0fdf4',
+            borderColor: '#bbf7d0',
+            path: 'cardapio',
+          },
+        ].map((item) => (
+          <button
+            key={item.path}
+            onClick={() => onNavigate(item.path)}
+            style={{
+              background: '#fff',
+              border: '1px solid rgba(0,0,0,0.07)',
+              borderRadius: 18,
+              padding: 0,
+              cursor: 'pointer',
+              textAlign: 'left',
+              overflow: 'hidden',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07)',
+              transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.transform = 'translateY(-4px) scale(1.01)';
+              el.style.boxShadow = '0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.11)';
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.transform = 'translateY(0) scale(1)';
+              el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.07)';
+            }}
+          >
+            {/* Barra de cor no topo */}
+            <div style={{ height: 4, background: item.accentColor, width: '100%' }} />
+            <div style={{ padding: '16px 20px 18px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 11,
+                  background: item.bgColor,
+                  border: `1px solid ${item.borderColor}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                }}>
+                  <item.icon style={{ width: 19, height: 19, color: item.accentColor }} />
+                </div>
+                <ArrowUpRight style={{ width: 16, height: 16, color: '#cbd5e1', marginTop: 4 }} />
+              </div>
+              <p style={{ fontSize: 14, fontWeight: 800, color: '#0f172a', marginBottom: 5, letterSpacing: '-0.01em' }}>
+                {item.label}
+              </p>
+              <p style={{ fontSize: 12, color: '#64748b', lineHeight: 1.5, margin: 0 }}>
+                {item.desc}
+              </p>
+            </div>
+          </button>
+        ))}
       </div>
 
     </div>

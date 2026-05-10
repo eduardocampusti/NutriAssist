@@ -22,7 +22,10 @@ export interface FNDEPreparacaoIngrediente {
     id: string;
     preparacao_id: string;
     alimento_id: string;
-    quantidade_per_capita: number;
+    quantidade_per_capita: number; // Peso Líquido (PL)
+    per_capita_bruto: number;
+    per_capita_liquido: number;
+    fator_correcao: number;
     alimento?: {
         nome: string;
         grupo_alimentar: string;
@@ -85,6 +88,9 @@ export const fndePreparacaoService = {
     },
 
     async getById(id: string): Promise<FNDEPreparacao> {
+        console.log("[Service] Buscando ficha por ID:", id);
+        if (!id || id === 'new') throw new Error("ID inválido para busca");
+
         const { data, error } = await supabase
             .from('fnde_preparacoes')
             .select(`
@@ -102,9 +108,11 @@ export const fndePreparacaoService = {
             .single();
 
         if (error) {
-            console.error('Error fetching preparation by id:', error);
+            console.error('[Service] Erro ao buscar ficha:', error);
             throw error;
         }
+
+        console.log("[Service] Ficha recuperada:", data?.nome, "Ingredientes:", data?.ingredientes?.length);
 
         // Enrich with TACO complementary data (graceful — fails silently if table absent)
         if (data?.ingredientes?.length) {
@@ -182,10 +190,20 @@ export const fndePreparacaoService = {
         if (ingredientes.length > 0) {
             const { error: ingError } = await supabase
                 .from('fnde_preparacao_ingredientes')
-                .insert(ingredientes.map(ing => ({
-                    ...ing,
-                    preparacao_id: prepId
-                })));
+                .insert(ingredientes.map(ing => {
+                    // PROBLEMA 1: Fallback robusto conforme solicitado
+                    const pl = ing.per_capita_liquido ?? ing.per_capita_bruto ?? (ing as any).quantidade ?? 1;
+                    const pb = ing.per_capita_bruto ?? pl;
+                    
+                    return {
+                        preparacao_id: prepId,
+                        alimento_id: ing.alimento_id,
+                        quantidade_per_capita: pl || 1, // Garante que nunca seja 0 ou null se a constraint for restrita
+                        per_capita_bruto: pb || 1,
+                        per_capita_liquido: pl || 1,
+                        fator_correcao: ing.fator_correcao ?? (pl > 0 ? pb / pl : 1.0)
+                    };
+                }));
             if (ingError) {
                 console.error('❌ Erro Supabase (Insert Ings):', ingError);
                 throw ingError;

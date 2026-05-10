@@ -168,15 +168,15 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
 
         {/* LISTA DE USUÁRIOS */}
         <div className={`${isFormOpen ? 'lg:col-span-8' : 'lg:col-span-12'} transition-all duration-500 ease-spring`}>
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+          <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden'}}>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="bg-slate-50/50 border-b border-slate-100">
+                <thead style={{background:'linear-gradient(135deg,#1e293b,#0f172a)'}}>
                   <tr>
-                    <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Profissional</th>
-                    <th className="px-6 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Acesso</th>
-                    <th className="px-6 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest">Status</th>
-                    {isAdmin && <th className="px-8 py-5 text-[10px] font-black uppercase text-slate-400 tracking-widest text-right">Controles</th>}
+                    <th style={{padding:'13px 20px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.1em',textTransform:'uppercase'}}>Profissional</th>
+                    <th style={{padding:'13px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.1em',textTransform:'uppercase'}}>Acesso</th>
+                    <th style={{padding:'13px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.1em',textTransform:'uppercase'}}>Status</th>
+                    {isAdmin && <th style={{padding:'13px 20px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',letterSpacing:'0.1em',textTransform:'uppercase',textAlign:'right'}}>Controles</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -186,7 +186,7 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
                     const isActive = profile.ativo && !profile.bloqueado;
 
                     return (
-                      <tr key={profile.id} className="group hover:bg-slate-50 transition-colors">
+                      <tr key={profile.id} style={{borderBottom:'1px solid #f8fafc',transition:'background 0.15s'}} onMouseEnter={e=>{(e.currentTarget as HTMLTableRowElement).style.background='#f0fdf4';}} onMouseLeave={e=>{(e.currentTarget as HTMLTableRowElement).style.background='transparent';}}>
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-4">
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm overflow-hidden border-2 shadow-sm transition-transform group-hover:scale-105 ${profile.bloqueado ? 'bg-red-50 border-red-100 text-red-500' : 'bg-white border-slate-100 text-slate-600'

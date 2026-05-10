@@ -11,29 +11,30 @@ interface TACOImportManagerProps {
 }
 
 // TACO 4ª Edição — standard column indices (0-based, header row already skipped)
-// See: https://www.unicamp.br/nepa/taco/tabela/
+// Based on taco_completa.xlsx provided by user
 const TACO_COLUMN_MAP: Record<number, string> = {
     0:  'codigo_taco',
     1:  'descricao',
-    4:  'energia_kcal',
-    6:  'proteinas_g',
-    7:  'lipidios_g',
-    9:  'carboidratos_g',
-    10: 'fibras_g',
-    12: 'calcio_mg',
-    13: 'magnesio_mg',
-    16: 'ferro_mg',
-    17: 'sodio_mg',
-    20: 'zinco_mg',
-    21: 'vitamina_a_mcg',
-    28: 'vitamina_c_mg',
+    2:  'energia_kcal',
+    3:  'proteinas_g',
+    4:  'lipidios_g',
+    5:  'carboidratos_g',
+    6:  'fibras_g',
+    7:  'calcio_mg',
+    8:  'magnesio_mg',
+    9:  'ferro_mg',
+    10: 'sodio_mg',
+    11: 'zinco_mg',
+    12: 'vitamina_a_mcg',
+    13: 'vitamina_c_mg',
+    14: 'gordura_saturada_g',
 };
 
 // Fields shown in the preview table
 const PREVIEW_COLUMNS = [
     'descricao', 'energia_kcal', 'proteinas_g', 'lipidios_g',
     'carboidratos_g', 'calcio_mg', 'ferro_mg', 'magnesio_mg',
-    'zinco_mg', 'vitamina_a_mcg', 'fator_coccao',
+    'zinco_mg', 'vitamina_a_mcg', 'gordura_saturada_g', 'fator_coccao',
 ];
 
 // Parses a TACO cell value: handles "Tr" (trace), "NA", "-", commas as decimal
@@ -134,6 +135,11 @@ const TACOImportManager: React.FC<TACOImportManagerProps> = ({ activeProfile, on
                             obj[field] = parseNutrient(val);
                         }
                     });
+
+                    // Debug log for specific items to verify mapping
+                    if (i === dataStart) {
+                        console.log('Primeiro item processado:', obj);
+                    }
 
                     if (obj.descricao && obj.codigo_taco) {
                         items.push(obj as TACOComposicao);

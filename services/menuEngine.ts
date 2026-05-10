@@ -15,9 +15,94 @@ import {
  */
 
 // --- TYPES ---
-// ... (mantenha o restante dos tipos)
+
+export interface NutritionalTargets {
+    minKcal: number;
+    maxKcal: number;
+    minProteinG: number;
+    maxProteinG: number;
+    minCarbG: number;
+    maxCarbG: number;
+    minFatG: number;
+    maxFatG: number;
+    minFiberG: number;
+    minCalciumMg: number;
+    minIronMg: number;
+    minVitaminAMcg: number;
+    minVitaminCMg: number;
+    sodiumMaxMg: number;
+    coverage: number;
+}
+
 // --- CORE FUNCTIONS ---
-// ... (mantenha calculateNutritionalTargets)
+
+/**
+ * Rule 1A: Calcula metas nutricionais por Etapa de Ensino
+ * Baseado na Resolução CD/FNDE nº 06/2020 — Anexo I
+ */
+export const calculateNutritionalTargets = (
+    stage: EducationalStage | string,
+    coverage: number = 0.3
+): NutritionalTargets => {
+    const base: Record<string, Omit<NutritionalTargets, 'coverage'>> = {
+        CRECHE: {
+            minKcal: 300, maxKcal: 360, minProteinG: 8, maxProteinG: 11,
+            minCarbG: 39, maxCarbG: 48, minFatG: 9, maxFatG: 12,
+            minFiberG: 6, minCalciumMg: 210, minIronMg: 2,
+            minVitaminAMcg: 90, minVitaminCMg: 12, sodiumMaxMg: 300,
+        },
+        PRE_ESCOLA: {
+            minKcal: 360, maxKcal: 420, minProteinG: 9, maxProteinG: 12,
+            minCarbG: 45, maxCarbG: 54, minFatG: 11, maxFatG: 14,
+            minFiberG: 6, minCalciumMg: 300, minIronMg: 2,
+            minVitaminAMcg: 120, minVitaminCMg: 14, sodiumMaxMg: 360,
+        },
+        FUNDAMENTAL_I: {
+            minKcal: 450, maxKcal: 510, minProteinG: 12, maxProteinG: 17,
+            minCarbG: 57, maxCarbG: 69, minFatG: 14, maxFatG: 17,
+            minFiberG: 7, minCalciumMg: 300, minIronMg: 2,
+            minVitaminAMcg: 135, minVitaminCMg: 14, sodiumMaxMg: 420,
+        },
+        FUNDAMENTAL_II: {
+            minKcal: 540, maxKcal: 630, minProteinG: 16, maxProteinG: 21,
+            minCarbG: 68, maxCarbG: 81, minFatG: 17, maxFatG: 21,
+            minFiberG: 8, minCalciumMg: 390, minIronMg: 3,
+            minVitaminAMcg: 180, minVitaminCMg: 15, sodiumMaxMg: 480,
+        },
+        EJA: {
+            minKcal: 600, maxKcal: 720, minProteinG: 17, maxProteinG: 23,
+            minCarbG: 75, maxCarbG: 93, minFatG: 18, maxFatG: 24,
+            minFiberG: 8, minCalciumMg: 300, minIronMg: 2,
+            minVitaminAMcg: 210, minVitaminCMg: 23, sodiumMaxMg: 540,
+        },
+    };
+
+    const key = String(stage || '').toUpperCase().replace(/[^A-Z_]/g, '');
+    const targets = base[key] || base['FUNDAMENTAL_I'];
+    
+    // Ajustar proporcionalmente ao coverage se diferente do default 0.3
+    if (coverage !== 0.3) {
+        const factor = coverage / 0.3;
+        return {
+            minKcal: Math.round(targets.minKcal * factor),
+            maxKcal: Math.round(targets.maxKcal * factor),
+            minProteinG: Math.round(targets.minProteinG * factor),
+            maxProteinG: Math.round(targets.maxProteinG * factor),
+            minCarbG: Math.round(targets.minCarbG * factor),
+            maxCarbG: Math.round(targets.maxCarbG * factor),
+            minFatG: Math.round(targets.minFatG * factor),
+            maxFatG: Math.round(targets.maxFatG * factor),
+            minFiberG: Math.round(targets.minFiberG * factor),
+            minCalciumMg: Math.round(targets.minCalciumMg * factor),
+            minIronMg: Math.round(targets.minIronMg * factor),
+            minVitaminAMcg: Math.round(targets.minVitaminAMcg * factor),
+            minVitaminCMg: Math.round(targets.minVitaminCMg * factor),
+            sodiumMaxMg: Math.round(targets.sodiumMaxMg * factor),
+            coverage,
+        };
+    }
+    return { ...targets, coverage };
+};
 
 /**
  * Rule 1B: Generate Menu from Inventory

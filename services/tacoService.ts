@@ -31,13 +31,11 @@ export interface TACOFonte {
     observacoes?: string;
 }
 
-// Strip accents and lowercase for local comparison only — NOT for ilike queries.
-// PostgreSQL ilike is accent-sensitive, so we must send original words to ilike.
-const normalize = (s: string) =>
-    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+// Função de normalização solicitada: remove acentos e converte para minúsculas
+const normalizar = (s: string) => 
+    s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
 // Returns the first meaningful word of a name, preserving original casing and accents.
-// Used to build ilike conditions that PostgreSQL can match against accented entries.
 const firstWord = (name: string): string =>
     name.split(',')[0].trim().split(/\s+/)[0];
 
@@ -94,24 +92,24 @@ export const tacoService = {
     },
 
     // Enriches preparation ingredients with complementary TACO data.
-    // For each ingredient, FNDE values > 0 are kept; zeros are filled from TACO.
-    // fator_coccao from TACO overrides a 1.0 FC default when available.
     async enrichIngredientes(ingredientes: FNDEPreparacaoIngrediente[]): Promise<FNDEPreparacaoIngrediente[]> {
         if (!ingredientes || ingredientes.length === 0) return ingredientes;
 
         const names = ingredientes.map(i => i.alimento?.nome).filter(Boolean) as string[];
         if (names.length === 0) return ingredientes;
 
-        // Use original (accented) first words for ilike so PostgreSQL matches "Feijão" via "Feij%".
-        const originalFirstWords = [...new Set(
-            names
-                .map(n => firstWord(n))
-                .filter(w => w.length >= 3)
-        )];
+        // PROBLEMA 2: Melhorar o match de nomes com normalização.
+        // Buscamos prefixos de 3 letras (original e normalizado) para capturar candidatos
+        // mesmo com divergências de acentuação no banco de dados.
+        const searchPrefixes = [...new Set([
+            ...names.map(n => firstWord(n).substring(0, 3)),
+            ...names.map(n => normalizar(firstWord(n)).substring(0, 3))
+        ].filter(w => w.length >= 3))];
 
-        if (originalFirstWords.length === 0) return ingredientes;
+        if (searchPrefixes.length === 0) return ingredientes;
 
-        const orConditions = originalFirstWords.map(w => `descricao.ilike.${w}%`).join(',');
+        // Filtramos candidatos pelo prefixo (ilike é case-insensitive)
+        const orConditions = searchPrefixes.map(w => `descricao.ilike.${w}%`).join(',');
 
         const { data: tacoRows, error } = await supabase
             .from('taco_composicao')
@@ -120,41 +118,41 @@ export const tacoService = {
 
         if (error || !tacoRows || tacoRows.length === 0) return ingredientes;
 
-        // Build lookup: normalizedDescription → TACOComposicao (for local matching)
+        // Build lookup: normalizedDescription → TACOComposicao
         const tacoByNorm = new Map<string, TACOComposicao>();
         for (const t of tacoRows) {
-            tacoByNorm.set(normalize(t.descricao), t);
+            tacoByNorm.set(normalizar(t.descricao), t);
         }
 
         return ingredientes.map(ing => {
             const nome = ing.alimento?.nome;
             if (!nome) return ing;
 
-            const key = normalize(nome);
-            // 1. Exact normalized match: "carne moida" === "carne moida"
+            const key = normalizar(nome);
+            
+            // 1. Exact normalized match
             let taco: TACOComposicao | undefined = tacoByNorm.get(key);
 
-            // 2. Prefix match on first token before comma: "carne moida" starts with "carne"
+            // 2. Prefix match (ex: "Carne moída" matches "Carne moída, bovina")
             if (!taco) {
-                const prefix = key.split(',')[0].trim();
-                taco = [...tacoByNorm.values()].find(t =>
-                    normalize(t.descricao).startsWith(prefix)
-                );
+                taco = [...tacoByNorm.values()].find(t => {
+                    const normTaco = normalizar(t.descricao);
+                    return normTaco.startsWith(key) || key.startsWith(normTaco);
+                });
             }
 
-            // 3. First-word match: any TACO entry whose normalized description starts with the first word
+            // 3. First-word match fallback
             if (!taco) {
                 const firstToken = key.split(/\s+/)[0];
                 if (firstToken.length >= 3) {
                     taco = [...tacoByNorm.values()].find(t =>
-                        normalize(t.descricao).startsWith(firstToken)
+                        normalizar(t.descricao).startsWith(firstToken)
                     );
                 }
             }
 
             if (!taco) return ing;
 
-            // Use || 1.0 (not ??) so an explicit 0 is also replaced with the default
             const currentFc = ing.alimento?.fator_correcao || 1.0;
             const newFc = currentFc === 1.0 && taco.fator_coccao !== 1.0
                 ? taco.fator_coccao

@@ -88,9 +88,9 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300 pb-20">
-      <div className="flex justify-between items-center bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',padding:'18px 22px',marginBottom:0}}>
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-rose-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-lg font-black border border-rose-500">❤️</div>
+          <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,#fecdd3,#fda4af)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,boxShadow:'0 4px 14px rgba(244,63,94,0.25)',flexShrink:0}}>❤️</div>
           <div>
             <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Necessidades Alimentares Especiais</h2>
             <p className="text-slate-500 text-sm font-medium italic">Gestão de Inclusão e Dietas • SME Brotas de Macaúbas</p>
@@ -104,7 +104,7 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* FORMULÁRIO DE CADASTRO */}
         {canEdit && (
-          <div className="lg:col-span-4 bg-white p-8 rounded-[40px] border border-slate-200 shadow-xl space-y-6 h-fit sticky top-6">
+          <div style={{background:'#fff',padding:'20px 22px',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',height:'fit-content',position:'sticky',top:24}} className="lg:col-span-4">
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
               <span>➕</span> Novo Aluno NE
             </h3>
@@ -191,13 +191,13 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
             const schoolStudents = students.filter(s => s.escolaId === school.id);
             if (schoolStudents.length === 0) return null;
             return (
-              <div key={school.id} className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                <div className="bg-slate-50 p-6 flex justify-between items-center border-b border-slate-100">
+              <div key={school.id} style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden'}}>
+                <div style={{background:'linear-gradient(135deg,#fff1f2,#fecdd3)',padding:'14px 18px',display:'flex',justifyContent:'space-between',alignItems:'center',borderBottom:'1px solid #fecdd3'}}>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl shadow-sm">🏫</div>
+                    <div style={{width:34,height:34,background:'rgba(255,255,255,0.7)',borderRadius:9,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,boxShadow:'0 2px 6px rgba(0,0,0,0.08)'}}>🏫</div>
                     <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">{school.nome}</h4>
                   </div>
-                  <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">{schoolStudents.length} Alunos NE</span>
+                  <span style={{background:'rgba(255,255,255,0.75)',color:'#be123c',padding:'3px 10px',borderRadius:6,fontSize:10,fontWeight:800,letterSpacing:'0.05em',textTransform:'uppercase',border:'1px solid rgba(190,18,60,0.2)'}}>{schoolStudents.length} Alunos NE</span>
                 </div>
 
                 <div className="divide-y divide-slate-50">
@@ -262,7 +262,7 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
         </div>
       </div>
 
-      <div className="bg-slate-900 p-8 rounded-[40px] shadow-2xl border border-slate-800 text-center space-y-4">
+      <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',padding:'20px 28px',borderRadius:18,boxShadow:'0 8px 32px rgba(0,0,0,0.2)',textAlign:'center',border:'1px solid rgba(255,255,255,0.06)'}}>
         <h4 className="text-[11px] font-black text-rose-400 uppercase tracking-[0.3em]">Compliance LGPD e PNAE</h4>
         <p className="text-[11px] text-slate-500 leading-relaxed italic max-w-3xl mx-auto">
           "O registro de saúde escolar deve ser tratado com rastro de acesso rigoroso. Este módulo não armazena diagnósticos médicos completos, apenas as diretrizes alimentares necessárias para a produção segura da merenda. A guarda dos laudos físicos permanece na unidade escolar sob responsabilidade da direção."

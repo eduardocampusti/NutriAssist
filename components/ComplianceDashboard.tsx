@@ -61,12 +61,12 @@ const ComplianceDashboard: React.FC = () => {
         <div className="page-transition min-h-screen bg-slate-50/50 p-6 lg:p-10 space-y-10">
 
             {/* INSTITUTIONAL HEADER */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 bg-white p-10 rounded-[48px] shadow-xl border border-slate-100 relative overflow-hidden">
+            <div style={{background:'#fff',borderRadius:20,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08),0 20px 40px rgba(0,0,0,0.06)',padding:'20px 24px',display:'flex',flexWrap:'wrap',justifyContent:'space-between',alignItems:'center',gap:16,marginBottom:0,position:'relative',overflow:'hidden'}}>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full -mr-32 -mt-32 blur-3xl" />
 
                 <div className="space-y-4 relative z-10">
                     <div className="flex items-center gap-3">
-                        <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-200">
+                        <div style={{width:42,height:42,background:'linear-gradient(135deg,#4f46e5,#6d28d9)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 14px rgba(79,70,229,0.35)',flexShrink:0}}>
                             <ShieldCheck size={28} />
                         </div>
                         <div>
@@ -114,8 +114,8 @@ const ComplianceDashboard: React.FC = () => {
                     { label: 'Atenção Necessária', val: stats.atencao, icon: AlertTriangle, color: 'bg-amber-500', sub: 'Inconsistências Leves' },
                     { label: 'Risco Administrativo', val: stats.risco, icon: TrendingDown, color: 'bg-rose-500', sub: 'Ação Imediata SME' }
                 ].map((kpi, i) => (
-                    <div key={i} className="p-8 bg-white rounded-[40px] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl hover:scale-[1.02] transition-all duration-500">
-                        <div className={`w-16 h-16 ${kpi.color} text-white rounded-3xl flex items-center justify-center shadow-2xl shrink-0 group-hover:rotate-6 transition-transform`}>
+                    <div key={i} style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',padding:'18px 20px',display:'flex',alignItems:'center',gap:16,transition:'all 0.22s ease',cursor:'default'}} onMouseEnter={e=>{const el=e.currentTarget;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08),0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)';el.style.transform='translateY(0)';}}>
+                        <div style={{width:44,height:44,background:kpi.color.replace('bg-','').replace('indigo-600','linear-gradient(135deg,#4f46e5,#6d28d9)').replace('emerald-500','linear-gradient(135deg,#059669,#15803d)').replace('amber-500','linear-gradient(135deg,#d97706,#b45309)').replace('rose-500','linear-gradient(135deg,#f43f5e,#be123c)'),borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 4px 14px rgba(0,0,0,0.18)'}}>
                             <kpi.icon size={28} />
                         </div>
                         <div>
@@ -130,14 +130,14 @@ const ComplianceDashboard: React.FC = () => {
             {/* FILTERS & RANKING */}
             <div className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <div className="relative w-full md:w-96">
+                    <div style={{position:'relative',width:'100%',maxWidth:360}}>
                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input
                             type="text"
                             placeholder="Buscar Escola ou Unidade..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-14 pr-6 py-5 bg-white border border-slate-100 rounded-3xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-indigo-100 shadow-sm transition-all"
+                            style={{width:'100%',paddingLeft:44,paddingRight:20,paddingTop:10,paddingBottom:10,background:'#fff',border:'1px solid #e2e8f0',borderRadius:12,fontSize:14,fontFamily:'inherit',outline:'none',boxShadow:'0 1px 4px rgba(0,0,0,0.05)'}}
                         />
                     </div>
 
@@ -169,7 +169,7 @@ const ComplianceDashboard: React.FC = () => {
                         <p className="text-slate-500 font-bold uppercase text-[10px]">Nenhum dado de conformidade encontrado para este período.</p>
                     </div>
                 ) : viewType === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{gap:16}}>
                         {filteredReports.map((report, idx) => (
                             <ComplianceCard key={report.id} report={report} rank={idx + 1} />
                         ))}
@@ -261,7 +261,7 @@ const ComplianceCard: React.FC<{ report: ComplianceReport, rank: number }> = ({ 
     };
 
     return (
-        <div className="group bg-white rounded-[56px] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 p-8 space-y-8 flex flex-col relative">
+        <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',padding:'20px',display:'flex',flexDirection:'column',gap:16,position:'relative',transition:'all 0.22s ease',cursor:'default'}} onMouseEnter={e=>{const el=e.currentTarget;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08),0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-4px)';}} onMouseLeave={e=>{const el=e.currentTarget;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)';el.style.transform='translateY(0)';}}>
             {/* RANK BADGE */}
             <div className="absolute top-8 right-8 w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-xl z-10 transition-transform group-hover:rotate-12 group-hover:scale-110">
                 #{rank}
@@ -286,7 +286,7 @@ const ComplianceCard: React.FC<{ report: ComplianceReport, rank: number }> = ({ 
             </div>
 
             {/* MAIN SCORE RADIUS */}
-            <div className="flex justify-between items-end bg-slate-50/50 p-6 rounded-[40px] border border-slate-100">
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',background:'#f8fafc',padding:'14px 16px',borderRadius:12,border:'1px solid #f1f5f9'}}>
                 <div className="space-y-1">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Score Geral</p>
                     <h4 className="text-4xl font-black text-slate-900 leading-none">{report.score_geral}%</h4>
@@ -314,7 +314,7 @@ const ComplianceCard: React.FC<{ report: ComplianceReport, rank: number }> = ({ 
             </div>
 
             <div className="pt-2 mt-auto">
-                <button className="w-full py-5 bg-white border-2 border-slate-100 hover:border-indigo-600 text-slate-400 hover:text-indigo-600 rounded-[28px] text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 active:scale-95 group/btn">
+                <button style={{width:'100%',padding:'10px',background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:10,fontSize:10,fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',color:'#475569',display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',transition:'all 0.15s'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLButtonElement;el.style.background='#eff6ff';el.style.color='#1d4ed8';el.style.borderColor='#bfdbfe';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLButtonElement;el.style.background='#f8fafc';el.style.color='#475569';el.style.borderColor='#e2e8f0';}}>
                     Ver Detalhes Analíticos <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>
             </div>
@@ -323,7 +323,7 @@ const ComplianceCard: React.FC<{ report: ComplianceReport, rank: number }> = ({ 
 };
 
 const Indicator: React.FC<{ label: string, val: string | number, icon: any, color: string, invert?: boolean }> = ({ label, val, icon: Icon, color, invert }) => (
-    <div className="p-4 bg-white border border-slate-50 rounded-3xl space-y-2 group/ind hover:bg-slate-50 transition-colors">
+    <div style={{padding:'10px 12px',background:'#fff',border:'1px solid #f1f5f9',borderRadius:10,display:'flex',flexDirection:'column',gap:6}}>
         <div className={`w-8 h-8 rounded-xl bg-${color}-50 text-${color}-600 flex items-center justify-center shrink-0`}>
             <Icon size={14} />
         </div>

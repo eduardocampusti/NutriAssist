@@ -45,9 +45,9 @@ function resolveComp(ing: any) {
 
 function calcRow(ing: any) {
     const comp = resolveComp(ing);
-    const pl = Number(ing.quantidade_per_capita) || 0;
-    const fc = Number(ing.alimento?.fator_correcao || 1.0);
-    const pb = pl * fc;
+    const pl = Number(ing.per_capita_liquido || ing.quantidade_per_capita) || 0;
+    const pb = Number(ing.per_capita_bruto) || pl;
+    const fc = Number(ing.fator_correcao) || 1.0;
     const calc = (val: number) => isNaN(val) ? 0 : (val * pl) / 100;
     if (!comp) return { pl, fc, pb, energia_kcal: 0, proteinas_g: 0, lipidios_g: 0, carboidratos_g: 0, calcio_mg: 0, ferro_mg: 0, vitamina_a_mcg: 0, vitamina_c_mg: 0, sodio_mg: 0, fibras_g: 0, magnesio_mg: 0, zinco_mg: 0, gordura_saturada_g: 0, gordura_trans_mg: 0 };
     return { pl, fc, pb, energia_kcal: calc(comp.energia_kcal), proteinas_g: calc(comp.proteinas_g), lipidios_g: calc(comp.lipidios_g), carboidratos_g: calc(comp.carboidratos_g), calcio_mg: calc(comp.calcio_mg), ferro_mg: calc(comp.ferro_mg), vitamina_a_mcg: calc(comp.vitamina_a_mcg), vitamina_c_mg: calc(comp.vitamina_c_mg), sodio_mg: calc(comp.sodio_mg), fibras_g: calc(comp.fibras_g), magnesio_mg: calc(comp.magnesio_mg), zinco_mg: calc(comp.zinco_mg), gordura_saturada_g: calc(comp.gordura_saturada_g), gordura_trans_mg: calc(comp.gordura_trans_mg) };
@@ -160,7 +160,7 @@ const PreparacaoReport: React.FC<PreparacaoReportProps> = ({ preparacao, onClose
                                             <td className="p-1.5 border-r border-slate-300 font-bold text-slate-800 uppercase truncate">{ing.alimento?.nome}</td>
                                             <td className="p-1 border-r border-slate-300 text-center font-medium text-slate-600">{fmt(pb)}</td>
                                             <td className="p-1 border-r border-slate-300 text-center font-bold text-slate-900">{fmt(pl)}</td>
-                                            <td className="p-1 border-r border-slate-300 text-center text-slate-400 italic">{fmt(fc)}</td>
+                                            <td className={`p-1 border-r border-slate-300 text-center tabular-nums ${fc === 1 ? 'text-slate-300' : 'text-slate-900 font-bold'}`}>{fmt(fc)}</td>
                                             <td className={cellCls(r.energia_kcal)}>{fmt(r.energia_kcal)}</td>
                                             <td className={cellCls(r.proteinas_g)}>{fmt(r.proteinas_g)}</td>
                                             <td className={cellCls(r.lipidios_g)}>{fmt(r.lipidios_g)}</td>
