@@ -96,6 +96,7 @@ export const LoginPage = () => {
     };
 
     const [showTerms, setShowTerms] = useState(false);
+    const getGreeting = () => { const h = new Date().getHours(); if (h < 12) return 'Bom dia'; if (h < 18) return 'Boa tarde'; return 'Boa noite'; };
     const [showPolicy, setShowPolicy] = useState(false);
 
     const TermsModal = () => (
@@ -214,19 +215,30 @@ export const LoginPage = () => {
                     </button>
                 </div>
 
-                <div className="w-full max-w-[400px] space-y-10">
+                <div className="w-full max-w-[440px]">
+                    {/* HEADER INSTITUCIONAL */}
+                    <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',borderRadius:'16px 16px 0 0',padding:'14px 20px',display:'flex',alignItems:'center',gap:12,marginBottom:0}}>
+                        <div style={{width:36,height:36,background:'rgba(255,255,255,0.10)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid rgba(255,255,255,0.15)',flexShrink:0,fontSize:20}}>🥗</div>
+                        <div><p style={{fontSize:14,fontWeight:700,color:'#fff',margin:0,letterSpacing:'-0.01em'}}>NutriAssist</p><p style={{fontSize:9,color:'#4ade80',margin:0,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase'}}>SME · Brotas de Macaúbas</p></div>
+                        <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,0.08)',padding:'4px 10px',borderRadius:99,border:'1px solid rgba(255,255,255,0.12)'}}>
+                            <div style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',flexShrink:0}}></div>
+                            <span style={{fontSize:9,color:'rgba(255,255,255,0.7)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>Ativo</span>
+                        </div>
+                    </div>
+                    {/* CARD DO FORM */}
+                    <div style={{background:'#fff',border:'1px solid #e2e8f0',borderTop:'none',borderRadius:'0 0 16px 16px',padding:'20px 22px 18px',boxShadow:'0 8px 32px rgba(0,0,0,0.08)'}}>
                     {view === 'login' ? (
                         <>
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50/50 text-emerald-600 rounded-lg border border-emerald-100/50 mb-1">
                                     <ShieldCheck className="w-4 h-4" />
                                     <span className="text-[9px] font-black uppercase tracking-widest">Acesso Restrito</span>
                                 </div>
-                                <h3 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Boas-vindas!</h3>
-                                <p className="text-slate-400 text-sm font-medium leading-relaxed">Insira suas credenciais técnicas para acessar o painel de nutrição.</p>
+                                <h3 style={{fontSize:20,fontWeight:900,color:"#0f172a",letterSpacing:"-0.02em",margin:"0 0 4px",lineHeight:1.2}}>{getGreeting()}, operador! 👋</h3>
+                                <p style={{fontSize:12,color:"#64748b",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Sistema de Gestão Nutricional · SME Brotas de Macaúbas</p>
                             </div>
 
-                            <form onSubmit={handleLogin} className="space-y-8">
+                            <form onSubmit={handleLogin} className="space-y-5">
                                 <div className="space-y-5">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">ID Federado / E-mail</label>
@@ -239,7 +251,7 @@ export const LoginPage = () => {
                                                 placeholder="seu@email.com"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-4 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium"
+                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-4 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a"}}
                                                 required
                                             />
                                         </div>
@@ -256,7 +268,7 @@ export const LoginPage = () => {
                                                 placeholder="••••••••"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-12 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium"
+                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-12 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a"}}
                                                 required
                                             />
                                             <button
@@ -296,11 +308,14 @@ export const LoginPage = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-[#020617] text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-emerald-600 active:scale-[0.98] disabled:opacity-50 disabled:grayscale shadow-xl shadow-slate-900/20 relative overflow-hidden group"
+                                    className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-emerald-600/30"
                                 >
-                                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                                     {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Acessar Sistema'}
                                 </button>
+                            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,padding:'10px 0 2px',borderTop:'1px solid #f1f5f9',marginTop:4}}>
+                                <ShieldCheck style={{width:11,height:11,color:'#94a3b8'}} />
+                                <span style={{fontSize:9.5,color:'#94a3b8',fontWeight:500}}>Conexão segura · LGPD · FNDE 06/2020</span>
+                            </div>
                             </form>
                         </>
                     ) : (
@@ -371,6 +386,7 @@ export const LoginPage = () => {
                         </>
                     )}
 
+                    </div>
                     <div className="pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         <div className="flex gap-4">
                             <a href="https://wa.me/5577991290375" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-600 flex items-center gap-1 transition-colors">
@@ -380,9 +396,9 @@ export const LoginPage = () => {
                             <button onClick={() => setShowTerms(true)} className="hover:text-slate-900 uppercase">Termos</button>
                             <button onClick={() => setShowPolicy(true)} className="hover:text-slate-900 uppercase">Privacidade</button>
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5" style={{whiteSpace:"nowrap"}}>
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                            SME CLOUD • {config.uf}
+                            SME CLOUD
                         </div>
                     </div>
                 </div>
