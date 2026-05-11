@@ -215,18 +215,18 @@ export const LoginPage = () => {
                     </button>
                 </div>
 
-                <div className="w-full max-w-[440px]">
+                <div className="w-full max-w-[520px]">
                     {/* HEADER INSTITUCIONAL */}
-                    <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',borderRadius:'16px 16px 0 0',padding:'14px 20px',display:'flex',alignItems:'center',gap:12,marginBottom:0}}>
+                    <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',borderRadius:'16px 16px 0 0',padding:'16px 24px',display:'flex',alignItems:'center',gap:12,marginBottom:0}}>
                         <div style={{width:36,height:36,background:'rgba(255,255,255,0.10)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid rgba(255,255,255,0.15)',flexShrink:0,fontSize:20}}>🥗</div>
-                        <div><p style={{fontSize:14,fontWeight:700,color:'#fff',margin:0,letterSpacing:'-0.01em'}}>NutriAssist</p><p style={{fontSize:9,color:'#4ade80',margin:0,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase'}}>SME · Brotas de Macaúbas</p></div>
+                        <div><p style={{fontSize:15,fontWeight:700,color:'#fff',margin:0,letterSpacing:'-0.01em'}}>NutriAssist</p><p style={{fontSize:9,color:'#4ade80',margin:0,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase'}}>SME · Brotas de Macaúbas</p></div>
                         <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,0.08)',padding:'4px 10px',borderRadius:99,border:'1px solid rgba(255,255,255,0.12)'}}>
                             <div style={{width:6,height:6,borderRadius:'50%',background:'#4ade80',flexShrink:0}}></div>
                             <span style={{fontSize:9,color:'rgba(255,255,255,0.7)',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>Ativo</span>
                         </div>
                     </div>
                     {/* CARD DO FORM */}
-                    <div style={{background:'#fff',border:'1px solid #e2e8f0',borderTop:'none',borderRadius:'0 0 16px 16px',padding:'20px 22px 18px',boxShadow:'0 8px 32px rgba(0,0,0,0.08)'}}>
+                    <div style={{background:'#fff',border:'1px solid #e2e8f0',borderTop:'none',borderRadius:'0 0 16px 16px',padding:'28px 28px 24px',boxShadow:'0 8px 32px rgba(0,0,0,0.08)'}}>
                     {view === 'login' ? (
                         <>
                             <div className="space-y-3">
@@ -234,8 +234,8 @@ export const LoginPage = () => {
                                     <ShieldCheck className="w-4 h-4" />
                                     <span className="text-[9px] font-black uppercase tracking-widest">Acesso Restrito</span>
                                 </div>
-                                <h3 style={{fontSize:20,fontWeight:900,color:"#0f172a",letterSpacing:"-0.02em",margin:"0 0 4px",lineHeight:1.2}}>{getGreeting()}, operador! 👋</h3>
-                                <p style={{fontSize:12,color:"#64748b",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Sistema de Gestão Nutricional · SME Brotas de Macaúbas</p>
+                                <h3 style={{fontSize:24,fontWeight:900,color:"#0f172a",letterSpacing:"-0.02em",margin:"0 0 6px",lineHeight:1.2}}>{getGreeting()}, operador! 👋</h3>
+                                <p style={{fontSize:13,color:"#64748b",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>Sistema de Gestão Nutricional · SME Brotas de Macaúbas</p>
                             </div>
 
                             <form onSubmit={handleLogin} className="space-y-5">
@@ -251,7 +251,7 @@ export const LoginPage = () => {
                                                 placeholder="seu@email.com"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-4 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a"}}
+                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-4 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a",fontSize:15}}
                                                 required
                                             />
                                         </div>
@@ -268,7 +268,7 @@ export const LoginPage = () => {
                                                 placeholder="••••••••"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-12 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a"}}
+                                                className="w-full bg-slate-50/50 border border-slate-100 rounded-xl pl-12 pr-12 py-4 text-base text-slate-900 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300 font-medium" style={{WebkitBoxShadow:"0 0 0 1000px #f8fafc inset",WebkitTextFillColor:"#0f172a",fontSize:15}}
                                                 required
                                             />
                                             <button
@@ -308,7 +308,7 @@ export const LoginPage = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-emerald-600/30"
+                                    className="w-full bg-emerald-600 text-white py-5 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 shadow-xl shadow-emerald-600/30"
                                 >
                                     {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Acessar Sistema'}
                                 </button>
