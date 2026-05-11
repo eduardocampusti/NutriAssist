@@ -90,7 +90,7 @@ const PublicTransparencyPanel: React.FC = () => {
             </div>
 
             {/* METODOLOGIA CARD */}
-            <Card variant="governance" padding="lg" className="bg-slate-900 text-white relative overflow-hidden">
+            <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',borderRadius:20,padding:'22px 28px',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',position:'relative',overflow:'hidden'}}>
                 <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
                     <div className="w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-xl shadow-emerald-500/20">
                         <Award className="w-10 h-10 text-white" />
@@ -114,8 +114,8 @@ const PublicTransparencyPanel: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]"></div>
-            </Card>
+                <div style={{position:'absolute',top:-60,right:-60,width:180,height:180,background:'rgba(52,211,153,0.07)',borderRadius:'50%',filter:'blur(40px)',pointerEvents:'none'}}></div>
+            </div>
 
             {/* BUSCA */}
             <div className="relative max-w-md mx-auto">
@@ -125,14 +125,14 @@ const PublicTransparencyPanel: React.FC = () => {
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     placeholder="Pesquisar escola certificada..."
-                    className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-base md:text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-emerald-500/10 transition-all shadow-sm"
+                    style={{width:'100%',background:'#fff',border:'1px solid #e2e8f0',borderRadius:14,paddingLeft:48,paddingRight:20,paddingTop:12,paddingBottom:12,fontSize:14,fontFamily:'inherit',fontWeight:600,color:'#0f172a',outline:'none',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',boxSizing:'border-box'}}
                 />
             </div>
 
             {/* GRID DE ESCOLAS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{gap:16}}>
                 {filtered.map((school, idx) => (
-                    <Card key={idx} variant="elevated" className="bg-white border-slate-200 hover:border-slate-300 transition-all group overflow-hidden">
+                    <div key={idx} style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',overflow:'hidden',transition:'all 0.22s ease'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';el.style.transform='translateY(0)';}}>
                         <div className="p-8 space-y-6">
                             <div className="flex justify-between items-start">
                                 <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 transition-transform group-hover:scale-110">
@@ -156,12 +156,12 @@ const PublicTransparencyPanel: React.FC = () => {
                                 <Info className="w-4 h-4 text-slate-200" />
                             </div>
                         </div>
-                    </Card>
+                    </div>
                 ))}
             </div>
 
             {filtered.length === 0 && (
-                <div className="py-24 text-center space-y-6 bg-slate-50 rounded-[40px] border border-dashed border-slate-200">
+                <div style={{padding:'64px 32px',textAlign:'center',background:'#f8fafc',borderRadius:18,border:'2px dashed #e2e8f0'}}>
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
                         <SearchSlash className="w-8 h-8 text-slate-300" />
                     </div>

@@ -1,21 +1,13 @@
-
 import React, { useState, useMemo } from 'react';
-import {
-  ProcurementPlan,
-  MenuPlan,
-  InventoryItem,
-  DocStatus,
-  ProcurementMapItem,
-  UserProfile,
-  UserRole
-} from '../types';
+import { ProcurementPlan, MenuPlan, InventoryItem, DocStatus, ProcurementMapItem, UserProfile, UserRole } from '../types';
 import { procurementEngine } from '../services/procurementEngine';
 import { documentService, OfficialDocType } from '../services/documentService';
 import { documentGenerator } from '../services/documentGeneratorService';
+import { Scale, FileText, Download, BarChart3, X, CheckCircle2, AlertCircle, Clock, ChevronRight, Gavel, FileSpreadsheet } from 'lucide-react';
 
 interface ProcurementManagerProps {
-  plans: ProcurementPlan[]; // Historic of Procurement Processes
-  menuPlans: MenuPlan[]; // Available Menu Plans (Source)
+  plans: ProcurementPlan[];
+  menuPlans: MenuPlan[];
   inventory: InventoryItem[];
   activeProfile?: UserProfile;
   onSave: (data: Omit<ProcurementPlan, 'id' | 'created_at' | 'authorId'>) => Promise<void>;
@@ -23,19 +15,14 @@ interface ProcurementManagerProps {
   onClose: () => void;
 }
 
+const S = '0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';
+const SH = '0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';
+
 const ProcurementManager: React.FC<ProcurementManagerProps> = ({
-  plans,
-  menuPlans,
-  inventory,
-  activeProfile,
-  onSave,
-  onRequestDocument,
-  onClose
+  plans, menuPlans, inventory, activeProfile, onSave, onRequestDocument, onClose
 }) => {
   const [activeTab, setActiveTab] = useState<'create' | 'archive'>('create');
-
-  // Creation Wizard State
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear] = useState(new Date().getFullYear());
   const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);
   const [generatedMap, setGeneratedMap] = useState<ProcurementMapItem[] | null>(null);
   const [blockingErrors, setBlockingErrors] = useState<string[]>([]);
@@ -43,374 +30,243 @@ const ProcurementManager: React.FC<ProcurementManagerProps> = ({
 
   const canManage = activeProfile?.role === UserRole.NUTRICIONISTA || activeProfile?.role === UserRole.ADMIN;
 
-  // Filter Menus by Year
-  const availableMenus = useMemo(() => {
-    // Assuming title or metadata contains year, or just list all for now.
-    // Better strictly would be to check created_at or title.
-    // For now, listing all ACTIVE plans (Elaboracao/Approved/etc)
-    const filtered = menuPlans.filter(p => !p.titulo?.includes('ARQUIVADO'));
-    console.log("ProcurementManager: Available menus computed", filtered.map(p => ({ id: p.id, title: p.titulo })));
-    return filtered;
-  }, [menuPlans]);
+  const availableMenus = useMemo(() =>
+    menuPlans.filter(p => !p.titulo?.includes('ARQUIVADO')), [menuPlans]);
 
   const togglePlanSelection = (id: string) => {
-    console.log("Toggling plan selection:", id);
-    if (selectedPlanIds.includes(id)) {
-      console.log("Removing from selection");
-      setSelectedPlanIds(selectedPlanIds.filter(pid => pid !== id));
-    } else {
-      console.log("Adding to selection");
-      setSelectedPlanIds([...selectedPlanIds, id]);
-    }
-    // Reset generated map if selection changes
-    setGeneratedMap(null);
-    setBlockingErrors([]);
+    setSelectedPlanIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setGeneratedMap(null); setBlockingErrors([]);
   };
 
-  const handleGenerateMap = async () => {
-    const selected = menuPlans.filter(p => selectedPlanIds.includes(p.id));
-
-    // 1. Validate
-    // Note: The UI version passes selected plans directly for local calculation.
-    // The engine version is async/supabase. I'll maintain UI-logic for local preview but use engine for official TR.
-    // However, to fix lints, I'll use a local mock/mapper or the engine if suitable.
-    // For now, let's assume the component wants local calculation based on current state.
-    // I will use computeAnnualRequirements from engine but I need to make it work with local 'selected' plans.
-    // Actually, I'll just fix the function names to procurementEngine.xxx
-
-    // As the engine is async and DB-bound, and the UI has 'selected' plans in memory,
-    // I'll implement a sync helper or use the engine. 
-    // Let's use the engine's logic but adapt for the lint fix.
-
-    const map = generateAnnualConsumptionMapLocal(selected, inventory); // I'll define this helper below
-
-    // 2. Fetch Real Benchmark
-    try {
-      const benchmark = await procurementEngine.getRealConsumptionBenchmark(selectedYear);
-      setRealBenchmark(benchmark);
-    } catch (e) {
-      console.error("Benchmark error:", e);
-    }
-
-    setGeneratedMap(map);
-    setBlockingErrors([]);
-  };
-
-  // Helper for internal UI calculation
-  const generateAnnualConsumptionMapLocal = (selected: MenuPlan[], inventory: InventoryItem[]) => {
-    // Local implementation to avoid blocking lints and DB roundtrips for preview
+  const generateAnnualConsumptionMapLocal = (selected: MenuPlan[], inv: InventoryItem[]) => {
     const map = new Map<string, any>();
     selected.forEach(p => {
       const multiplier = (p.diasLetivos || 200) / 5;
       p.preparacoes.forEach(dish => {
         dish.ingredientes.forEach(ing => {
-          const item = inventory.find(i => i.id === ing.itemId);
+          const item = inv.find(i => i.id === ing.itemId);
           if (!item) return;
           const key = item.alimento_normativo_id || item.id;
           const qty = (ing.perCapitaGrams / 1000) * (p.numAlunos || 0) * multiplier;
-
-          if (map.has(key)) {
-            map.get(key).totalQuantity += qty;
-          } else {
-            map.set(key, {
-              inventoryItemName: item.nome,
-              totalQuantity: qty,
-              technicalSpec: item.technicalSpecifications || '-',
-              averageCost: item.costPerUnit || 0,
-              totalCost: qty * (item.costPerUnit || 0),
-              isAF: !!item.allowed_af
-            });
-          }
+          if (map.has(key)) { map.get(key).totalQuantity += qty; }
+          else { map.set(key, { inventoryItemName: item.nome, totalQuantity: qty, technicalSpec: item.technicalSpecifications || '-', averageCost: item.costPerUnit || 0, totalCost: qty * (item.costPerUnit || 0), isAF: !!item.allowed_af }); }
         });
       });
     });
     return Array.from(map.values());
   };
 
+  const handleGenerateMap = async () => {
+    const selected = menuPlans.filter(p => selectedPlanIds.includes(p.id));
+    const map = generateAnnualConsumptionMapLocal(selected, inventory);
+    try { const benchmark = await procurementEngine.getRealConsumptionBenchmark(selectedYear); setRealBenchmark(benchmark); } catch (e) {}
+    setGeneratedMap(map); setBlockingErrors([]);
+  };
+
   const handleExportTR = () => {
     if (!generatedMap || !onRequestDocument) return;
-
-    const context = `
-      Contexto: Elaboração de Termo de Referência (TR) e Estudo Técnico Preliminar (ETP) para Aquisição de Gêneros Alimentícios do PNAE.
-      Exercício Financeiro: ${selectedYear}
-      Base Legal: Lei 11.947/2009 (PNAE) e Lei 14.133/2021 (Nova Lei de Licitações).
-      
-      Fontes de Dados (VINCULAÇÃO OBRIGATÓRIA):
-      Os quantitativos foram calculados estritamente com base nos Cardápios Aprovados: ${menuPlans.filter(p => selectedPlanIds.includes(p.id)).map(p => p.titulo).join(', ')}.
-      
-      SOLICITAÇÃO:
-      Gere um texto técnico formal para compor o TR e ETP contendo:
-      1. Objeto da Licitação (Descrição genérica agrupada).
-      2. Justificativa da Aquisição (Baseada na necessidade de alimentação escolar para os dias letivos previstos).
-      3. Detalhamento dos Itens (Resumo das especificações técnicas dos principais grupos: Perecíveis, Secos, Hortifruti).
-      4. Metodologia de Cálculo (Explicar que foi baseado em per capita x alunos x dias letivos).
-      
-      DADOS DO MAPA DE CONSUMO (Para referência):
-      ${generatedMap.slice(0, 50).map((item, idx) => // Limiting to 50 items for prompt context limits, user implies full list but context window matters. 
-      `- ${item.inventoryItemName}: ${item.totalQuantity.toFixed(0)} KG (Spec: ${item.technicalSpec})`
-    ).join('\n')}
-      (Lista parcial para contexto. O anexo completo será a planilha).
-      `;
-
-    // PERSISTÊNCIA OFICIAL (Novo)
-    if (activeProfile) {
-      try {
-        const content = documentGenerator.generateTRDraft(selectedYear, generatedMap, realBenchmark);
-        documentService.saveDocument(
-          OfficialDocType.TERMO_REFERENCIA,
-          content.titulo,
-          activeProfile.id,
-          content
-        );
-      } catch (e) {
-        console.error("Erro ao salvar histórico do TR:", e);
-      }
-    }
-
-    onRequestDocument(
-      'Termo de Referência',
-      'TERMO_REFERENCIA',
-      context,
-      'Geração automática de TR baseada em Cardápios e Benchmark de Consumo Real.'
-    );
+    const context = `Contexto: TR para Aquisição de Gêneros Alimentícios do PNAE. Exercício: ${selectedYear}. Base Legal: Lei 11.947/2009 e Lei 14.133/2021. Cardápios: ${menuPlans.filter(p => selectedPlanIds.includes(p.id)).map(p => p.titulo).join(', ')}. Itens: ${generatedMap.slice(0,50).map(i => `${i.inventoryItemName}: ${i.totalQuantity.toFixed(0)} KG`).join(', ')}`;
+    if (activeProfile) { try { const c = documentGenerator.generateTRDraft(selectedYear, generatedMap, realBenchmark); documentService.saveDocument(OfficialDocType.TERMO_REFERENCIA, c.titulo, activeProfile.id, c); } catch (e) {} }
+    onRequestDocument('Termo de Referência', 'TERMO_REFERENCIA', context, 'Geração automática de TR.');
   };
 
   const handleExportETP = () => {
     if (!generatedMap || !onRequestDocument || !activeProfile) return;
-
     try {
-      const content = documentGenerator.generateETP(selectedYear, generatedMap, realBenchmark);
-      documentService.saveDocument(
-        OfficialDocType.ETP,
-        content.titulo,
-        activeProfile.id,
-        content
-      );
-
-      onRequestDocument(
-        'Estudo Técnico Preliminar',
-        'PARECER_TECNICO',
-        `Exercício: ${selectedYear}. Itens: ${generatedMap.length}. Analisado contra benchmark de consumo real.`,
-        'Geração automática de ETP fundamentada em dados reais e histórico de perdas.'
-      );
-    } catch (e) {
-      console.error("Erro ao gerar ETP:", e);
-    }
+      const c = documentGenerator.generateETP(selectedYear, generatedMap, realBenchmark);
+      documentService.saveDocument(OfficialDocType.ETP, c.titulo, activeProfile.id, c);
+      onRequestDocument('Estudo Técnico Preliminar', 'PARECER_TECNICO', `Exercício: ${selectedYear}. Itens: ${generatedMap.length}.`, 'Geração automática de ETP.');
+    } catch (e) {}
   };
 
   const handleExportCSV = () => {
     if (!generatedMap) return;
-
     const headers = ['ITEM', 'ESPECIFICACAO_TECNICA', 'MODALIDADE', 'UNIDADE', 'QUANTIDADE_TOTAL', 'CUSTO_MEDIO', 'VALOR_TOTAL_ESTIMADO'];
-    const rows = generatedMap.map(item => [
-      `"${item.inventoryItemName}"`,
-      `"${item.technicalSpec.replace(/"/g, '""')}"`, // Escape quotes
-      item.isAF ? 'AGRICULTURA FAMILIAR' : 'GERAL',
-      'KG', // Base is always KG in map for now
-      item.totalQuantity.toFixed(3).replace('.', ','),
-      item.averageCost.toFixed(2).replace('.', ','),
-      item.totalCost.toFixed(2).replace('.', ',')
-    ]);
-
-    const csvContent = [
-      headers.join(';'),
-      ...rows.map(r => r.join(';'))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const rows = generatedMap.map(i => [`"${i.inventoryItemName}"`, `"${i.technicalSpec.replace(/"/g,'""')}"`, i.isAF ? 'AGRICULTURA FAMILIAR' : 'GERAL', 'KG', i.totalQuantity.toFixed(3).replace('.',','), i.averageCost.toFixed(2).replace('.',','), i.totalCost.toFixed(2).replace('.',',')]);
+    const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `MAPA_CONSUMO_PNAE_${selectedYear}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a'); a.href = url; a.download = `MAPA_CONSUMO_PNAE_${selectedYear}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
+    <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 80 }} className="animate-in fade-in duration-300">
+
       {/* HEADER */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center text-2xl shadow-lg border border-indigo-500 font-black">⚖️</div>
-          <div>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Gestão de Licitações PNAE</h2>
-            <p className="text-slate-500 text-sm">Vincular Cardápios • Gerar Mapa de Consumo • Termo de Referência</p>
+      <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden', marginBottom: 20 }}>
+        <div style={{ background: 'linear-gradient(135deg,#ede9fe,#c4b5fd)', padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(79,70,229,0.2)', flexShrink: 0 }}>
+              <Scale style={{ width: 22, height: 22, color: '#4f46e5' }} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: 18, fontWeight: 900, color: '#1e1b4b', letterSpacing: '-0.02em', margin: 0 }}>Gestão de Licitações PNAE</h2>
+              <p style={{ fontSize: 12, color: '#6d28d9', margin: 0, fontWeight: 500 }}>Vincular Cardápios · Gerar Mapa de Consumo · Termo de Referência</p>
+            </div>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setActiveTab('create');
-              // Reset state for a fresh process
-              setSelectedPlanIds([]);
-              setGeneratedMap(null);
-              setBlockingErrors([]);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'create' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-          >
-            Novo Processo
-          </button>
-          <button
-            onClick={() => setActiveTab('archive')}
-            className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-          >
-            Histórico ({plans.length})
-          </button>
-          <button onClick={onClose} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-colors">✕</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {[
+              { id: 'create', label: 'Novo Processo' },
+              { id: 'archive', label: `Histórico (${plans.length})` },
+            ].map(tab => (
+              <button key={tab.id} onClick={() => { setActiveTab(tab.id as any); if (tab.id === 'create') { setSelectedPlanIds([]); setGeneratedMap(null); setBlockingErrors([]); } }}
+                style={{ padding: '8px 18px', borderRadius: 10, fontSize: 11, fontWeight: 700, border: 'none', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'all 0.15s',
+                  background: activeTab === tab.id ? 'linear-gradient(135deg,#4f46e5,#6d28d9)' : 'rgba(255,255,255,0.6)',
+                  color: activeTab === tab.id ? '#fff' : '#4f46e5',
+                  boxShadow: activeTab === tab.id ? '0 4px 14px rgba(79,70,229,0.35)' : 'none',
+                }}>
+                {tab.label}
+              </button>
+            ))}
+            <button onClick={onClose} style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(255,255,255,0.6)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#4f46e5' }}>
+              <X style={{ width: 15, height: 15 }} />
+            </button>
+          </div>
         </div>
       </div>
 
       {activeTab === 'create' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LEFT: MENU SELECTION */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">1. Selecionar Cardápios do Exercício</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 18 }}>
 
-              <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {availableMenus.length === 0 && <p className="text-center text-slate-400 italic text-xs py-4">Nenhum cardápio disponível.</p>}
+          {/* PAINEL ESQUERDO */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+            {/* Seleção de cardápios */}
+            <div style={{ background: '#fff', borderRadius: 18, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden' }}>
+              <div style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', padding: '14px 18px', borderBottom: '1px solid #ddd6fe' }}>
+                <p style={{ fontSize: 9.5, fontWeight: 700, color: '#6d28d9', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Passo 1</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#1e1b4b', margin: 0 }}>Selecionar Cardápios do Exercício</p>
+              </div>
+              <div style={{ padding: '12px', maxHeight: 380, overflowY: 'auto' }} className="custom-scrollbar">
+                {availableMenus.length === 0 && (
+                  <p style={{ textAlign: 'center', color: '#94a3b8', fontStyle: 'italic', fontSize: 12, padding: '24px 0' }}>Nenhum cardápio disponível.</p>
+                )}
                 {availableMenus.map(plan => {
                   const isSelected = selectedPlanIds.includes(plan.id);
                   const isApproved = plan.status === DocStatus.APROVADO;
-
                   return (
-                    <div
-                      key={plan.id}
-                      onClick={() => togglePlanSelection(plan.id)}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-transparent bg-slate-50 hover:bg-slate-100'}`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <h4 className={`text-xs font-black uppercase ${isSelected ? 'text-indigo-900' : 'text-slate-700'}`}>{plan.titulo}</h4>
-                        {isSelected && <div className="w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center text-white text-[10px]">✓</div>}
+                    <div key={plan.id} onClick={() => togglePlanSelection(plan.id)}
+                      style={{ padding: '10px 12px', borderRadius: 12, cursor: 'pointer', marginBottom: 6, transition: 'all 0.15s',
+                        background: isSelected ? '#ede9fe' : '#f8fafc',
+                        border: `1px solid ${isSelected ? '#a78bfa' : '#f1f5f9'}`,
+                        boxShadow: isSelected ? '0 2px 8px rgba(79,70,229,0.12)' : 'none',
+                      }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: isSelected ? '#3730a3' : '#0f172a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.02em' }}>{plan.titulo}</p>
+                        {isSelected && (
+                          <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'linear-gradient(135deg,#4f46e5,#6d28d9)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <CheckCircle2 style={{ width: 11, height: 11, color: '#fff' }} />
+                          </div>
+                        )}
                       </div>
-                      <div className="mt-2 flex gap-2">
-                        <span className={`text-[9px] px-2 py-0.5 rounded font-bold uppercase ${isApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                          {isApproved ? 'APROVADO' : plan.status}
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 5, textTransform: 'uppercase', letterSpacing: '0.05em',
+                          background: isApproved ? '#f0fdf4' : '#fffbeb', color: isApproved ? '#15803d' : '#92400e',
+                          border: `1px solid ${isApproved ? '#bbf7d0' : '#fde68a'}` }}>
+                          {isApproved ? 'Aprovado' : plan.status}
                         </span>
-                        <span className="text-[9px] bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500 font-bold uppercase">
-                          {plan.etapa?.replace(/_/g, ' ')}
+                        <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 5, background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', textTransform: 'uppercase' }}>
+                          {plan.etapa?.replace(/_/g,' ')}
                         </span>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
-
-              <div className="mt-6 pt-6 border-t border-slate-100">
-                <button
-                  onClick={handleGenerateMap}
-                  disabled={selectedPlanIds.length === 0}
-                  className="w-full py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:bg-indigo-600 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Gerar Mapa de Consumo →
+              <div style={{ padding: '12px 14px', borderTop: '1px solid #f1f5f9' }}>
+                <button onClick={handleGenerateMap} disabled={selectedPlanIds.length === 0}
+                  style={{ width: '100%', padding: '11px', background: selectedPlanIds.length === 0 ? '#f1f5f9' : 'linear-gradient(135deg,#4f46e5,#6d28d9)', color: selectedPlanIds.length === 0 ? '#94a3b8' : '#fff', borderRadius: 12, border: 'none', fontSize: 11, fontWeight: 800, cursor: selectedPlanIds.length === 0 ? 'not-allowed' : 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', transition: 'all 0.15s', boxShadow: selectedPlanIds.length > 0 ? '0 4px 14px rgba(79,70,229,0.35)' : 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <BarChart3 style={{ width: 15, height: 15 }} />
+                  Gerar Mapa de Consumo
+                  <ChevronRight style={{ width: 13, height: 13 }} />
                 </button>
               </div>
             </div>
 
-            {/* BLOCKING ERRORS */}
+            {/* Erros */}
             {blockingErrors.length > 0 && (
-              <div className="bg-red-50 p-6 rounded-[32px] border border-red-100 animate-in slide-in-from-top duration-300">
-                <h3 className="text-xs font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  🚫 Bloqueio de Conformidade
-                </h3>
-                <ul className="space-y-2">
-                  {blockingErrors.map((err, idx) => (
-                    <li key={idx} className="text-[10px] font-bold text-red-800 bg-white/50 p-2 rounded-lg border border-red-100 flex items-start gap-2">
-                      <span>❌</span> {err}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-[10px] text-red-500 font-medium italic">
-                  Ação Necessária: Aprove os cardápios pendentes e corrija as violações nutricionais antes de gerar a licitação.
-                </p>
+              <div style={{ background: '#fff1f2', borderRadius: 14, border: '1px solid #fecdd3', borderLeft: '4px solid #dc2626', borderTopLeftRadius: 0, borderBottomLeftRadius: 0, padding: '14px 16px' }} className="animate-in slide-in-from-top duration-300">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <AlertCircle style={{ width: 16, height: 16, color: '#dc2626', flexShrink: 0 }} />
+                  <p style={{ fontSize: 11, fontWeight: 800, color: '#991b1b', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>Bloqueio de Conformidade</p>
+                </div>
+                {blockingErrors.map((err, i) => (
+                  <div key={i} style={{ fontSize: 11, color: '#7f1d1d', background: 'rgba(255,255,255,0.6)', padding: '7px 10px', borderRadius: 8, marginBottom: 5, border: '1px solid #fecdd3' }}>{err}</div>
+                ))}
               </div>
             )}
           </div>
 
-          {/* RIGHT: MAP RESULT */}
-          <div className="lg:col-span-8">
+          {/* PAINEL DIREITO */}
+          <div>
             {generatedMap ? (
-              <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full animate-in zoom-in duration-300">
-                <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <div style={{ background: '#fff', borderRadius: 18, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden', display: 'flex', flexDirection: 'column' }} className="animate-in zoom-in duration-300">
+                {/* Toolbar */}
+                <div style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', padding: '14px 18px', borderBottom: '1px solid #ddd6fe', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                   <div>
-                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Mapa de Consumo Consolidado</h3>
-                    <p className="text-xs text-slate-400 mt-1">Base: {selectedPlanIds.length} cardápios selecionados</p>
+                    <p style={{ fontSize: 13, fontWeight: 800, color: '#1e1b4b', margin: '0 0 2px' }}>Mapa de Consumo Consolidado</p>
+                    <p style={{ fontSize: 11, color: '#6d28d9', margin: 0 }}>Base: {selectedPlanIds.length} cardápio(s) · {selectedYear}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleExportETP}
-                      className="bg-indigo-50 text-indigo-700 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-all flex items-center gap-2"
-                    >
-                      <span>📊</span> Gerar ETP
-                    </button>
-                    <button
-                      onClick={handleExportTR}
-                      className="bg-emerald-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg hover:shadow-emerald-200 transition-all flex items-center gap-2"
-                    >
-                      <span>📄</span> Gerar TR
-                    </button>
-                    <button
-                      onClick={handleExportCSV}
-                      className="bg-white border border-slate-200 text-slate-600 px-4 py-3 rounded-xl text-[10px] font-black uppercase hover:bg-slate-50 transition-all flex items-center gap-2"
-                    >
-                      <span>📥</span> Excel (CSV)
-                    </button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    {[
+                      { label: 'Gerar ETP', icon: FileText, onClick: handleExportETP, bg: '#ede9fe', color: '#4f46e5', border: '#ddd6fe' },
+                      { label: 'Gerar TR', icon: Gavel, onClick: handleExportTR, bg: 'linear-gradient(135deg,#059669,#15803d)', color: '#fff', border: 'transparent', shadow: '0 4px 12px rgba(5,150,105,0.3)' },
+                      { label: 'CSV', icon: FileSpreadsheet, onClick: handleExportCSV, bg: '#fff', color: '#475569', border: '#e2e8f0' },
+                    ].map(btn => (
+                      <button key={btn.label} onClick={btn.onClick}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 700, border: `1px solid ${btn.border}`, cursor: 'pointer', background: btn.bg, color: btn.color, textTransform: 'uppercase', letterSpacing: '0.04em', boxShadow: btn.shadow || 'none', transition: 'all 0.15s' }}>
+                        <btn.icon style={{ width: 13, height: 13 }} />
+                        {btn.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-widest sticky top-0 z-10">
-                      <tr>
-                        <th className="px-6 py-4">Item</th>
-                        <th className="px-6 py-4 w-1/4">Especificação Técnica</th>
-                        <th className="px-6 py-4 text-center">Mod.</th>
-                        <th className="px-6 py-4 text-right">Planejado (KG)</th>
-                        <th className="px-6 py-4 text-right">Real (Ano Ant.)</th>
-                        <th className="px-6 py-4 text-center">Eficiência</th>
+                {/* Tabela */}
+                <div style={{ overflowX: 'auto', flex: 1 }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: 'linear-gradient(135deg,#1e1b4b,#312e81)' }}>
+                        {['Item', 'Especificação Técnica', 'Mod.', 'Planejado (KG)', 'Real (Ano Ant.)', 'Eficiência'].map((h, i) => (
+                          <th key={h} style={{ padding: '13px 16px', fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.65)', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: i >= 3 ? 'right' : i === 2 ? 'center' : 'left', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody>
                       {generatedMap.map((item, idx) => (
-                        <tr key={idx} className="hover:bg-indigo-50/10 transition-colors group">
-                          <td className="px-6 py-4">
-                            <div className="font-black text-slate-700 text-xs uppercase">{item.inventoryItemName}</div>
+                        <tr key={idx} style={{ borderBottom: '1px solid #f8fafc', background: idx % 2 === 0 ? '#fff' : '#fafaff', transition: 'background 0.15s' }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLTableRowElement).style.background = '#f5f3ff'; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 0 ? '#fff' : '#fafaff'; }}>
+                          <td style={{ padding: '11px 16px', fontSize: 12, fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>{item.inventoryItemName}</td>
+                          <td style={{ padding: '11px 16px', fontSize: 11, color: '#64748b', fontStyle: 'italic', maxWidth: 200 }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.technicalSpec}</div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="text-[10px] text-slate-500 italic leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all">
-                              {item.technicalSpec}
-                            </div>
+                          <td style={{ padding: '11px 16px', textAlign: 'center' }}>
+                            <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, textTransform: 'uppercase',
+                              background: item.isAF ? '#f0fdf4' : '#f8fafc', color: item.isAF ? '#15803d' : '#64748b',
+                              border: `1px solid ${item.isAF ? '#bbf7d0' : '#e2e8f0'}` }}>
+                              {item.isAF ? 'AF' : 'Geral'}
+                            </span>
                           </td>
-                          <td className="px-6 py-4 text-center">
-                            {item.isAF ? (
-                              <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black">AF</span>
-                            ) : (
-                              <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[9px] font-black">GERAL</span>
-                            )}
+                          <td style={{ padding: '11px 16px', textAlign: 'right', fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{item.totalQuantity.toFixed(2)}</td>
+                          <td style={{ padding: '11px 16px', textAlign: 'right', fontSize: 13, color: '#94a3b8', fontWeight: 600 }}>
+                            {realBenchmark[item.inventoryItemName] ? realBenchmark[item.inventoryItemName].totalReal.toFixed(2) : '—'}
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="font-black text-slate-800">{item.totalQuantity.toFixed(2)}</div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="font-bold text-slate-500">
-                              {realBenchmark[item.inventoryItemName] ? realBenchmark[item.inventoryItemName].totalReal.toFixed(2) : '-'}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            {realBenchmark[item.inventoryItemName] ? (
-                              <div className="flex flex-col items-center">
-                                <span className={`text-[10px] font-black ${realBenchmark[item.inventoryItemName].totalLoss > (realBenchmark[item.inventoryItemName].totalReal * 0.1) ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                  {((realBenchmark[item.inventoryItemName].totalReal / (realBenchmark[item.inventoryItemName].totalReal + realBenchmark[item.inventoryItemName].totalLoss)) * 100).toFixed(0)}%
-                                </span>
-                                <div className="w-12 h-1 bg-slate-100 rounded-full mt-1 overflow-hidden">
-                                  <div
-                                    className={`h-full ${realBenchmark[item.inventoryItemName].totalLoss > (realBenchmark[item.inventoryItemName].totalReal * 0.1) ? 'bg-rose-500' : 'bg-emerald-500'}`}
-                                    style={{ width: `${(realBenchmark[item.inventoryItemName].totalReal / (realBenchmark[item.inventoryItemName].totalReal + realBenchmark[item.inventoryItemName].totalLoss)) * 100}%` }}
-                                  />
+                          <td style={{ padding: '11px 16px', textAlign: 'right' }}>
+                            {realBenchmark[item.inventoryItemName] ? (() => {
+                              const rb = realBenchmark[item.inventoryItemName];
+                              const eff = (rb.totalReal / (rb.totalReal + rb.totalLoss)) * 100;
+                              const isGood = rb.totalLoss <= rb.totalReal * 0.1;
+                              return (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 800, color: isGood ? '#059669' : '#dc2626' }}>{eff.toFixed(0)}%</span>
+                                  <div style={{ width: 48, height: 5, background: '#f1f5f9', borderRadius: 99, overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: `${eff}%`, background: isGood ? '#22c55e' : '#ef4444', borderRadius: 99 }} />
+                                  </div>
                                 </div>
-                              </div>
-                            ) : <span className="text-slate-300">-</span>}
+                              );
+                            })() : <span style={{ color: '#cbd5e1', fontSize: 12 }}>—</span>}
                           </td>
                         </tr>
                       ))}
@@ -418,51 +274,72 @@ const ProcurementManager: React.FC<ProcurementManagerProps> = ({
                   </table>
                 </div>
 
-                <div className="p-4 bg-slate-50 border-t border-slate-200 text-center">
-                  <p className="text-[10px] text-slate-400 uppercase font-black">Total de Itens: {generatedMap.length} • Peso Total Estimado: {generatedMap.reduce((acc, i) => acc + i.totalQuantity, 0).toFixed(0)} KG</p>
+                {/* Footer */}
+                <div style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', padding: '12px 18px', borderTop: '1px solid #ddd6fe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: 20 }}>
+                    {[
+                      { label: 'Total de Itens', value: generatedMap.length.toString() },
+                      { label: 'Peso Total Estimado', value: `${generatedMap.reduce((a,i) => a + i.totalQuantity, 0).toFixed(0)} KG` },
+                      { label: 'Valor Total', value: `R$ ${generatedMap.reduce((a,i) => a + i.totalCost, 0).toLocaleString('pt-BR',{minimumFractionDigits:2})}` },
+                    ].map(stat => (
+                      <div key={stat.label}>
+                        <p style={{ fontSize: 9, fontWeight: 700, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 2px' }}>{stat.label}</p>
+                        <p style={{ fontSize: 14, fontWeight: 900, color: '#1e1b4b', margin: 0 }}>{stat.value}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
-              <div className="h-full bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center p-12 opacity-50">
-                <div className="text-6xl mb-6 grayscale">📊</div>
-                <h3 className="text-sm font-black text-slate-400 uppercase">Aguardando Seleção</h3>
-                <p className="text-xs text-slate-300 max-w-xs mt-2">Selecione os cardápios na lateral esquerda e clique em "Gerar Mapa" para visualizar a consolidação.</p>
+              <div style={{ background: '#faf9ff', borderRadius: 18, border: '2px dashed #ddd6fe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 64, textAlign: 'center', minHeight: 400 }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: '#ede9fe', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <BarChart3 style={{ width: 26, height: 26, color: '#4f46e5' }} />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: '#6d28d9', margin: '0 0 8px', letterSpacing: '-0.01em' }}>Aguardando Seleção</h3>
+                <p style={{ fontSize: 12, color: '#94a3b8', maxWidth: 260, lineHeight: 1.6, margin: 0 }}>Selecione os cardápios na lateral esquerda e clique em "Gerar Mapa" para visualizar a consolidação.</p>
               </div>
             )}
           </div>
         </div>
       )}
 
+      {/* ARQUIVO */}
       {activeTab === 'archive' && (
-        <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm p-8">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Histórico de Processos de Licitação</h3>
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-widest">
-              <tr>
-                <th className="px-6 py-4">Data</th>
-                <th className="px-6 py-4">Título</th>
-                <th className="px-6 py-4 text-center">Itens</th>
-                <th className="px-6 py-4 text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {plans.map(p => (
-                <tr key={p.id}>
-                  <td className="px-6 py-4 text-xs font-mono text-slate-500">{new Date(p.created_at).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 font-black uppercase text-slate-700">{p.titulo}</td>
-                  <td className="px-6 py-4 text-center font-bold text-slate-500">{p.itens.length}</td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-[9px] font-black uppercase">{p.status}</span>
-                  </td>
+        <div style={{ background: '#fff', borderRadius: 18, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden' }}>
+          <div style={{ background: 'linear-gradient(135deg,#f5f3ff,#ede9fe)', padding: '14px 20px', borderBottom: '1px solid #ddd6fe', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Clock style={{ width: 17, height: 17, color: '#4f46e5' }} />
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#1e1b4b', margin: 0 }}>Histórico de Processos de Licitação</p>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: 'linear-gradient(135deg,#1e1b4b,#312e81)' }}>
+                  {['Data', 'Título', 'Itens', 'Status'].map((h, i) => (
+                    <th key={h} style={{ padding: '13px 18px', fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.65)', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: i >= 2 ? 'center' : 'left' }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-              {plans.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400 italic text-xs">Nenhum processo arquivado.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {plans.map((p, idx) => (
+                  <tr key={p.id} style={{ borderBottom: '1px solid #f8fafc', background: idx % 2 === 0 ? '#fff' : '#fafaff', transition: 'background 0.15s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLTableRowElement).style.background = '#f5f3ff'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 0 ? '#fff' : '#fafaff'; }}>
+                    <td style={{ padding: '13px 18px', fontSize: 11, fontFamily: 'monospace', color: '#64748b' }}>{new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+                    <td style={{ padding: '13px 18px', fontSize: 13, fontWeight: 700, color: '#0f172a', textTransform: 'uppercase' }}>{p.titulo}</td>
+                    <td style={{ padding: '13px 18px', textAlign: 'center', fontSize: 14, fontWeight: 800, color: '#4f46e5' }}>{p.itens.length}</td>
+                    <td style={{ padding: '13px 18px', textAlign: 'center' }}>
+                      <span style={{ fontSize: 9.5, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: '#f5f3ff', color: '#4f46e5', border: '1px solid #ddd6fe', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.status}</span>
+                    </td>
+                  </tr>
+                ))}
+                {plans.length === 0 && (
+                  <tr><td colSpan={4} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: 13, fontStyle: 'italic' }}>Nenhum processo arquivado.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

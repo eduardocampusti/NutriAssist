@@ -45,16 +45,16 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
 
   return (
     <div className="page-transition max-w-5xl mx-auto pb-20 px-4">
-      <div className="glass-card rounded-[48px] soft-shadow border border-white/40 p-10 lg:p-16 relative overflow-hidden bg-white/80 backdrop-blur-xl">
+      <div style={{background:'#fff',borderRadius:22,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'28px 32px',position:'relative',overflow:'hidden'}}>
 
         {/* DECORATION */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-[100px] -mr-40 -mt-40"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-slate-500/5 rounded-full blur-[80px] -ml-32 -mb-32"></div>
+        <div style={{position:'absolute',top:-80,right:-80,width:260,height:260,background:'rgba(5,150,105,0.06)',borderRadius:'50%',filter:'blur(60px)',pointerEvents:'none'}}></div>
+        <div style={{position:'absolute',bottom:-60,left:-60,width:200,height:200,background:'rgba(100,116,139,0.04)',borderRadius:'50%',filter:'blur(50px)',pointerEvents:'none'}}></div>
 
         <header className="relative z-10 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+              <div style={{width:40,height:40,background:'linear-gradient(135deg,#059669,#15803d)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',boxShadow:'0 4px 14px rgba(5,150,105,0.35)',flexShrink:0}}>
                 <Sparkles size={20} />
               </div>
               <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">IA Redação Técnica v2.0</p>
@@ -67,8 +67,8 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
             </p>
           </div>
 
-          <div className="bg-slate-100/50 p-2 rounded-2xl border border-slate-200/50 flex items-center gap-2">
-            <div className="px-4 py-2 bg-white rounded-xl shadow-sm text-[10px] font-black text-slate-600 uppercase tracking-widest">
+          <div style={{background:'#f0fdf4',padding:'6px 8px',borderRadius:12,border:'1px solid #bbf7d0',display:'flex',alignItems:'center',gap:8}}>
+            <div style={{padding:'5px 12px',background:'#fff',borderRadius:8,boxShadow:'0 1px 4px rgba(0,0,0,0.07)',fontSize:9.5,fontWeight:800,color:'#059669',textTransform:'uppercase',letterSpacing:'0.08em'}}>
               Modo Escritório Virtual
             </div>
           </div>
@@ -76,7 +76,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
 
         <form onSubmit={handleSubmit} className={`relative z-10 space-y-10 ${(!canInsertDocument || isLoading) ? 'opacity-60 cursor-not-allowed' : ''}`}>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50/50 p-8 rounded-[32px] border border-slate-100">
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,background:'#f8fafc',padding:'18px 20px',borderRadius:16,border:'1px solid #f1f5f9',marginBottom:0}}>
             <div className="space-y-3">
               <label className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest px-1">
                 <FileText size={14} className="text-emerald-500" />
@@ -85,7 +85,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
               <select
                 value={selectedTypeId}
                 onChange={(e) => setSelectedTypeId(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all hover:border-emerald-500/30"
+                style={{width:'100%',background:'#fff',border:'1px solid #e2e8f0',borderRadius:10,padding:'9px 14px',fontSize:13,fontFamily:'inherit',fontWeight:600,color:'#0f172a',outline:'none',cursor:'pointer',boxSizing:'border-box'}}
                 disabled={isLoading}
               >
                 {activeDocTypes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
@@ -103,7 +103,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
               <select
                 value={selectedSchoolId}
                 onChange={(e) => setSelectedSchoolId(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all hover:border-emerald-500/30"
+                style={{width:'100%',background:'#fff',border:'1px solid #e2e8f0',borderRadius:10,padding:'9px 14px',fontSize:13,fontFamily:'inherit',fontWeight:600,color:'#0f172a',outline:'none',cursor:'pointer',boxSizing:'border-box'}}
                 disabled={isLoading}
               >
                 <option value="">REDE MUNICIPAL - GERAL (SME)</option>
@@ -137,7 +137,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
                 onChange={(e) => setContext(e.target.value)}
                 placeholder="Exemplo de escrita livre:&#10;Cardápio semanal de 6 a 10 anos, almoço: arroz, feijão, frango e salada. Precisa de adequação térmica e lista de ingredientes conforme PNAE."
                 rows={12}
-                className="w-full bg-slate-900 border-none rounded-[40px] px-10 py-12 text-base font-medium text-emerald-50 leading-relaxed focus:ring-8 focus:ring-emerald-500/5 outline-none placeholder:text-slate-600 shadow-inner group-hover:bg-slate-800 transition-colors"
+                style={{width:'100%',background:'#0f172a',border:'none',borderRadius:16,padding:'20px 24px',fontSize:14,fontFamily:'inherit',fontWeight:500,color:'#d1fae5',lineHeight:1.7,outline:'none',resize:'vertical',boxSizing:'border-box',boxShadow:'inset 0 2px 8px rgba(0,0,0,0.15)'}}
                 required
                 disabled={isLoading}
               />
@@ -155,7 +155,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Ex: Ref. Resolução 06/2020 FNDE, Portaria Interministerial nº..."
-                className="w-full bg-slate-100/80 border-none rounded-2xl px-8 py-5 text-sm font-bold text-slate-800 focus:ring-4 focus:ring-emerald-500/10 outline-none"
+                style={{width:'100%',background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:12,padding:'10px 16px',fontSize:13,fontFamily:'inherit',fontWeight:600,color:'#0f172a',outline:'none',boxSizing:'border-box'}}
                 disabled={isLoading}
               />
               <BookOpen size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300" />
@@ -177,7 +177,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
             <button
               type="submit"
               disabled={isLoading || !context}
-              className="w-full lg:w-auto min-w-[320px] bg-slate-900 hover:bg-emerald-600 text-white px-16 py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_20px_40px_rgba(0,0,0,0.1)] hover:shadow-emerald-500/20 transition-all duration-500 active:scale-95 disabled:opacity-30 flex items-center justify-center gap-5 group relative overflow-hidden"
+              style={{width:'100%',maxWidth:360,background:'linear-gradient(135deg,#059669,#15803d)',color:'#fff',padding:'13px 28px',borderRadius:13,border:'none',fontSize:12,fontWeight:800,textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer',boxShadow:'0 6px 20px rgba(5,150,105,0.4)',transition:'all 0.2s',display:'flex',alignItems:'center',justifyContent:'center',gap:10,opacity:(!context||isLoading)?0.4:1}} disabled={isLoading||!context}
             >
               {isLoading && (
                 <div className="absolute inset-0 bg-emerald-600 flex items-center justify-center">
@@ -193,17 +193,17 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
         </form>
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+      <div style={{marginTop:20,display:'flex',flexWrap:'wrap',justifyContent:'center',gap:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:5,fontSize:9.5,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',padding:'4px 12px',background:'#f8fafc',borderRadius:99,border:'1px solid #f1f5f9'}}>
           <Check size={14} /> Padrão ANVISA
         </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div style={{display:'flex',alignItems:'center',gap:5,fontSize:9.5,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',padding:'4px 12px',background:'#f8fafc',borderRadius:99,border:'1px solid #f1f5f9'}}>
           <Check size={14} /> Compliance PNAE
         </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div style={{display:'flex',alignItems:'center',gap:5,fontSize:9.5,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',padding:'4px 12px',background:'#f8fafc',borderRadius:99,border:'1px solid #f1f5f9'}}>
           <Check size={14} /> Normas CFN
         </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+        <div style={{display:'flex',alignItems:'center',gap:5,fontSize:9.5,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',padding:'4px 12px',background:'#f8fafc',borderRadius:99,border:'1px solid #f1f5f9'}}>
           <Check size={14} /> Lei 14.133/21
         </div>
       </div>

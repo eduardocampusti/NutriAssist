@@ -1,38 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSchools } from '../contexts/SchoolContext';
 import { useUsers } from '../contexts/UserContext';
 import { usePNAE } from '../contexts/PNAEContext';
 import { simulationService, ImpactSimulation } from '../services/simulationService';
 import { normativeService } from '../services/normativeService';
 import { generateTechnicalDocument } from '../services/geminiService';
-import {
-    NormativeFood,
-    UserRole,
-    EducationalStage
-} from '../types';
-import {
-    Play,
-    AlertOctagon,
-    Users,
-    School,
-    Zap,
-    ArrowRight,
-    FileText,
-    RefreshCw,
-    Search,
-    Calendar,
-    CheckCircle2,
-    AlertTriangle
-} from 'lucide-react';
+import { NormativeFood, UserRole } from '../types';
+import { Play, AlertOctagon, Users, School, Zap, FileText, RefreshCw, Search, CheckCircle2, X } from 'lucide-react';
 import { OfficialDocumentViewer } from './OfficialDocumentViewer';
+
+const S  = '0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';
+const SH = '0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';
 
 const NutritionalImpactSimulator: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { activeProfile } = useUsers();
     const { letterhead } = usePNAE();
-
     const [normativeFoods, setNormativeFoods] = useState<NormativeFood[]>([]);
-    const [selectedItemId, setSelectedItemId] = useState<string>('');
-    const [durationDays, setDurationDays] = useState<number>(7);
+    const [selectedItemId, setSelectedItemId] = useState('');
+    const [durationDays, setDurationDays] = useState(7);
     const [simulation, setSimulation] = useState<ImpactSimulation | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -40,319 +24,278 @@ const NutritionalImpactSimulator: React.FC<{ onClose: () => void }> = ({ onClose
     const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
-        const loadFoods = async () => {
-            const foods = await normativeService.getAll();
-            setNormativeFoods(foods);
-        };
-        loadFoods();
+        normativeService.getAll().then(setNormativeFoods).catch(() => {});
     }, []);
 
-    const filteredFoods = useMemo(() => {
-        return normativeFoods.filter(f => f.nome.toLowerCase().includes(searchTerm.toLowerCase()));
-    }, [normativeFoods, searchTerm]);
+    const filteredFoods = useMemo(() =>
+        normativeFoods.filter(f => f.nome.toLowerCase().includes(searchTerm.toLowerCase())),
+        [normativeFoods, searchTerm]);
 
     const handleRunSimulation = async () => {
         if (!selectedItemId) return;
         setIsLoading(true);
         try {
-            const selectedItem = normativeFoods.find(f => f.id === selectedItemId);
-            const itemName = selectedItem?.nome || 'Item Selecionado';
-
-            const result = await simulationService.runSimulation(selectedItemId, durationDays, itemName);
+            const item = normativeFoods.find(f => f.id === selectedItemId);
+            const result = await simulationService.runSimulation(selectedItemId, durationDays, item?.nome || '');
             setSimulation(result);
-        } catch (err) {
-            console.error("Erro na simulação:", err);
-        } finally {
-            setIsLoading(false);
-        }
+        } catch (e) { console.error(e); }
+        finally { setIsLoading(false); }
     };
 
     const handleGenerateOpinion = async () => {
         if (!simulation) return;
         setIsGenerating(true);
         try {
-            const context = {
-                item: simulation.itemName,
-                duracao: `${simulation.durationDays} dias`,
-                alunos_impactados: simulation.totalStudentsAffected,
-                escolas: simulation.schoolsAffectedCount,
-                modalidades: simulation.stagesAffected.join(', '),
-                risco: simulation.impactScore,
-                perdas_nutricionais: simulation.nutritionalLoss.map(l => `${l.nutrient}: -${l.impactPercent}%`).join('; '),
-                substituicoes: simulation.suggestedSubstitutes.map(s => s.nome).join(', ')
-            };
-
-            const doc = await generateTechnicalDocument(
-                'PARECER',
-                'PARECER',
-                context,
-                `Simulação de ausência de ${simulation.itemName} por ${simulation.durationDays} dias.`,
-                activeProfile?.role || UserRole.NUTRICIONISTA
-            );
+            const doc = await generateTechnicalDocument('PARECER', 'PARECER',
+                { item: simulation.itemName, duracao: `${simulation.durationDays} dias`, alunos_impactados: simulation.totalStudentsAffected },
+                `Simulação de ausência de ${simulation.itemName}.`, activeProfile?.role || UserRole.NUTRICIONISTA);
             setTechnicalOpinion(doc);
-        } catch (err) {
-            console.error("Erro ao gerar parecer:", err);
-        } finally {
-            setIsGenerating(false);
-        }
+        } catch (e) { console.error(e); }
+        finally { setIsGenerating(false); }
     };
 
-    const getImpactColor = (score: string) => {
-        switch (score) {
-            case 'ALTO': return 'text-red-500 bg-red-50 border-red-100';
-            case 'MÉDIO': return 'text-amber-500 bg-amber-50 border-amber-100';
-            default: return 'text-emerald-500 bg-emerald-50 border-emerald-100';
-        }
+    const IMPACT_STYLE: Record<string, { bg: string; color: string; border: string; gradient: string }> = {
+        ALTO:  { bg: '#fff1f2', color: '#be123c', border: '#fecdd3', gradient: 'linear-gradient(135deg,#fee2e2,#fca5a5)' },
+        MÉDIO: { bg: '#fffbeb', color: '#92400e', border: '#fde68a', gradient: 'linear-gradient(135deg,#fef3c7,#fcd34d)' },
+        BAIXO: { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', gradient: 'linear-gradient(135deg,#d1fae5,#6ee7b7)' },
     };
+    const imp = simulation ? (IMPACT_STYLE[simulation.impactScore] || IMPACT_STYLE['BAIXO']) : null;
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
-            {/* CABEÇALHO */}
-            <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 bg-emerald-500 text-white rounded-[24px] flex items-center justify-center text-3xl shadow-xl shadow-emerald-500/20">🧪</div>
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">Simulador de Impacto</h2>
-                        <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mt-2">Previsão Nutricional & Contingência PNAE</p>
+        <div style={{ paddingBottom: 80 }} className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+            {/* HEADER */}
+            <div style={{ background: '#fff', borderRadius: 20, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden', marginBottom: 20 }}>
+                <div style={{ background: 'linear-gradient(135deg,#d1fae5,#6ee7b7)', padding: '18px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(5,150,105,0.2)', flexShrink: 0 }}>
+                            <Zap style={{ width: 22, height: 22, color: '#065f46' }} />
+                        </div>
+                        <div>
+                            <h2 style={{ fontSize: 17, fontWeight: 900, color: '#064e3b', margin: 0, letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Simulador de Impacto</h2>
+                            <p style={{ fontSize: 12, color: '#059669', margin: 0, fontWeight: 600 }}>Previsão Nutricional · Contingência PNAE</p>
+                        </div>
                     </div>
+                    <button onClick={onClose} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(6,78,59,0.15)', color: '#065f46', fontSize: 11, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <X style={{ width: 13, height: 13 }} /> Fechar
+                    </button>
                 </div>
-                <button
-                    onClick={onClose}
-                    className="px-6 py-3 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
-                >
-                    Fechar Simulador
-                </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* CONFIGURAÇÃO DA SIMULAÇÃO */}
-                <div className="lg:col-span-4 space-y-6">
-                    <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm space-y-6">
-                        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest pl-2">Parâmetros de Ausência</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 18 }}>
 
-                        <div className="space-y-4">
-                            <label className="block">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Item Alimentar</span>
-                                <div className="mt-2 relative">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <input
-                                        type="text"
-                                        placeholder="Filtrar item..."
-                                        value={searchTerm}
-                                        onChange={e => setSearchTerm(e.target.value)}
-                                        className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-4 py-4 text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
-                                    />
+                {/* PAINEL ESQUERDO */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+                    {/* Parâmetros */}
+                    <div style={{ background: '#fff', borderRadius: 18, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden' }}>
+                        <div style={{ background: 'linear-gradient(135deg,#f0fdf4,#dcfce7)', padding: '14px 18px', borderBottom: '1px solid #bbf7d0' }}>
+                            <p style={{ fontSize: 9.5, fontWeight: 700, color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>Configuração</p>
+                            <p style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', margin: 0 }}>Parâmetros de Ausência</p>
+                        </div>
+                        <div style={{ padding: '18px 18px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                            {/* Busca */}
+                            <div>
+                                <label style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 6 }}>Item Alimentar</label>
+                                <div style={{ position: 'relative', marginBottom: 8 }}>
+                                    <Search style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 14, height: 14, color: '#94a3b8' }} />
+                                    <input type="text" placeholder="Filtrar item..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+                                        style={{ width: '100%', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '9px 12px 9px 36px', fontSize: 13, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
                                 </div>
-                                <select
-                                    value={selectedItemId}
-                                    onChange={e => setSelectedItemId(e.target.value)}
-                                    className="w-full mt-2 bg-slate-50 border-none rounded-2xl px-4 py-4 text-xs font-black text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20"
-                                >
+                                <select value={selectedItemId} onChange={e => setSelectedItemId(e.target.value)}
+                                    style={{ width: '100%', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '9px 12px', fontSize: 12, fontFamily: 'inherit', fontWeight: 600, outline: 'none', color: '#0f172a' }}>
                                     <option value="">Selecione o Insumo</option>
-                                    {filteredFoods.map(f => (
-                                        <option key={f.id} value={f.id}>{f.nome}</option>
-                                    ))}
+                                    {filteredFoods.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}
                                 </select>
-                            </label>
+                            </div>
 
-                            <label className="block">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Período de Ruptura</span>
-                                <div className="mt-2 grid grid-cols-3 gap-2">
-                                    {[1, 7, 30].map(d => (
-                                        <button
-                                            key={d}
-                                            onClick={() => setDurationDays(d)}
-                                            className={`py-3 rounded-xl border-2 text-[10px] font-black transition-all ${durationDays === d
-                                                ? 'border-emerald-500 bg-emerald-50 text-emerald-600'
-                                                : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'
-                                                }`}
-                                        >
-                                            {d === 1 ? '1 DIA' : d === 7 ? '1 SEMANA' : '1 MÊS'}
+                            {/* Período */}
+                            <div>
+                                <label style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: 8 }}>Período de Ruptura</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 6, marginBottom: 8 }}>
+                                    {[{ v: 1, l: '1 Dia' }, { v: 7, l: '1 Semana' }, { v: 30, l: '1 Mês' }].map(d => (
+                                        <button key={d.v} onClick={() => setDurationDays(d.v)}
+                                            style={{ padding: '8px', borderRadius: 9, fontSize: 10, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s', textTransform: 'uppercase', letterSpacing: '0.04em',
+                                                background: durationDays === d.v ? '#059669' : '#f8fafc',
+                                                color: durationDays === d.v ? '#fff' : '#64748b',
+                                                border: `1px solid ${durationDays === d.v ? '#059669' : '#e2e8f0'}`,
+                                                boxShadow: durationDays === d.v ? '0 3px 10px rgba(5,150,105,0.3)' : 'none',
+                                            }}>
+                                            {d.l}
                                         </button>
                                     ))}
                                 </div>
-                                <input
-                                    type="number"
-                                    value={durationDays}
-                                    onChange={e => setDurationDays(Number(e.target.value))}
-                                    className="w-full mt-2 bg-slate-50 border-none rounded-2xl px-4 py-4 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20"
-                                    placeholder="Outro (dias)"
-                                />
-                            </label>
+                                <input type="number" value={durationDays} onChange={e => setDurationDays(Number(e.target.value))}
+                                    style={{ width: '100%', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '9px 12px', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', outline: 'none', color: '#0f172a', boxSizing: 'border-box' }} />
+                            </div>
 
-                            <button
-                                onClick={handleRunSimulation}
-                                disabled={!selectedItemId || isLoading}
-                                className="w-full bg-slate-900 text-white font-black py-5 rounded-[20px] shadow-lg shadow-slate-900/10 flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <RefreshCw className="w-5 h-5 animate-spin" />
-                                        <span>ANALISANDO CADEIA...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Play className="w-5 h-5 fill-current" />
-                                        <span>EXECUTAR SIMULAÇÃO</span>
-                                    </>
-                                )}
+                            {/* Botão executar */}
+                            <button onClick={handleRunSimulation} disabled={!selectedItemId || isLoading}
+                                style={{ width: '100%', padding: '12px', background: !selectedItemId || isLoading ? '#f1f5f9' : 'linear-gradient(135deg,#059669,#15803d)', color: !selectedItemId || isLoading ? '#94a3b8' : '#fff', borderRadius: 12, border: 'none', fontSize: 12, fontWeight: 800, cursor: !selectedItemId || isLoading ? 'not-allowed' : 'pointer', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: selectedItemId && !isLoading ? '0 4px 14px rgba(5,150,105,0.35)' : 'none', transition: 'all 0.15s' }}>
+                                {isLoading ? <><RefreshCw style={{ width: 15, height: 15, animation: 'spin 1s linear infinite' }} /> Analisando...</> : <><Play style={{ width: 14, height: 14 }} /> Executar Simulação</>}
                             </button>
                         </div>
                     </div>
 
-                    {/* ALERTA DE SEGURANÇA */}
-                    <div className="bg-indigo-900 p-6 rounded-[32px] text-white space-y-3 relative overflow-hidden">
-                        <div className="relative z-10 flex items-start gap-4">
-                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                                <Zap className="w-5 h-5 text-amber-300" />
+                    {/* Aviso */}
+                    <div style={{ background: 'linear-gradient(135deg,#1e1b4b,#312e81)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                            <div style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.12)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Zap style={{ width: 15, height: 15, color: '#fbbf24' }} />
                             </div>
                             <div>
-                                <h4 className="text-xs font-black uppercase tracking-widest">Aviso de Integridade</h4>
-                                <p className="text-[10px] text-indigo-200 font-medium leading-relaxed mt-1">
-                                    As simulações **não alteram** dados reais de estoque ou cardápio. Use para planejar contingências e gerar pareceres de substituição técnica.
-                                </p>
+                                <p style={{ fontSize: 10, fontWeight: 800, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>Aviso de Integridade</p>
+                                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, margin: 0 }}>As simulações não alteram dados reais de estoque ou cardápio. Use para planejar contingências.</p>
                             </div>
                         </div>
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                     </div>
                 </div>
 
-                {/* RESULTADOS DA SIMULAÇÃO */}
-                <div className="lg:col-span-8">
+                {/* PAINEL DIREITO */}
+                <div>
                     {!simulation ? (
-                        <div className="h-full bg-white rounded-[40px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center p-20 text-center space-y-4">
-                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-3xl">🧩</div>
-                            <div>
-                                <h3 className="text-xl font-black text-slate-800 tracking-tight uppercase">Dashboard Vazio</h3>
-                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">Selecione um item e período para iniciar a análise</p>
+                        <div style={{ background: '#f0fdf4', borderRadius: 18, border: '2px dashed #bbf7d0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 64, textAlign: 'center', minHeight: 420 }}>
+                            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                                <Zap style={{ width: 26, height: 26, color: '#15803d' }} />
                             </div>
+                            <h3 style={{ fontSize: 15, fontWeight: 800, color: '#15803d', margin: '0 0 8px', letterSpacing: '-0.01em' }}>Dashboard Vazio</h3>
+                            <p style={{ fontSize: 12, color: '#86efac', maxWidth: 240, lineHeight: 1.6, margin: 0 }}>Selecione um item e período para iniciar a análise de impacto.</p>
                         </div>
                     ) : (
-                        <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
-                            {/* SCORE DE IMPACTO */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className={`p-6 rounded-[32px] border shadow-sm ${getImpactColor(simulation.impactScore)}`}>
-                                    <div className="flex justify-between items-start">
-                                        <AlertOctagon className="w-6 h-6" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Risco Logístico</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }} className="animate-in fade-in zoom-in-95 duration-500">
+
+                            {/* KPI IMPACT CARDS */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+                                {/* Score */}
+                                <div style={{ borderRadius: 18, overflow: 'hidden', boxShadow: S, transition: 'all 0.2s' }}
+                                    onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = SH; el.style.transform = 'translateY(-3px)'; }}
+                                    onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = S; el.style.transform = 'translateY(0)'; }}>
+                                    <div style={{ background: imp!.gradient, padding: '16px 18px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}>
+                                            <AlertOctagon style={{ width: 17, height: 17, color: imp!.color }} />
+                                        </div>
+                                        <span style={{ fontSize: 9.5, fontWeight: 700, color: imp!.color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Risco Logístico</span>
                                     </div>
-                                    <h4 className="text-2xl font-black mt-4 uppercase leading-none">{simulation.impactScore} IMPACTO</h4>
+                                    <div style={{ background: '#fff', padding: '14px 18px 18px' }}>
+                                        <div style={{ fontSize: 28, fontWeight: 900, color: imp!.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{simulation.impactScore}</div>
+                                        <p style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '4px 0 0' }}>Nível de Impacto</p>
+                                    </div>
                                 </div>
-                                <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm">
-                                    <div className="flex justify-between items-start text-slate-400">
-                                        <Users className="w-6 h-6" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Alunos Afetados</span>
+
+                                {/* Alunos */}
+                                <div style={{ borderRadius: 18, overflow: 'hidden', boxShadow: S, transition: 'all 0.2s' }}
+                                    onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = SH; el.style.transform = 'translateY(-3px)'; }}
+                                    onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = S; el.style.transform = 'translateY(0)'; }}>
+                                    <div style={{ background: 'linear-gradient(135deg,#dbeafe,#93c5fd)', padding: '16px 18px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <Users style={{ width: 17, height: 17, color: '#1e3a5f' }} />
+                                        </div>
+                                        <span style={{ fontSize: 9.5, fontWeight: 700, color: '#1e3a5f', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Alunos Afetados</span>
                                     </div>
-                                    <h4 className="text-2xl font-black text-slate-800 mt-4 leading-none">{simulation.totalStudentsAffected.toLocaleString()}</h4>
+                                    <div style={{ background: '#fff', padding: '14px 18px 18px' }}>
+                                        <div style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1 }}>{simulation.totalStudentsAffected.toLocaleString('pt-BR')}</div>
+                                        <p style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '4px 0 0' }}>Matrículas impactadas</p>
+                                    </div>
                                 </div>
-                                <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm">
-                                    <div className="flex justify-between items-start text-slate-400">
-                                        <School className="w-6 h-6" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Escolas Atingidas</span>
+
+                                {/* Escolas */}
+                                <div style={{ borderRadius: 18, overflow: 'hidden', boxShadow: S, transition: 'all 0.2s' }}
+                                    onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = SH; el.style.transform = 'translateY(-3px)'; }}
+                                    onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = S; el.style.transform = 'translateY(0)'; }}>
+                                    <div style={{ background: 'linear-gradient(135deg,#ede9fe,#c4b5fd)', padding: '16px 18px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <School style={{ width: 17, height: 17, color: '#4c1d95' }} />
+                                        </div>
+                                        <span style={{ fontSize: 9.5, fontWeight: 700, color: '#4c1d95', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Escolas Atingidas</span>
                                     </div>
-                                    <h4 className="text-2xl font-black text-slate-800 mt-4 leading-none">{simulation.schoolsAffectedCount} UNIDADES</h4>
+                                    <div style={{ background: '#fff', padding: '14px 18px 18px' }}>
+                                        <div style={{ fontSize: 28, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1 }}>{simulation.schoolsAffectedCount}</div>
+                                        <p style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '4px 0 0' }}>Unidades escolares</p>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* DETALHAMENTO NUTRICIONAL */}
-                            <div className="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm lg:col-span-2">
-                                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                    <Zap className="w-4 h-4 text-emerald-500" />
-                                    Comprometimento Nutricional Esperado
-                                </h3>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-4">
-                                        {simulation.nutritionalLoss.map((loss, idx) => (
-                                            <div key={idx} className="space-y-1.5">
-                                                <div className="flex justify-between text-[10px] font-black uppercase">
-                                                    <span className="text-slate-500">{loss.nutrient}</span>
-                                                    <span className="text-red-500">-{loss.impactPercent}%</span>
+                            <div style={{ background: '#fff', borderRadius: 18, border: '1px solid rgba(0,0,0,0.07)', boxShadow: S, overflow: 'hidden' }}>
+                                <div style={{ background: 'linear-gradient(135deg,#f8fafc,#f1f5f9)', padding: '14px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: 9, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Zap style={{ width: 15, height: 15, color: '#15803d' }} />
+                                    </div>
+                                    <p style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', margin: 0 }}>Comprometimento Nutricional Esperado</p>
+                                </div>
+                                <div style={{ padding: '18px 20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                                        {simulation.nutritionalLoss.map((loss, i) => (
+                                            <div key={i}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                                                    <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{loss.nutrient}</span>
+                                                    <span style={{ fontSize: 10, fontWeight: 800, color: '#dc2626' }}>-{loss.impactPercent}%</span>
                                                 </div>
-                                                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-red-400 rounded-full transition-all duration-1000"
-                                                        style={{ width: `${loss.impactPercent}%` }}
-                                                    />
+                                                <div style={{ height: 7, background: '#f1f5f9', borderRadius: 99, overflow: 'hidden' }}>
+                                                    <div style={{ height: '100%', background: 'linear-gradient(90deg,#ef4444,#dc2626)', borderRadius: 99, width: `${loss.impactPercent}%`, transition: 'width 1s ease' }} />
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
-
-                                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Modalidades Afetadas</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {simulation.stagesAffected.map(stage => (
-                                                <span key={stage} className="bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black text-slate-600 uppercase">
-                                                    {stage}
-                                                </span>
+                                    <div style={{ background: '#f8fafc', borderRadius: 14, padding: '16px 18px', border: '1px solid #f1f5f9' }}>
+                                        <p style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Modalidades Afetadas</p>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                            {simulation.stagesAffected.map(s => (
+                                                <span key={s} style={{ fontSize: 9.5, fontWeight: 700, padding: '4px 10px', borderRadius: 7, background: '#fff', border: '1px solid #e2e8f0', color: '#475569', textTransform: 'uppercase' }}>{s}</span>
                                             ))}
                                         </div>
-                                        <div className="mt-6 pt-6 border-t border-slate-200 flex items-center gap-3">
-                                            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                            <p className="text-[10px] font-bold text-red-600 uppercase">Revisão de Cardápio Urgente: {simulation.menusAffectedCount} Planos</p>
+                                        <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: 7 }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#dc2626', flexShrink: 0, boxShadow: '0 0 0 3px rgba(220,38,38,0.15)', display: 'inline-block' }} />
+                                            <p style={{ fontSize: 10, fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', margin: 0 }}>Revisão Urgente: {simulation.menusAffectedCount} Planos</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* SUBSTITUIÇÕES SUGERIDAS */}
-                            <div className="bg-slate-900 p-8 rounded-[40px] text-white shadow-xl">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                                        Substituições Técnicas Equivalentes
-                                    </h3>
-                                    <span className="bg-white/10 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">Mesmo Grupo Alimentar</span>
+                            {/* SUBSTITUIÇÕES */}
+                            <div style={{ background: 'linear-gradient(135deg,#0f172a,#1e293b)', borderRadius: 18, padding: '20px 22px', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                                        <CheckCircle2 style={{ width: 17, height: 17, color: '#34d399' }} />
+                                        <p style={{ fontSize: 13, fontWeight: 800, color: '#fff', margin: 0 }}>Substituições Técnicas Equivalentes</p>
+                                    </div>
+                                    <span style={{ fontSize: 9.5, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', border: '1px solid rgba(255,255,255,0.08)' }}>Mesmo Grupo</span>
                                 </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 16 }}>
                                     {simulation.suggestedSubstitutes.map(sub => (
-                                        <div key={sub.id} className="bg-white/5 border border-white/10 p-4 rounded-2xl hover:bg-white/10 transition-all cursor-default group">
-                                            <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">{sub.grupo_alimentar}</span>
-                                            <h5 className="text-xs font-black mt-1 group-hover:text-emerald-300 transition-colors">{sub.nome}</h5>
-                                            <div className="flex items-center gap-1.5 mt-3 text-[9px] font-bold text-slate-400 uppercase">
-                                                <FileText className="w-3 h-3" />
-                                                <span>Padrão PNAE</span>
+                                        <div key={sub.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px', transition: 'all 0.15s' }}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.10)'; }}
+                                            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)'; }}>
+                                            <p style={{ fontSize: 9, fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 4px' }}>{sub.grupo_alimentar}</p>
+                                            <p style={{ fontSize: 12, fontWeight: 700, color: '#fff', margin: '0 0 8px' }}>{sub.nome}</p>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                                <FileText style={{ width: 11, height: 11, color: '#64748b' }} />
+                                                <span style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Padrão PNAE</span>
                                             </div>
                                         </div>
                                     ))}
                                     {simulation.suggestedSubstitutes.length === 0 && (
-                                        <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl col-span-3">
-                                            <p className="text-[10px] font-black text-red-400 uppercase">Nenhuma substituição direta encontrada no catálogo normativo.</p>
+                                        <div style={{ gridColumn: '1/-1', background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 10, padding: '12px 14px' }}>
+                                            <p style={{ fontSize: 11, color: '#f87171', fontWeight: 700, margin: 0 }}>Nenhuma substituição direta encontrada no catálogo normativo.</p>
                                         </div>
                                     )}
                                 </div>
-
-                                <div className="mt-8 flex flex-col md:flex-row gap-4">
-                                    <button
-                                        onClick={handleGenerateOpinion}
-                                        disabled={isGenerating}
-                                        className="flex-1 bg-emerald-500 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all group disabled:opacity-50"
-                                    >
-                                        {isGenerating ? (
-                                            <RefreshCw className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                        )}
-                                        <span>{isGenerating ? 'GERANDO FUNDAMENTAÇÃO...' : 'GERAR PARECER TÉCNICO (IA)'}</span>
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                    <button onClick={handleGenerateOpinion} disabled={isGenerating}
+                                        style={{ flex: 1, padding: '11px', background: isGenerating ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg,#059669,#15803d)', color: '#fff', borderRadius: 11, border: 'none', fontSize: 11, fontWeight: 800, cursor: isGenerating ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, textTransform: 'uppercase', letterSpacing: '0.06em', boxShadow: isGenerating ? 'none' : '0 4px 14px rgba(5,150,105,0.4)', transition: 'all 0.15s' }}>
+                                        {isGenerating ? <RefreshCw style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} /> : <FileText style={{ width: 14, height: 14 }} />}
+                                        {isGenerating ? 'Gerando Fundamentação...' : 'Gerar Parecer Técnico (IA)'}
                                     </button>
-                                    <button
-                                        onClick={() => window.print()}
-                                        className="px-8 bg-white/10 text-white font-black py-4 rounded-2xl hover:bg-white/20 transition-all text-xs uppercase tracking-widest"
-                                    >
-                                        IMPRIMIR ANÁLISE
+                                    <button onClick={() => window.print()}
+                                        style={{ padding: '11px 20px', background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 11, border: '1px solid rgba(255,255,255,0.1)', fontSize: 11, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                        Imprimir
                                     </button>
                                 </div>
                             </div>
 
-                            {/* MODAL / VIEW DO PARECER TÉCNICO */}
                             {technicalOpinion && (
-                                <OfficialDocumentViewer
-                                    content={technicalOpinion}
-                                    config={letterhead}
-                                    onClose={() => setTechnicalOpinion(null)}
-                                />
+                                <OfficialDocumentViewer content={technicalOpinion} config={letterhead} onClose={() => setTechnicalOpinion(null)} />
                             )}
                         </div>
                     )}

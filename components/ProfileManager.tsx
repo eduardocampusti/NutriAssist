@@ -123,20 +123,11 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
     <div className="max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500">
 
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50 pointer-events-none"></div>
+      <div style={{background:'#fff',borderRadius:20,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',overflow:'hidden',marginBottom:0}}><div style={{background:'linear-gradient(135deg,#d1fae5,#6ee7b7)',padding:'16px 22px',display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,flexWrap:'wrap'}}>
+        
+        <div style={{display:'flex',alignItems:'center',gap:14}}><div style={{width:42,height:42,background:'linear-gradient(135deg,#059669,#15803d)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 14px rgba(5,150,105,0.35)',flexShrink:0}}><Shield style={{width:20,height:20,color:'#fff'}} /></div><div><h2 style={{fontSize:17,fontWeight:900,color:'#064e3b',margin:0,letterSpacing:'-0.02em',textTransform:'uppercase'}}>Gestão de Usuários</h2><p style={{fontSize:12,color:'#059669',margin:0}}>Controle de credenciais e permissões da rede</p></div></div>
 
-        <div className="flex items-center gap-5 relative z-10">
-          <div className="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-emerald-200">
-            <Shield className="w-7 h-7" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-black text-slate-800 tracking-tight">Gestão de Usuários</h2>
-            <p className="text-slate-500 font-medium">Controle de credenciais e permissões da rede</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 relative z-10">
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
           <div className="relative group">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-emerald-500 transition-colors" />
             <input
@@ -144,25 +135,21 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
               placeholder="Buscar usuário..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-medium w-64 focus:ring-2 focus:ring-emerald-100 transition-all outline-none"
+              style={{paddingLeft:36,paddingRight:16,paddingTop:9,paddingBottom:9,background:'rgba(255,255,255,0.8)',border:'1px solid rgba(5,150,105,0.2)',borderRadius:10,fontSize:13,fontFamily:'inherit',fontWeight:500,width:220,outline:'none'}}
             />
           </div>
 
           {isAdmin && !isFormOpen && (
             <button
               onClick={handleCreateNew}
-              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-black transition-all shadow-xl hover:shadow-2xl flex items-center gap-2 active:scale-95"
+              style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',color:'#fff',padding:'9px 18px',borderRadius:10,fontWeight:700,fontSize:12,letterSpacing:'0.04em',border:'none',cursor:'pointer',display:'flex',alignItems:'center',gap:7,boxShadow:'0 4px 14px rgba(0,0,0,0.25)',textTransform:'uppercase'}}
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus style={{width:14,height:14}} />
               NOVO USUÁRIO
             </button>
           )}
 
-          <button onClick={onClose} className="p-3 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'rgba(255,255,255,0.65)',border:'1px solid rgba(5,150,105,0.2)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#065f46'}}><X style={{width:15,height:15}} /></button></div></div></div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
 
@@ -189,8 +176,7 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
                       <tr key={profile.id} style={{borderBottom:'1px solid #f8fafc',transition:'background 0.15s'}} onMouseEnter={e=>{(e.currentTarget as HTMLTableRowElement).style.background='#f0fdf4';}} onMouseLeave={e=>{(e.currentTarget as HTMLTableRowElement).style.background='transparent';}}>
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm overflow-hidden border-2 shadow-sm transition-transform group-hover:scale-105 ${profile.bloqueado ? 'bg-red-50 border-red-100 text-red-500' : 'bg-white border-slate-100 text-slate-600'
-                              }`}>
+                            <div style={{width:36,height:36,borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:13,overflow:'hidden',border:'1px solid',flexShrink:0,background:profile.bloqueado?'#fff1f2':'#f0fdf4',borderColor:profile.bloqueado?'#fecdd3':'#bbf7d0',color:profile.bloqueado?'#be123c':'#15803d'}}>
                               {profile.foto ? (
                                 <img src={profile.foto} alt="" className="w-full h-full object-cover" />
                               ) : (
@@ -287,20 +273,7 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
         {/* PAINEL LATERAL (Formulário) */}
         {isFormOpen && (
           <div className="lg:col-span-4 sticky top-6 animate-in slide-in-from-right-8 duration-500">
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl p-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-blue-500"></div>
-
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">
-                    {editingId ? 'Editar Perfil' : 'Novo Acesso'}
-                  </h3>
-                  <p className="text-xs text-slate-400 font-medium">Preencha os dados cadastrais</p>
-                </div>
-                <button onClick={handleCloseForm} className="p-2 hover:bg-slate-100 rounded-full text-slate-400">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+            <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',overflow:'hidden'}}><div style={{background:'linear-gradient(135deg,#f0fdf4,#dcfce7)',padding:'14px 18px',borderBottom:'1px solid #bbf7d0',display:'flex',justifyContent:'space-between',alignItems:'center'}}><div><p style={{fontSize:13,fontWeight:800,color:'#064e3b',margin:0}}>{editingId ? 'Editar Perfil' : 'Novo Acesso'}</p><p style={{fontSize:11,color:'#059669',margin:0}}>Preencha os dados cadastrais</p></div><button onClick={handleCloseForm} style={{width:28,height:28,borderRadius:7,background:'rgba(255,255,255,0.7)',border:'1px solid #bbf7d0',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#059669'}}><X style={{width:13,height:13}} /></button></div><div style={{padding:'16px 18px'}}>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="flex justify-center mb-2">
@@ -423,18 +396,18 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
                   <button
                     type="button"
                     onClick={handleCloseForm}
-                    className="flex-1 bg-white border border-slate-200 text-slate-600 font-bold py-3 rounded-xl text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors"
+                    style={{flex:1,background:'#f8fafc',border:'1px solid #e2e8f0',color:'#475569',fontWeight:700,padding:'10px',borderRadius:10,fontSize:11,textTransform:'uppercase',cursor:'pointer',fontFamily:'inherit'}}
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="flex-[2] bg-emerald-500 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-200 active:scale-95"
+                    style={{flex:2,background:'linear-gradient(135deg,#059669,#15803d)',color:'#fff',fontWeight:800,padding:'10px',borderRadius:10,fontSize:11,textTransform:'uppercase',cursor:'pointer',border:'none',boxShadow:'0 4px 12px rgba(5,150,105,0.3)',fontFamily:'inherit'}}
                   >
                     {editingId ? 'Salvar Edição' : 'Criar Acesso'}
                   </button>
                 </div>
-              </form>
+              </form></div>
             </div>
           </div>
         )}

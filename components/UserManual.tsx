@@ -61,21 +61,21 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print:grid-cols-1 print:gap-4">
-                  <div className="p-8 bg-slate-50 rounded-[40px] border border-slate-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300">
+                  <div className="p-8 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300">
                      <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center print:bg-slate-200 print:text-slate-900">
                         <Gavel className="w-5 h-5" />
                      </div>
                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest print:text-slate-600">Base Legal</h4>
                      <p className="text-xs font-bold text-slate-700 leading-relaxed print:text-[11px] print:font-normal">Instituído conforme Lei Federal nº 11.947/2009 e Resoluções do FNDE, servindo como registro oficial para auditorias do Tribunal de Contas e do CAE.</p>
                   </div>
-                  <div className="p-8 bg-emerald-50 rounded-[40px] border border-emerald-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300 print:bg-white">
+                  <div className="p-8 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300 print:bg-white">
                      <div className="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center print:bg-slate-200 print:text-slate-900">
                         <Lock className="w-5 h-5" />
                      </div>
                      <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest print:text-slate-600">Segurança de Dados</h4>
                      <p className="text-xs font-bold text-emerald-900 leading-relaxed print:text-[11px] print:font-normal print:text-slate-700">Operação em conformidade com a LGPD (Lei 13.709/2018), protegendo dados sensíveis de saúde e informações pessoais de alunos e servidores.</p>
                   </div>
-                  <div className="p-8 bg-indigo-50 rounded-[40px] border border-indigo-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300 print:bg-white">
+                  <div className="p-8 bg-indigo-50 rounded-2xl border border-indigo-100 space-y-4 print:p-6 print:rounded-2xl print:border-slate-300 print:bg-white">
                      <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center print:bg-slate-200 print:text-slate-900">
                         <CheckCircle className="w-5 h-5" />
                      </div>
@@ -84,7 +84,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-slate-900 text-white rounded-[48px] shadow-2xl overflow-hidden relative group print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300 print:shadow-none">
+               <div className="p-10 bg-slate-900 text-white rounded-2xl shadow-2xl overflow-hidden relative group print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300 print:shadow-none">
                   <Shield className="absolute top-0 right-0 w-64 h-64 opacity-5 -mr-12 -mt-12 group-hover:scale-110 transition-transform duration-1000 print:hidden" />
                   <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start">
                      <div className="space-y-4 max-w-xl">
@@ -109,7 +109,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.ADMIN, UserRole.NUTRICIONISTA, UserRole.SECRETARIA, UserRole.DIRETOR, UserRole.MERENDEIRA, UserRole.TECNICO],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-10 bg-emerald-50 border border-emerald-100 rounded-[48px] relative overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300">
+               <div className="p-10 bg-emerald-50 border border-emerald-100 rounded-2xl relative overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300">
                   <ShieldCheck className="absolute top-0 right-0 w-32 h-32 text-emerald-100 -mr-6 -mt-6 print:hidden" />
                   <div className="relative z-10 space-y-4">
                      <span className="px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest print:bg-slate-100 print:text-slate-600">Compliance & Segurança</span>
@@ -134,7 +134,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                      { t: 'Sigilo de Dados', d: 'Proibição de compartilhamento de informações sensíveis.' },
                      { t: 'Conformidade LGPD', d: 'Proteção integral conforme a Lei Geral de Proteção de Dados.' }
                   ].map((item, i) => (
-                     <div key={i} className="group p-6 bg-white border border-slate-100 rounded-[32px] hover:border-emerald-500 transition-all shadow-sm print:p-4 print:rounded-xl print:border-slate-300 print:shadow-none">
+                     <div key={i} className="group p-6 bg-white border border-slate-100 rounded-xl hover:border-emerald-500 transition-all shadow-sm print:p-4 print:rounded-xl print:border-slate-300 print:shadow-none">
                         <div className="flex items-center gap-4">
                            <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform print:bg-slate-100 print:text-slate-900 print:shadow-none">
                               <CheckCircle2 className="w-4 h-4" />
@@ -148,7 +148,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   ))}
                </div>
 
-               <div className="p-8 bg-slate-900 text-white rounded-[40px] border border-slate-800 relative overflow-hidden print:p-6 print:rounded-2xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
+               <div className="p-8 bg-slate-900 text-white rounded-2xl border border-slate-800 relative overflow-hidden print:p-6 print:rounded-2xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
                   <AlertTriangle className="absolute top-0 right-0 w-32 h-32 opacity-10 -mr-6 -mt-6 print:hidden" />
                   <div className="flex gap-6 items-start relative z-10">
                      <div className="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-rose-900/20 print:bg-rose-100 print:text-rose-600 print:shadow-none">
@@ -172,7 +172,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.ADMIN, UserRole.NUTRICIONISTA, UserRole.SECRETARIA, UserRole.DIRETOR, UserRole.MERENDEIRA, UserRole.TECNICO],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-slate-900 border border-slate-800 rounded-[56px] shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
+               <div className="p-12 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
                   <Gavel className="absolute top-0 right-0 w-64 h-64 text-white opacity-5 -mr-12 -mt-12 group-hover:scale-110 transition-transform duration-1000 print:hidden" />
                   <div className="relative z-10 space-y-6">
                      <span className="px-4 py-1.5 bg-indigo-500/20 text-indigo-300 rounded-full text-[10px] font-black uppercase tracking-widest print:bg-slate-100 print:text-slate-600">Declaração de Ciência</span>
@@ -192,7 +192,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                         { t: 'Finalidade Institucional', d: 'Utilizar o sistema exclusivamente para fins de gestão do PNAE.' },
                         { t: 'Responsabilidade Legal', d: 'Responder administrativa e legalmente por ações realizadas com seu login.' }
                      ].map((item, i) => (
-                        <div key={i} className="p-8 bg-white border border-slate-100 rounded-[40px] shadow-sm flex flex-col gap-4 print:p-6 print:rounded-2xl print:border-slate-300">
+                        <div key={i} className="p-8 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col gap-4 print:p-6 print:rounded-2xl print:border-slate-300">
                            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0">
                               <ShieldCheck className="w-5 h-5" />
                            </div>
@@ -205,7 +205,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-rose-50 rounded-[44px] border border-rose-100 space-y-6 print:p-6 print:rounded-2xl print:bg-white print:border-slate-300">
+               <div className="p-10 bg-rose-50 rounded-2xl border border-rose-100 space-y-6 print:p-6 print:rounded-2xl print:bg-white print:border-slate-300">
                   <div className="flex items-center gap-3 text-rose-600">
                      <AlertTriangle className="w-6 h-6" />
                      <h5 className="text-xs font-black text-rose-900 uppercase tracking-widest">Responsabilização Jurídica</h5>
@@ -229,7 +229,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.ADMIN],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-slate-900 border border-slate-800 rounded-[56px] shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
+               <div className="p-12 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
                   <div className="absolute top-0 right-0 p-12 text-white/5 transition-transform duration-1000 group-hover:scale-110 print:hidden">
                      <ShieldCheck className="w-48 h-48" />
                   </div>
@@ -266,7 +266,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-rose-50 rounded-[48px] border border-rose-100 space-y-8 print:p-8 print:rounded-3xl print:border-slate-300 print:bg-white">
+               <div className="p-10 bg-rose-50 rounded-2xl border border-rose-100 space-y-8 print:p-8 print:rounded-3xl print:border-slate-300 print:bg-white">
                   <div className="flex items-center gap-4">
                      <AlertTriangle className="w-6 h-6 text-rose-600" />
                      <h5 className="text-xs font-black text-rose-900 uppercase tracking-widest print:text-slate-900">Responsabilidades Inegociáveis</h5>
@@ -296,7 +296,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.NUTRICIONISTA, UserRole.ADMIN],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-white border border-slate-100 rounded-[56px] shadow-sm relative group overflow-hidden print:p-8 print:rounded-3xl print:border-slate-300 print:shadow-none">
+               <div className="p-12 bg-white border border-slate-100 rounded-2xl shadow-sm relative group overflow-hidden print:p-8 print:rounded-3xl print:border-slate-300 print:shadow-none">
                   <div className="absolute top-0 right-0 p-12 text-indigo-50 transition-colors opacity-10 group-hover:opacity-20 print:hidden">
                      <Apple className="w-48 h-48" />
                   </div>
@@ -333,7 +333,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-slate-900 text-white rounded-[48px] shadow-2xl relative overflow-hidden print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
+               <div className="p-10 bg-slate-900 text-white rounded-2xl shadow-2xl relative overflow-hidden print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
                   <div className="flex items-center gap-4 mb-8">
                      <Scale className="w-6 h-6 text-indigo-400" />
                      <h5 className="text-xs font-black text-white uppercase tracking-widest print:text-slate-900">Responsabilidades Legais PNAE</h5>
@@ -359,7 +359,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.DIRETOR, UserRole.ADMIN],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-white border border-slate-100 rounded-[56px] shadow-sm relative group overflow-hidden print:p-8 print:rounded-3xl print:border-slate-300 print:shadow-none">
+               <div className="p-12 bg-white border border-slate-100 rounded-2xl shadow-sm relative group overflow-hidden print:p-8 print:rounded-3xl print:border-slate-300 print:shadow-none">
                   <div className="absolute top-0 right-0 p-12 text-emerald-50 transition-colors opacity-10 group-hover:opacity-20 print:hidden">
                      <Truck className="w-48 h-48" />
                   </div>
@@ -396,7 +396,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-slate-50 rounded-[44px] border border-slate-100 space-y-6 print:p-6 print:rounded-2xl print:bg-white print:border-slate-300">
+               <div className="p-10 bg-slate-50 rounded-2xl border border-slate-100 space-y-6 print:p-6 print:rounded-2xl print:bg-white print:border-slate-300">
                   <div className="flex items-center gap-3 text-slate-400">
                      <Lock className="w-5 h-5" />
                      <h5 className="text-xs font-black text-slate-900 uppercase tracking-widest">Política de Acesso e Segurança</h5>
@@ -426,7 +426,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.SECRETARIA, UserRole.ADMIN],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-indigo-900 border border-indigo-800 rounded-[56px] shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
+               <div className="p-12 bg-indigo-900 border border-indigo-800 rounded-2xl shadow-2xl relative group overflow-hidden print:p-8 print:rounded-3xl print:bg-white print:border-slate-300 print:text-slate-900">
                   <div className="absolute top-0 right-0 p-12 text-white/5 transition-transform duration-1000 group-hover:scale-110 print:hidden">
                      <UserCircle className="w-48 h-48" />
                   </div>
@@ -463,7 +463,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="p-10 bg-indigo-50 rounded-[48px] border border-indigo-100 space-y-6 print:p-8 print:rounded-3xl print:bg-white print:border-slate-300">
+               <div className="p-10 bg-indigo-50 rounded-2xl border border-indigo-100 space-y-6 print:p-8 print:rounded-3xl print:bg-white print:border-slate-300">
                   <div className="flex items-center gap-3 text-indigo-400">
                      <AlertTriangle className="w-5 h-5" />
                      <h5 className="text-xs font-black text-indigo-900 uppercase tracking-widest">Protocolo de Limitação Regional</h5>
@@ -483,7 +483,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          content: (
             <div className="space-y-12 print:space-y-8">
                <div className="flex flex-col md:flex-row gap-12 items-center print:gap-6">
-                  <div className="w-32 h-32 md:w-48 md:h-48 bg-amber-100 text-amber-600 rounded-[56px] flex items-center justify-center shadow-2xl shrink-0 print:w-20 print:h-20 print:rounded-2xl print:shadow-none print:bg-slate-100 print:text-slate-900">
+                  <div className="w-32 h-32 md:w-48 md:h-48 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shadow-2xl shrink-0 print:w-20 print:h-20 print:rounded-2xl print:shadow-none print:bg-slate-100 print:text-slate-900">
                      <Utensils className="w-16 h-16 md:w-24 md:h-24 print:w-10 print:h-10" />
                   </div>
                   <div className="space-y-4">
@@ -494,7 +494,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                   </div>
                </div>
 
-               <div className="bg-white border border-slate-100 rounded-[48px] p-10 shadow-sm space-y-10 print:p-0 print:border-none">
+               <div className="bg-white border border-slate-100 rounded-2xl p-10 shadow-sm space-y-10 print:p-0 print:border-none">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8 print:grid-cols-1 print:gap-4">
                      {[
                         { t: 'Consulta do Cardápio', d: 'Veja as preparações e ingredientes previstos para o dia.' },
@@ -511,7 +511,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                      ))}
                   </div>
 
-                  <div className="p-8 bg-slate-900 text-white rounded-[40px] relative overflow-hidden print:p-6 print:rounded-2xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
+                  <div className="p-8 bg-slate-900 text-white rounded-2xl relative overflow-hidden print:p-6 print:rounded-2xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300">
                      <AlertTriangle className="absolute top-0 right-0 w-32 h-32 opacity-10 -mr-6 -mt-6 print:hidden" />
                      <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-400 mb-2 print:text-amber-700">Prazos de Registro</h4>
                      <p className="text-xs font-medium leading-relaxed print:text-[11px] print:font-normal">O registro deve ser feito logo após o término da distribuição da refeição para viabilizar o ajuste logístico em tempo real.</p>
@@ -527,7 +527,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
          roles: [UserRole.SECRETARIA, UserRole.TECNICO, UserRole.ADMIN],
          content: (
             <div className="space-y-12 print:space-y-8">
-               <div className="p-12 bg-slate-900 text-white rounded-[64px] shadow-2xl relative overflow-hidden group print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300 print:shadow-none">
+               <div className="p-12 bg-slate-900 text-white rounded-2xl shadow-2xl relative overflow-hidden group print:p-8 print:rounded-3xl print:bg-slate-50 print:text-slate-900 print:border print:border-slate-300 print:shadow-none">
                   <TrendingUp className="absolute top-0 right-0 w-64 h-64 opacity-5 -mr-12 -mt-12 group-hover:scale-110 transition-transform duration-1000 print:hidden" />
                   <div className="relative z-10 space-y-6 print:space-y-2">
                      <span className="px-4 py-1.5 bg-indigo-500/20 text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-widest print:hidden">Gestão de Governança</span>
@@ -539,7 +539,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 print:grid-cols-1 print:gap-4">
-                  <div className="p-10 bg-white border border-slate-100 rounded-[44px] shadow-sm space-y-6 print:p-6 print:rounded-2xl print:border-slate-300">
+                  <div className="p-10 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-6 print:p-6 print:rounded-2xl print:border-slate-300">
                      <div className="flex items-center gap-4">
                         <ClipboardCheck className="text-slate-400 w-8 h-8 print:w-5 print:h-5" />
                         <h5 className="text-xs font-black text-slate-900 uppercase tracking-widest print:text-[11px]">Prestação de Contas</h5>
@@ -548,7 +548,7 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                         Relatórios que fornecem o detalhamento de consumo e agricultura familiar, servindo de suporte para o parecer anual do CAE.
                      </p>
                   </div>
-                  <div className="p-10 bg-white border border-slate-100 rounded-[44px] shadow-sm space-y-6 print:p-6 print:rounded-2xl print:border-slate-300">
+                  <div className="p-10 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-6 print:p-6 print:rounded-2xl print:border-slate-300">
                      <div className="flex items-center gap-4">
                         <ShieldCheck className="text-slate-400 w-8 h-8 print:w-5 print:h-5" />
                         <h5 className="text-xs font-black text-slate-900 uppercase tracking-widest print:text-[11px]">Compliance Normativo</h5>
@@ -626,40 +626,37 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
 
          {/* VISUAL PAGE CONTENT (NO-PRINT) */}
          <div className="no-print">
-            <div className="bg-white w-full rounded-[40px] shadow-xl border border-slate-100 flex flex-col overflow-hidden h-full">
+            <div style={{background:'#fff',borderRadius:20,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',display:'flex',flexDirection:'column',overflow:'hidden',height:'100%'}}>
 
                {/* HEADER */}
-               <div className="p-8 lg:px-12 bg-white border-b border-slate-50 flex justify-between items-center shrink-0">
+               <div style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',padding:'16px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',flexShrink:0,gap:16,flexWrap:'wrap'}}>
                   <div className="flex items-center gap-6">
-                     <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg">
-                        <BookOpen className="w-7 h-7" />
+                     <div style={{width:40,height:40,background:'rgba(255,255,255,0.10)',borderRadius:11,display:'flex',alignItems:'center',justifyContent:'center',border:'1px solid rgba(255,255,255,0.15)',flexShrink:0}}>
+                        <BookOpen style={{width:20,height:20,color:'#fff'}} />
                      </div>
                      <div>
-                        <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight leading-none">Manual de Operação e Governança</h2>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2 italic">NutriAssist SME • Protocolo v2.6 • Edição Institucional</p>
+                        <h2 style={{fontSize:16,fontWeight:900,color:'#fff',textTransform:'uppercase',letterSpacing:'-0.02em',margin:0}}>Manual de Operação e Governança</h2>
+                        <p style={{fontSize:10,color:'rgba(255,255,255,0.4)',textTransform:'uppercase',letterSpacing:'0.12em',margin:0}}>NutriAssist SME · Protocolo v2.6 · Edição Institucional</p>
                      </div>
                   </div>
 
                   <div className="flex items-center gap-4">
                      <button
                         onClick={() => window.print()}
-                        className="flex items-center gap-3 px-8 py-5 bg-emerald-600 text-white text-[11px] font-extrabold uppercase tracking-widest rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-600/20 active:scale-95"
+                        style={{display:'flex',alignItems:'center',gap:8,padding:'9px 18px',background:'linear-gradient(135deg,#059669,#15803d)',color:'#fff',fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em',borderRadius:10,border:'none',cursor:'pointer',boxShadow:'0 4px 14px rgba(5,150,105,0.4)',fontFamily:'inherit'}}
                      >
-                        <FileSpreadsheet className="w-5 h-5" /> Exportar Manual Profissional (PDF)
+                        <FileSpreadsheet style={{width:14,height:14}} /> Exportar PDF
                      </button>
-                     <button
-                        onClick={onClose}
-                        className="p-4 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-2xl transition-all"
-                     >
-                        <X size={24} />
+                     <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'rgba(255,255,255,0.10)',border:'1px solid rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'rgba(255,255,255,0.6)',flexShrink:0}}>
+                        <X size={15} />
                      </button>
                   </div>
                </div>
 
                <div className="flex flex-1 min-h-[70vh] overflow-hidden">
                   {/* NAV */}
-                  <div className="w-24 lg:w-80 bg-slate-50/50 border-r border-slate-100 flex flex-col p-6 lg:p-10 space-y-2 overflow-y-auto shrink-0 scrolling-touch scrollbar-hide">
-                     <p className="hidden lg:block text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 ml-2">Conteúdo Programático</p>
+                  <div className="w-24 lg:w-72 flex flex-col overflow-y-auto shrink-0 custom-scrollbar" style={{background:'#f8fafc',borderRight:'1px solid #f1f5f9',padding:'16px 12px',gap:4,display:'flex',flexDirection:'column'}}>
+                     <p className="hidden lg:block" style={{fontSize:9,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.15em',marginBottom:8,paddingLeft:8}}>Conteúdo Programático</p>
                      {visibleSections.map(s => {
                         const Icon = s.icon;
                         const isActive = activeSection === s.id;
@@ -667,34 +664,32 @@ const UserManual: React.FC<UserManualProps> = ({ activeProfile, onClose }) => {
                            <button
                               key={s.id}
                               onClick={() => setActiveSection(s.id)}
-                              className={`flex items-center gap-4 p-4 lg:p-6 rounded-3xl transition-all group relative ${isActive ? 'bg-slate-900 text-white shadow-2xl' : 'hover:bg-white text-slate-400 hover:text-slate-800'}`}
+                              style={{display:'flex',alignItems:'center',gap:10,padding:'8px 10px',borderRadius:10,cursor:'pointer',background:isActive?'#0f172a':'transparent',color:isActive?'#fff':'#64748b',border:'none',width:'100%',textAlign:'left',transition:'all 0.15s',fontFamily:'inherit',marginBottom:2,position:'relative',boxShadow:isActive?'0 2px 8px rgba(0,0,0,0.15)':'none'}} onMouseEnter={e=>{if(!isActive)(e.currentTarget as HTMLButtonElement).style.background='#fff';}} onMouseLeave={e=>{if(!isActive)(e.currentTarget as HTMLButtonElement).style.background='transparent';}}
                            >
-                              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${isActive ? 'bg-white/10' : 'bg-slate-100 group-hover:scale-110'}`}>
-                                 <Icon className="w-5 h-5 transition-transform duration-500 group-hover:rotate-6" />
+                              <div style={{width:28,height:28,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',background:isActive?'rgba(255,255,255,0.12)':'#f1f5f9',flexShrink:0}}>
+                                 <Icon style={{width:14,height:14,color:isActive?'#4ade80':'#94a3b8'}} />
                               </div>
-                              <span className="hidden lg:block text-xs font-black uppercase tracking-tight text-left leading-tight">{s.title}</span>
+                              <span className="hidden lg:block" style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'-0.01em',lineHeight:1.3,flex:1,textAlign:'left'}}>{s.title}</span>
                               {isActive && (
-                                 <div className="absolute -right-1 w-1.5 h-6 bg-indigo-500 rounded-full" />
+                                 <div style={{position:'absolute',right:-1,width:3,height:20,background:'#4ade80',borderRadius:99}} />
                               )}
                            </button>
                         );
                      })}
 
-                     <div className="mt-auto hidden lg:block p-8 bg-indigo-50/50 border border-indigo-100/50 rounded-[32px] relative overflow-hidden group">
-                        <HelpCircle className="absolute -right-4 -bottom-4 w-24 h-24 text-indigo-500/10 group-hover:scale-110 transition-transform" />
-                        <h6 className="text-[10px] font-black text-indigo-900 uppercase tracking-widest mb-2 flex items-center gap-2">
-                           <Navigation className="w-3 h-3" /> Suporte SME
-                        </h6>
-                        <p className="text-[10px] font-bold text-indigo-600 leading-relaxed">Em caso de dúvidas técnicas, consulte o Gabinete da Secretaria de Educação.</p>
+                     <div className="hidden lg:block" style={{marginTop:'auto',padding:'12px 14px',background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:12,position:'relative',overflow:'hidden'}}>
+                        
+                        <h6 style={{fontSize:10,fontWeight:800,color:'#065f46',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:5,display:'flex',alignItems:'center',gap:5}}><Navigation style={{width:11,height:11}} /> Suporte SME</h6>
+                        <p style={{fontSize:10,color:'#059669',lineHeight:1.5,fontWeight:500,margin:0}}>Em caso de dúvidas técnicas, consulte o Gabinete da Secretaria de Educação.</p>
                      </div>
                   </div>
 
                   {/* CONTENT AREA */}
-                  <div className="flex-1 bg-white p-8 lg:p-20 overflow-y-auto custom-scrollbar bg-[radial-gradient(#f1f5f9_1px,transparent_1px)] [background-size:32px_32px]">
+                  <div style={{flex:1,background:'#fff',padding:'32px 48px',overflowY:'auto'}} className="custom-scrollbar">
                      <div className="max-w-4xl mx-auto">
-                        <div className="mb-16 border-b-2 border-slate-50 pb-12">
-                           <span className="px-4 py-2 bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase rounded-lg tracking-widest mb-6 inline-block">Protocolo Técnico Institucional</span>
-                           <h3 className="text-4xl lg:text-6xl font-black text-slate-900 uppercase tracking-tighter leading-[0.9]">{currentSection.title}</h3>
+                        <div style={{marginBottom:36,borderBottom:'1px solid #f1f5f9',paddingBottom:24}}>
+                           <span style={{padding:'4px 12px',background:'#eff6ff',color:'#1d4ed8',fontSize:9.5,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.1em',borderRadius:6,border:'1px solid #bfdbfe',display:'inline-block',marginBottom:16}}>Protocolo Técnico Institucional</span>
+                           <h3 style={{fontSize:28,fontWeight:900,color:'#0f172a',textTransform:'uppercase',letterSpacing:'-0.03em',lineHeight:1,margin:0}}>{currentSection.title}</h3>
                         </div>
                         <div className="manual-content-body transition-all duration-500 animate-in slide-in-from-bottom-4">
                            {currentSection.content}

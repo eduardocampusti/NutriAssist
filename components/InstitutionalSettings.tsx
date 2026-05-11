@@ -76,79 +76,60 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
 
    return (
       <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
-         <div className="flex justify-between items-center bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+         <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden',marginBottom:0}}><div style={{background:'linear-gradient(135deg,#e2e8f0,#f1f5f9)',padding:'16px 22px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div className="flex items-center gap-4">
-               <div className="w-14 h-14 bg-slate-900 text-emerald-400 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-slate-800">🏛️</div>
+               <div style={{width:42,height:42,borderRadius:12,background:'linear-gradient(135deg,#334155,#0f172a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,boxShadow:'0 4px 12px rgba(0,0,0,0.25)',flexShrink:0}}>🏛️</div>
                <div>
-                  <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Governança e Identidade Visual</h2>
-                  <p className="text-slate-500 text-sm font-medium tracking-tight">Painel de Controle do Administrador • SME Brotas de Macaúbas</p>
+                  <h2 style={{fontSize:16,fontWeight:900,color:'#0f172a',letterSpacing:'-0.02em',margin:0,textTransform:'uppercase'}}>Governança e Identidade Visual</h2>
+                  <p style={{fontSize:12,color:'#64748b',margin:0}}>Painel de Controle · SME Brotas de Macaúbas</p>
                </div>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
-               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-         </div>
+            <button onClick={onClose} style={{width:32,height:32,borderRadius:8,background:'rgba(255,255,255,0.7)',border:'1px solid rgba(0,0,0,0.1)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#475569',flexShrink:0}}>
+               <svg style={{width:15,height:15}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button></div></div>
 
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-7" style={{display:'flex',flexDirection:'column',gap:16}}>
 
-               {/* GESTÃO DE USUÁRIOS (ATALHO) */}
-               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex items-center justify-between group cursor-pointer hover:border-emerald-500/30 transition-all" onClick={() => navigate('/usuarios')}>
-                  <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl border border-emerald-100 group-hover:bg-emerald-500 group-hover:text-white transition-colors">🔐</div>
-                     <div>
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">Gestão de Usuários e Acessos</h3>
-                        <p className="text-xs text-slate-500 font-medium">Criar contas, alterar senhas e gerenciar permissões de acesso.</p>
+               {/* ATALHOS COMPACTOS */}
+               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10}}>
+                 {[
+                   {emoji:'🔐',label:'Gestão de Usuários',sub:'Acessar painel',bg:'#f0fdf4',color:'#15803d',border:'#bbf7d0',path:'/usuarios'},
+                   {emoji:'📊',label:'Importar Base FNDE',sub:'Importar XLSX',bg:'#eff6ff',color:'#1d4ed8',border:'#bfdbfe',path:'/importar-fnde'},
+                   {emoji:'🧪',label:'Importar Base TACO',sub:'Importar XLSX',bg:'#faf5ff',color:'#7c3aed',border:'#ddd6fe',path:'/importar-taco'},
+                 ].map(item => (
+                   <div key={item.path} onClick={() => navigate(item.path)}
+                     style={{background:'#fff',borderRadius:12,border:'1px solid rgba(0,0,0,0.07)',padding:'11px 13px',display:'flex',alignItems:'center',gap:10,cursor:'pointer',boxShadow:'0 1px 4px rgba(0,0,0,0.05)',transition:'all 0.15s'}}
+                     onMouseEnter={e=>{(e.currentTarget as HTMLDivElement).style.boxShadow='0 4px 14px rgba(0,0,0,0.10)';(e.currentTarget as HTMLDivElement).style.transform='translateY(-1px)';}}
+                     onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.boxShadow='0 1px 4px rgba(0,0,0,0.05)';(e.currentTarget as HTMLDivElement).style.transform='translateY(0)';}}>
+                     <div style={{width:32,height:32,borderRadius:9,background:item.bg,border:`1px solid ${item.border}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0}}>{item.emoji}</div>
+                     <div style={{flex:1,minWidth:0}}>
+                       <p style={{fontSize:11,fontWeight:700,color:'#0f172a',margin:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{item.label}</p>
+                       <p style={{fontSize:10,color:'#94a3b8',margin:0}}>{item.sub}</p>
                      </div>
-                  </div>
-                  <button className="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                     Acessar Painel
-                  </button>
-               </div>
-
-               {/* IMPORTAÇÃO BASE FNDE */}
-               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex items-center justify-between group cursor-pointer hover:border-indigo-500/30 transition-all" onClick={() => navigate('/importar-fnde')}>
-                  <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl border border-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors">📊</div>
-                     <div>
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">Importação da Base FNDE</h3>
-                        <p className="text-xs text-slate-500 font-medium">Atualizar a tabela oficial de composição nutricional (PNAE).</p>
-                     </div>
-                  </div>
-                  <button className="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                     Importar XLSX
-                  </button>
-               </div>
-
-               {/* IMPORTAÇÃO BASE TACO */}
-               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-md flex items-center justify-between group cursor-pointer hover:border-violet-500/30 transition-all" onClick={() => navigate('/importar-taco')}>
-                  <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center text-2xl border border-violet-100 group-hover:bg-violet-600 group-hover:text-white transition-colors">🧪</div>
-                     <div>
-                        <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight group-hover:text-violet-600 transition-colors">Importação Base TACO</h3>
-                        <p className="text-xs text-slate-500 font-medium">Tabela Brasileira de Composição de Alimentos (UNICAMP) — dados complementares.</p>
-                     </div>
-                  </div>
-                  <button className="px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest group-hover:bg-violet-600 group-hover:text-white transition-colors">
-                     Importar XLSX
-                  </button>
+                     <svg style={{width:13,height:13,color:'#cbd5e1',flexShrink:0}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                   </div>
+                 ))}
                </div>
 
                {/* TABS DE CONFIGURAÇÃO */}
-               <div className="flex gap-2 overflow-x-auto pb-2">
-                  <button onClick={() => setActiveTab('HEADER')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'HEADER' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Cabeçalho</button>
-                  <button onClick={() => setActiveTab('FOOTER')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'FOOTER' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Rodapé</button>
-                  <button onClick={() => setActiveTab('LOGIN')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'LOGIN' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Login</button>
-                  <button onClick={() => setActiveTab('COLORS')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'COLORS' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Cores & Estilo</button>
-                  <button onClick={() => setActiveTab('INSTITUTIONAL')} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'INSTITUTIONAL' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>Gestão Regional & RT</button>
+               <div style={{display:'flex',gap:5,background:'#f1f5f9',padding:4,borderRadius:12,border:'1px solid #e2e8f0'}}>
+                 {([['HEADER','Cabeçalho'],['FOOTER','Rodapé'],['LOGIN','Login'],['COLORS','Cores'],['INSTITUTIONAL','RT']] as const).map(([tab,label]) => (
+                   <button key={tab} onClick={() => setActiveTab(tab)}
+                     style={{flex:1,padding:'7px 0',borderRadius:8,border:activeTab===tab?'1px solid #e2e8f0':'none',background:activeTab===tab?'#fff':'transparent',fontSize:10,fontWeight:700,color:activeTab===tab?'#059669':'#94a3b8',cursor:'pointer',textTransform:'uppercase',letterSpacing:'0.05em',transition:'all 0.15s',boxShadow:activeTab===tab?'0 1px 4px rgba(0,0,0,0.07)':'none',fontFamily:'inherit'}}>
+                     {label}
+                   </button>
+                 ))}
                </div>
 
                {activeTab === 'INSTITUTIONAL' && (
                   <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6">
-                        <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                           <span>🏛️</span> Gestores e Responsável Técnica
-                        </h3>
+                     <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden'}}>
+                        <div style={{background:'linear-gradient(135deg,#fef3c7,#fcd34d)',padding:'13px 18px',borderBottom:'1px solid #fde68a',display:'flex',alignItems:'center',gap:8}}>
+                          <span style={{fontSize:15}}>🏛️</span>
+                          <p style={{fontSize:11,fontWeight:700,color:'#78350f',textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Gestores e Responsável Técnica</p>
+                        </div>
+                        <div style={{padding:'18px 20px'}}>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                            <div className="space-y-4">
@@ -205,15 +186,18 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
                               💡 <strong>Dica White-Label:</strong> Estes nomes aparecerão automaticamente no painel "Sobre o Sistema" e em documentos oficiais gerados pela plataforma.
                            </p>
                         </div>
+                        </div>
                      </div>
                   </div>
                )}
 
                {/* PAPEL TIMBRADO */}
-               <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6">
-                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                     <span>📄</span> Configuração de Papel Timbrado
-                  </h3>
+               <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden'}}>
+                  <div style={{background:'linear-gradient(135deg,#f0fdf4,#dcfce7)',padding:'13px 18px',borderBottom:'1px solid #bbf7d0',display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:15}}>📄</span>
+                    <p style={{fontSize:11,fontWeight:700,color:'#065f46',textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Configuração de Papel Timbrado</p>
+                  </div>
+                  <div style={{padding:'18px 20px',display:'flex',flexDirection:'column',gap:0}}>
 
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-6">
                      {/* UPLOAD DO CABEÇALHO */}
@@ -358,7 +342,7 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
                   <button
                      onClick={handleSave}
                      disabled={isSaving}
-                     className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white font-black py-5 rounded-[24px] transition-all shadow-xl shadow-slate-900/20 text-xs uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-emerald-500/20 hover:from-slate-950 hover:to-slate-900 active:scale-[0.98] mt-2 flex items-center justify-center gap-3 disabled:opacity-50"
+                     style={{width:'100%',padding:'11px',background:'linear-gradient(135deg,#0f172a,#1e293b)',color:'#fff',fontWeight:800,borderRadius:11,border:'none',fontSize:11,textTransform:'uppercase',letterSpacing:'0.07em',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginTop:16,boxShadow:'0 4px 14px rgba(0,0,0,0.2)',opacity:isSaving?0.6:1}}
                   >
                      {isSaving ? (
                         <>
@@ -372,13 +356,16 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
                         </>
                      )}
                   </button>
+                  </div>
                </div>
 
                {/* IMAGEM LOGIN */}
-               <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6">
-                  <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                     <span>👤</span> Personalização da Tela de Login
-                  </h3>
+               <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden'}}>
+                  <div style={{background:'linear-gradient(135deg,#eff6ff,#dbeafe)',padding:'13px 18px',borderBottom:'1px solid #bfdbfe',display:'flex',alignItems:'center',gap:8}}>
+                    <span style={{fontSize:15}}>👤</span>
+                    <p style={{fontSize:11,fontWeight:700,color:'#1e3a5f',textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>Personalização da Tela de Login</p>
+                  </div>
+                  <div style={{padding:'18px 20px'}}>
 
                   <div className="space-y-4">
                      {/* Imagem do Personagem */}
@@ -468,15 +455,16 @@ const InstitutionalSettings: React.FC<InstitutionalSettingsProps> = ({ config, o
                         </div>
                      )}
                   </div>
+                  </div>
                </div>
             </div>
 
             {/* PREVIEW EM TEMPO REAL */}
-            <div className="lg:col-span-12 xl:col-span-5">
-               <div className="sticky top-8 space-y-6">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Preview do Timbrado Oficial</h3>
+            <div className="lg:col-span-5">
+               <div style={{position:'sticky',top:24,display:'flex',flexDirection:'column',gap:12}}>
+                  <h3 style={{fontSize:10,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.1em',margin:'0 0 4px'}}>Preview do Timbrado Oficial</h3>
 
-                  <div className="bg-white border border-slate-300 shadow-2xl rounded-sm p-12 min-h-[500px] flex flex-col pointer-events-none origin-top transition-all">
+                  <div style={{background:'#fff',border:'1px solid #e2e8f0',borderRadius:10,padding:'20px 16px',minHeight:380,display:'flex',flexDirection:'column',pointerEvents:'none',boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
                      <div className="flex flex-col items-center text-center space-y-1 mb-8 pb-6 border-b-2 border-slate-100">
                         {localConfig.headerImage ? (
                            <img src={localConfig.headerImage} className="w-full max-h-32 object-contain mb-4" alt="Header Preview" />

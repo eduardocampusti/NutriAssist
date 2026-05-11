@@ -88,26 +88,29 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300 pb-20">
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',padding:'18px 22px',marginBottom:0}}>
+      <div style={{background:'#fff',borderRadius:20,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',overflow:'hidden',marginBottom:0}}>
+      <div style={{background:'linear-gradient(135deg,#fff1f2,#fecdd3)',padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div className="flex items-center gap-4">
           <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,#fecdd3,#fda4af)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,boxShadow:'0 4px 14px rgba(244,63,94,0.25)',flexShrink:0}}>❤️</div>
           <div>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase">Necessidades Alimentares Especiais</h2>
-            <p className="text-slate-500 text-sm font-medium italic">Gestão de Inclusão e Dietas • SME Brotas de Macaúbas</p>
+            <h2 style={{fontSize:17,fontWeight:900,color:'#7f1d1d',letterSpacing:'-0.02em',margin:0,textTransform:'uppercase'}}>Necessidades Alimentares Especiais</h2>
+            <p style={{fontSize:12,color:'#be123c',margin:0,fontWeight:500}}>Gestão de Inclusão e Dietas · SME Brotas de Macaúbas</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
+        <button onClick={onClose} style={{width:34,height:34,borderRadius:9,background:'rgba(255,255,255,0.65)',border:'1px solid rgba(190,18,60,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#be123c',flexShrink:0}}>
+            <svg style={{width:15,height:15}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* FORMULÁRIO DE CADASTRO */}
         {canEdit && (
           <div style={{background:'#fff',padding:'20px 22px',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05),0 8px 24px rgba(0,0,0,0.08)',height:'fit-content',position:'sticky',top:24}} className="lg:col-span-4">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-              <span>➕</span> Novo Aluno NE
-            </h3>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,paddingBottom:14,borderBottom:'1px solid #f1f5f9'}}>
+              <div style={{width:28,height:28,borderRadius:7,background:'#fff1f2',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}}>➕</div>
+              <p style={{fontSize:12,fontWeight:800,color:'#0f172a',margin:0,letterSpacing:'-0.01em'}}>Novo Aluno NE</p>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-500 uppercase block">Iniciais / Nome Completo (LGPD)</label>
@@ -180,7 +183,7 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
                 </label>
               </div>
 
-              <button type="submit" className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl text-[10px] uppercase tracking-[0.2em] shadow-xl hover:bg-black transition-all">Cadastrar Registro</button>
+              <button type="submit" style={{width:'100%',padding:'11px',background:'linear-gradient(135deg,#be123c,#9f1239)',color:'#fff',borderRadius:12,border:'none',fontSize:11,fontWeight:800,cursor:'pointer',letterSpacing:'0.06em',textTransform:'uppercase',boxShadow:'0 4px 14px rgba(190,18,60,0.35)',marginTop:8}}>Cadastrar Registro</button>
             </form>
           </div>
         )}
@@ -237,7 +240,7 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
                         <button
                           onClick={() => handleGenerateReport(student)}
                           disabled={isLoading}
-                          className="bg-slate-900 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
+                          style={{background:'linear-gradient(135deg,#be123c,#9f1239)',color:'#fff',padding:'6px 14px',borderRadius:8,fontSize:9,fontWeight:800,letterSpacing:'0.06em',textTransform:'uppercase',border:'none',cursor:'pointer',boxShadow:'0 2px 8px rgba(190,18,60,0.3)',transition:'all 0.15s'}}
                         >
                           Ficha IA
                         </button>
@@ -255,7 +258,7 @@ const SpecialNeedsStudentManager: React.FC<SpecialNeedsStudentManagerProps> = ({
           })}
 
           {students.length === 0 && (
-            <div className="bg-white p-20 rounded-[40px] border border-dashed border-slate-200 text-center text-slate-400 italic">
+            <div style={{background:'#fafafa',padding:64,borderRadius:18,border:'2px dashed #fecdd3',textAlign:'center',color:'#94a3b8',fontStyle:'italic'}}>
               Nenhum aluno com necessidade alimentar especial cadastrado no censo.
             </div>
           )}

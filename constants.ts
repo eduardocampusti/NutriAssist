@@ -1,6 +1,18 @@
-export const APP_VERSION = '1.1.0';
-export const RELEASE_DATE = '2026-05-10';
+export const APP_VERSION = '1.1.1';
+export const RELEASE_DATE = '2026-05-11';
 export const RELEASE_NOTES = [
+  {
+    version: '1.1.1',
+    date: '2026-05-11',
+    description: 'Polimento de UI/UX e Correção de Infraestrutura.',
+    changes: [
+      'Refatoração massiva de dashboards para design mobile-first e estética premium.',
+      'Correção crítica de case-sensitivity em diretórios de componentes para deploy Vercel.',
+      'Melhoria na responsividade de tabelas e formulários complexos.',
+      'Padronização de cores e tipografia em todos os módulos principais.',
+      'Limpeza de arquivos de utilidade e otimização de imports.'
+    ]
+  },
   {
     version: '1.1.0',
     date: '2026-05-10',

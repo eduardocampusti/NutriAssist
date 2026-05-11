@@ -106,7 +106,7 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
             />
 
             {/* BARRA DE FILTROS */}
-            <Card variant="governance" padding="md" className="flex flex-col lg:flex-row gap-6 items-center bg-white">
+            <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'14px 20px',display:'flex',flexWrap:'wrap',alignItems:'center',gap:16}}>
                 <div className="flex items-center gap-2 text-slate-500 border-r border-slate-200 pr-6">
                     <Filter className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-widest">Filtros</span>
@@ -125,12 +125,12 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                         </select>
                     </div>
                 </div>
-            </Card>
+            </div>
 
             {latestStat && targets && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* ENERGIA */}
-                    <Card variant="governance" padding="lg" className="bg-white border-b-4 border-b-emerald-500">
+                    <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',borderBottom:'4px solid #22c55e',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'18px 20px',transition:'all 0.2s'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';el.style.transform='translateY(0)';}}>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600"><Zap className="w-5 h-5" /></div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${getStatus(latestStat.media_energia, targets.ref_energia_kcal, 'ENERGY').bg} ${getStatus(latestStat.media_energia, targets.ref_energia_kcal, 'ENERGY').color}`}>
@@ -151,10 +151,10 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                                 <div className="h-full bg-emerald-500" style={{ width: `${Math.min((latestStat.media_energia / targets.ref_energia_kcal) * 100, 100)}%` }}></div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
 
                     {/* PROTEÍNAS */}
-                    <Card variant="governance" padding="lg" className="bg-white border-b-4 border-b-blue-500">
+                    <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',borderBottom:'4px solid #3b82f6',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'18px 20px',transition:'all 0.2s'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';el.style.transform='translateY(0)';}}>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-blue-50 text-blue-600"><Scale className="w-5 h-5" /></div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${getStatus(latestStat.media_proteinas, targets.ref_proteinas_g, 'PROTEIN').bg} ${getStatus(latestStat.media_proteinas, targets.ref_proteinas_g, 'PROTEIN').color}`}>
@@ -175,10 +175,10 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                                 <div className="h-full bg-blue-500" style={{ width: `${Math.min((latestStat.media_proteinas / targets.ref_proteinas_g) * 100, 100)}%` }}></div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
 
                     {/* FIBRAS */}
-                    <Card variant="governance" padding="lg" className="bg-white border-b-4 border-b-amber-500">
+                    <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',borderBottom:'4px solid #f59e0b',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'18px 20px',transition:'all 0.2s'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';el.style.transform='translateY(0)';}}>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-amber-50 text-amber-600"><Wheat className="w-5 h-5" /></div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${getStatus(latestStat.media_fibras, targets.ref_fibras_g, 'FIBER').bg} ${getStatus(latestStat.media_fibras, targets.ref_fibras_g, 'FIBER').color}`}>
@@ -199,10 +199,10 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                                 <div className="h-full bg-amber-500" style={{ width: `${Math.min((latestStat.media_fibras / targets.ref_fibras_g) * 100, 100)}%` }}></div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
 
                     {/* SÓDIO */}
-                    <Card variant="governance" padding="lg" className="bg-white border-b-4 border-b-rose-500">
+                    <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',borderBottom:'4px solid #ef4444',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'18px 20px',transition:'all 0.2s'}} onMouseEnter={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)';el.style.transform='translateY(-3px)';}} onMouseLeave={e=>{const el=e.currentTarget as HTMLDivElement;el.style.boxShadow='0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)';el.style.transform='translateY(0)';}}>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-2 rounded-lg bg-rose-50 text-rose-600"><Droplets className="w-5 h-5" /></div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${getStatus(latestStat.media_sodio, targets.ref_sodio_mg, 'SODIUM').bg} ${getStatus(latestStat.media_sodio, targets.ref_sodio_mg, 'SODIUM').color}`}>
@@ -223,13 +223,13 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                                 <div className={`h-full ${latestStat.media_sodio > targets.ref_sodio_mg ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: `${Math.min((latestStat.media_sodio / targets.ref_sodio_mg) * 100, 100)}%` }}></div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
                 </div>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* ALERTAS GERENCIAIS */}
-                <Card variant="governance" padding="lg" className="lg:col-span-1 bg-white border-l-4 border-l-slate-800">
+                <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',borderLeft:'4px solid #0f172a',borderTopLeftRadius:0,borderBottomLeftRadius:0,boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'20px 22px'}} className="lg:col-span-1">
                     <div className="flex items-center gap-2 mb-6">
                         <TrendingUp className="w-5 h-5 text-slate-800" />
                         <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">Análise de Tendências</h3>
@@ -253,10 +253,10 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                             </div>
                         )}
                     </div>
-                </Card>
+                </div>
 
                 {/* HISTÓRICO SEMANAL */}
-                <Card variant="governance" padding="lg" className="lg:col-span-2 bg-white">
+                <div style={{background:'#fff',borderRadius:18,border:'1px solid rgba(0,0,0,0.07)',boxShadow:'0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)',padding:'20px 22px',overflow:'hidden'}} className="lg:col-span-2">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-slate-800" />
@@ -268,17 +268,17 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-slate-100">
-                                    <th className="text-left py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Semana</th>
-                                    <th className="text-right py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Energia</th>
-                                    <th className="text-right py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Proteína</th>
-                                    <th className="text-right py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Sódio</th>
-                                    <th className="text-center py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                                <tr style={{background:'linear-gradient(135deg,#0f172a,#1e293b)'}}>
+                                    <th style={{padding:'12px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.1em',textAlign:'left' as const}}>Semana</th>
+                                    <th style={{padding:'12px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.1em',textAlign:'right' as const}}>Energia</th>
+                                    <th style={{padding:'12px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.1em',textAlign:'right' as const}}>Proteína</th>
+                                    <th style={{padding:'12px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.1em',textAlign:'right' as const}}>Sódio</th>
+                                    <th style={{padding:'12px 16px',fontSize:9.5,fontWeight:700,color:'rgba(255,255,255,0.6)',textTransform:'uppercase',letterSpacing:'0.1em',textAlign:'center' as const}}>Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {filteredStats.map((stat, idx) => (
-                                    <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
+                                    <tr key={idx} style={{borderBottom:'1px solid #f8fafc',transition:'background 0.15s'}} onMouseEnter={e=>{(e.currentTarget as HTMLTableRowElement).style.background='#f0fdf4';}} onMouseLeave={e=>{(e.currentTarget as HTMLTableRowElement).style.background='transparent';}}>
                                         <td className="py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-slate-200"></div>
@@ -309,7 +309,7 @@ const SchoolNutritionalDashboard: React.FC<SchoolNutritionalDashboardProps> = ({
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                </div>
             </div>
         </div>
     );

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-05-11
+
+### Added
+- **UI/UX Pro Max**: Refatoração de múltiplos dashboards (`Compliance`, `Inventory`, `Procurement`, etc) com foco em estética premium e responsividade mobile-first.
+- **Micro-interações**: Adicionados estados de hover e transições suaves em botões e cards informativos.
+
+### Changed
+- **Padronização Visual**: Unificação de paleta de cores e tipografia em componentes órfãos.
+- **Estrutura de Arquivos**: Normalização de caminhos de importação para garantir compatibilidade com sistemas de arquivos case-sensitive.
+
+### Fixed
+- **Vercel Build Error**: Corrigido erro de deploy causado por referências inconsistentes ao diretório `UI/`.
+
 ## [1.1.0] - 2026-05-10
 
 ### Added
