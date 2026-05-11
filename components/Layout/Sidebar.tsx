@@ -201,7 +201,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div style={{ margin: '14px 16px 10px', height: 1, background: 'rgba(255,255,255,0.06)' }} />
 
           <div style={{ padding: '0 6px' }}>
-            <MenuItem icon={Settings} label="Configurações" path="/configuracoes" />
+            {hasPermission(activeProfile?.role, 'MANAGE_SYSTEM_SETTINGS') && (
+              <MenuItem icon={Settings} label="Configurações" path="/configuracoes" />
+            )}
             {hasPermission(activeProfile?.role, 'MANAGE_USERS') && (
               <MenuItem icon={Users} label="Usuários" path="/usuarios" />
             )}
