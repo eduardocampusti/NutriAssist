@@ -1,6 +1,24 @@
-export const APP_VERSION = '1.1.1';
-export const RELEASE_DATE = '2026-05-11';
+export const APP_VERSION = '1.2.0';
+export const RELEASE_DATE = '2026-05-20';
 export const RELEASE_NOTES = [
+  {
+    version: '1.2.0',
+    date: '2026-05-20',
+    description: 'Redesign Visual Premium — Identidade Unificada do Sistema.',
+    changes: [
+      'Sidebar redesenhada com gradiente institucional escuro e navegação premium.',
+      'Topbar com bloco de boas-vindas dinâmico e saudação por horário.',
+      'Cards com sombra tripla, topos coloridos e hover com elevação em todos os módulos.',
+      'Fichas Técnicas, Escolas, Alunos, Simulador e Compras redesenhados.',
+      'Estoque com sidebar branca premium (identidade própria azul).',
+      'Dashboard de Inventário com cards coloridos e gráficos de barras por categoria.',
+      'Painel Executivo (Governança) com KPIs, alertas e ações estratégicas.',
+      'Logs de Auditoria, Manual do Usuário e Configurações com visual institucional.',
+      'Sobre o Sistema totalmente reformulado com cards compactos e premium.',
+      'Tela de Login com header institucional, saudação dinâmica e selo LGPD/FNDE.',
+      'Restauração e correção de bugs: menuEngine, encoding UTF-8, imports quebrados.'
+    ]
+  },
   {
     version: '1.1.1',
     date: '2026-05-11',

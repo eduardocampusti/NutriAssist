@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.2.0] - 2026-05-20
+
+### Redesign Visual Premium — Identidade Unificada do Sistema
+
+#### Interface
+- Sidebar redesenhada com gradiente institucional escuro e navegação premium
+- Topbar com bloco de boas-vindas dinâmico e saudação por horário do dia
+- Cards com sombra tripla, topos coloridos e hover com elevação em todos os módulos
+- Tela de Login com header institucional, saudação dinâmica e selo LGPD/FNDE
+
+#### Módulos Redesenhados
+- Fichas Técnicas: cards com gradiente e sombras profundas
+- Escolas: KPI cards + tabela com cabeçalho escuro premium
+- Alunos NE: header rosa, cards de escola com topo colorido
+- Simulador: painel verde com KPIs dinâmicos pós-simulação
+- Compras (PNAE): layout roxo institucional com tabela de mapa de consumo
+- Estoque: sidebar branca com identidade azul própria; dashboard com cards coloridos
+- Governança: Compliance, Transparência, Cockpit FNDE, Logs e Manual reformulados
+- Configurações: atalhos compactos em grid, tabs pill switcher, cards com topos coloridos
+- Usuários: header verde gradiente, formulário lateral com topo colorido
+- Sobre o Sistema: cards compactos, timeline de releases, seção de módulos
+
+#### Correções
+- Restauração do menuEngine.ts com calculateNutritionalTargets (FNDE nº 06/2020)
+- Correção de encoding UTF-8 no ProcurementManager.tsx
+- Correção de imports quebrados em múltiplos componentes
+- Variável S como string literal em vez de referência JS nos style props
+
+---
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
