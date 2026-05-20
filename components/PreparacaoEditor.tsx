@@ -205,8 +205,16 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         const bruto = normalizeDecimal(quantidadeBruta);
         const liquido = normalizeDecimal(quantidadeLiquida);
 
-        if (!selectedAlimentoId || !isPositiveDecimal(bruto) || !isPositiveDecimal(liquido)) {
-            addToast("Informe os pesos bruto e líquido (maiores que zero).", "warning");
+        if (!selectedAlimentoId) {
+            addToast("Selecione um alimento da lista antes de adicionar.", "warning");
+            return;
+        }
+        if (!isPositiveDecimal(bruto)) {
+            addToast("Informe o Peso Bruto (maior que zero). Use ponto ou vírgula: ex 6,0", "warning");
+            return;
+        }
+        if (!isPositiveDecimal(liquido)) {
+            addToast("Informe o Peso Líquido (maior que zero). Use ponto ou vírgula: ex 5,5", "warning");
             return;
         }
 
@@ -398,7 +406,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                         {searchTerm && (
                                             <div className="absolute top-full left-0 w-full z-50 bg-white border rounded-xl shadow-2xl max-h-48 overflow-y-auto">
                                                 {filteredAlimentos.map(a => (
-                                                    <button key={a.id} onClick={() => { setSelectedAlimentoId(a.id); setSearchTerm(a.descricao); }} className="w-full text-left px-4 py-3 text-[10px] font-black uppercase hover:bg-slate-50">
+                                                    <button key={a.id} onClick={() => { setSelectedAlimentoId(a.id); setSearchTerm(a.descricao); setShowDropdown && setShowDropdown(false); }} className="w-full text-left px-4 py-3 text-[10px] font-black uppercase hover:bg-slate-50">
                                                         {a.descricao}
                                                     </button>
                                                 ))}
@@ -408,11 +416,11 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per capita bruto (g)</label>
-                                            <input type="text" inputMode="decimal" value={quantidadeBruta} onChange={(e) => setQuantidadeBruta(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PB" />
+                                            <input type="text" inputMode="decimal" value={quantidadeBruta} onChange={(e) => setQuantidadeBruta(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="Ex: 6,0" />
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per capita líquido (g)</label>
-                                            <input type="text" inputMode="decimal" value={quantidadeLiquida} onChange={(e) => setQuantidadeLiquida(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PL" />
+                                            <input type="text" inputMode="decimal" value={quantidadeLiquida} onChange={(e) => setQuantidadeLiquida(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="Ex: 5,5" />
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">FC Calculado</label>

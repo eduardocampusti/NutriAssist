@@ -1,7 +1,7 @@
 {
   "name": "assistente-tecnico-de-nutricao-escolar",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.2.2",
   "type": "module",
   "scripts": {
     "dev": "node --no-warnings ./node_modules/vite/bin/vite.js",

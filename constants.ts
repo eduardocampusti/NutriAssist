@@ -1,6 +1,12 @@
-export const APP_VERSION = '1.2.1';
+export const APP_VERSION = '1.2.2';
 export const RELEASE_DATE = '2026-05-20';
 export const RELEASE_NOTES = [
+  {
+    version: '1.2.2',
+    date: '2026-05-20',
+    description: '"Fix:',
+    changes: ['"Fix:.']
+  },
   {
     version: '1.2.1',
     date: '2026-05-20',
