@@ -1,6 +1,12 @@
-export const APP_VERSION = '1.2.0';
+export const APP_VERSION = '1.2.1';
 export const RELEASE_DATE = '2026-05-20';
 export const RELEASE_NOTES = [
+  {
+    version: '1.2.1',
+    date: '2026-05-20',
+    description: '"Protecao',
+    changes: ['"Protecao.']
+  },
   {
     version: '1.2.0',
     date: '2026-05-20',

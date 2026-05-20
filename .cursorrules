@@ -1,1 +1,98 @@
-Sempre responda em Português.
+﻿# ============================================================
+# REGRAS OBRIGATORIAS - NUTRIASSIST SME
+# Leia ANTES de qualquer acao neste projeto
+# ============================================================
+
+## IDIOMA
+Sempre responda em Portugues do Brasil.
+
+---
+
+## PROTECAO ABSOLUTA DO BANCO DE DADOS
+
+### REGRA 1 - UNICO BANCO AUTORIZADO
+O unico banco de dados permitido neste projeto e o Supabase do NutriAssist SME.
+As credenciais estao em .env.local. NUNCA altere, substitua ou conecte a outro banco.
+
+Identificacao obrigatoria antes de qualquer operacao no banco:
+- URL deve conter: supabase.co E o projeto deve ser NutriAssist
+- Verificar em services/supabase.ts se a URL bate com .env.local
+- Se houver QUALQUER duvida sobre qual banco esta conectado: PARE e pergunte ao usuario
+
+### REGRA 2 - OPERACOES PROIBIDAS SEM CONFIRMACAO EXPLICITA
+Voce NUNCA pode executar sem o usuario digitar "CONFIRMO" no chat:
+- DROP TABLE, DROP DATABASE, TRUNCATE
+- DELETE sem clausula WHERE
+- UPDATE sem clausula WHERE
+- Qualquer migracao que remova colunas ou tabelas existentes
+- Alteracao em Row Level Security (RLS) policies
+
+### REGRA 3 - MIGRATIONS SEGURAS
+- Toda nova migration deve ser criada em supabase/migrations/ com timestamp
+- Nunca edite migrations existentes, crie uma nova
+- Sempre use IF NOT EXISTS e IF EXISTS para ser idempotente
+- Teste em dev antes de aplicar em producao
+
+### REGRA 4 - TABELAS CRITICAS (APENAS LEITURA SEM APROVACAO)
+- profiles: usuarios do sistema
+- application_settings: configuracoes institucionais
+- fnde_preparacoes: fichas tecnicas homologadas
+- inventory_batches: lotes de estoque com rastreabilidade PNAE
+
+---
+
+## VERSIONAMENTO AUTOMATICO OBRIGATORIO
+
+### REGRA 5 - TODA ALTERACAO EXIGE BUMP DE VERSAO
+Sempre que voce alterar, criar ou corrigir qualquer arquivo do projeto,
+voce DEVE atualizar a versao antes de finalizar. Nao e opcional.
+
+Tipo de mudanca -> Qual numero sobe:
+- Correcao de bug / ajuste visual -> PATCH (Z): ex 1.2.0 -> 1.2.1
+- Nova funcionalidade / nova tela -> MINOR (Y): ex 1.2.0 -> 1.3.0
+- Mudanca estrutural grande       -> MAJOR (X): ex 1.2.0 -> 2.0.0
+
+### REGRA 6 - ARQUIVOS QUE DEVEM SER ATUALIZADOS APOS TODA ALTERACAO
+1. constants.ts: APP_VERSION, RELEASE_DATE e nova entrada em RELEASE_NOTES
+2. package.json: campo "version"
+3. CHANGELOG.md: nova entrada no topo
+
+Formato obrigatorio em RELEASE_NOTES:
+{
+  version: 'X.Y.Z',
+  date: 'YYYY-MM-DD',
+  description: 'Resumo em uma linha.',
+  changes: ['Mudanca 1.', 'Mudanca 2.']
+}
+
+### REGRA 7 - COMMIT COM VERSAO
+Todo commit deve comecar com a versao:
+vX.Y.Z - Descricao curta do que foi feito
+
+---
+
+## ARQUITETURA DO PROJETO
+
+- Frontend: React + TypeScript + Vite + Tailwind CSS
+- Backend: Supabase (PostgreSQL + Auth + Storage + RLS)
+- IA: Google Gemini API via services/geminiService.ts
+- Deploy: Vercel (vercel.json)
+
+## PADRAO VISUAL (Design System NutriAssist)
+Ao criar ou editar componentes visuais, siga:
+- Sombra padrao: 0 2px 6px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.06)
+- Sombra hover:  0 6px 16px rgba(0,0,0,0.08), 0 20px 48px rgba(0,0,0,0.13)
+- Border radius cards: 18-20px
+- Topos coloridos: gradientes suaves com icone em glassmorphism
+- Tabelas: cabecalho linear-gradient(135deg,#0f172a,#1e293b) texto branco
+- Hover linhas tabela: #f0fdf4 (verde clarissimo)
+
+---
+
+## CHECKLIST ANTES DE QUALQUER TAREFA
+
+1. Estou no projeto correto? (NutriAssist SME)
+2. O banco conectado e o Supabase do NutriAssist? (checar .env.local)
+3. Entendi o que sera alterado e qual bump de versao aplicar?
+4. Apos concluir: atualizei constants.ts, package.json e CHANGELOG.md?
+5. O commit tem a versao no inicio?

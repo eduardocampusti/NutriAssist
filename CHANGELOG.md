@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1] - 2026-05-20
+
+### Fixed
+- "Protecao
+
+---
+
 ## [1.2.0] - 2026-05-20
 
 ### Redesign Visual Premium — Identidade Unificada do Sistema
