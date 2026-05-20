@@ -27,6 +27,11 @@ const InventoryReportView: React.FC<InventoryReportViewProps> = ({
 
     const now = Date.now();
 
+    const getValTime = (v: number | string | undefined): number => {
+        if (!v) return 0;
+        return typeof v === 'number' ? v : new Date(v).getTime();
+    };
+
     const handlePrint = () => {
         window.print();
     };
@@ -226,17 +231,17 @@ const InventoryReportView: React.FC<InventoryReportViewProps> = ({
                                     <tbody className="divide-y divide-slate-100">
                                         {batches
                                             .filter(b => b.ativo && b.saldoAtual > 0)
-                                            .sort((a, b) => a.validade - b.validade)
+                                            .sort((a, b) => getValTime(a.validade) - getValTime(b.validade))
                                             .map(batch => {
                                                 const item = inventory.find(i => i.id === batch.itemId);
-                                                const days = Math.ceil((batch.validade - now) / (1000 * 60 * 60 * 24));
+                                                const days = Math.ceil((getValTime(batch.validade) - now) / (1000 * 60 * 60 * 24));
                                                 const status = days < 0 ? 'VENCIDO' : days < 30 ? 'CRÍTICO' : 'ALERTA';
                                                 return (
                                                     <tr key={batch.id}>
                                                         <td className="py-4 px-4 font-bold uppercase text-slate-800 text-xs">{item?.nome}</td>
                                                         <td className="py-4 px-4 text-center font-mono text-slate-500">{batch.loteCod}</td>
                                                         <td className="py-4 px-4 text-center">
-                                                            <p className="font-bold text-slate-800">{new Date(batch.validade).toLocaleDateString('pt-BR')}</p>
+                                                            <p className="font-bold text-slate-800">{new Date(getValTime(batch.validade)).toLocaleDateString('pt-BR')}</p>
                                                             <p className={`text-[9px] font-black uppercase ${days < 0 ? 'text-red-500' : 'text-orange-500'}`}>
                                                                 {days < 0 ? 'EXPIRADO' : `Faltam ${days} dias`}
                                                             </p>

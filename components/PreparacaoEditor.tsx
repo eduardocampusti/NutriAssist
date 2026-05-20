@@ -32,6 +32,17 @@ interface PreparacaoEditorProps {
     onSave: () => void;
 }
 
+const normalizeDecimal = (v: unknown) =>
+    parseFloat(String(v).trim().replace(',', '.'));
+
+const isPositiveDecimal = (v: number) =>
+    Number.isFinite(v) && v > 0;
+
+const finiteDecimalOr = (v: unknown, fallback = 0) => {
+    const normalized = normalizeDecimal(v);
+    return Number.isFinite(normalized) ? normalized : fallback;
+};
+
 const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave }) => {
     const { addToast } = useToast();
     const { activeProfile } = useUsers();
@@ -61,8 +72,8 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     const [searchTerm, setSearchTerm] = useState('');
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [selectedAlimentoId, setSelectedAlimentoId] = useState('');
-    const [quantidadeBruta, setQuantidadeBruta] = useState<number>(0);
-    const [quantidadeLiquida, setQuantidadeLiquida] = useState<number>(0);
+    const [quantidadeBruta, setQuantidadeBruta] = useState('');
+    const [quantidadeLiquida, setQuantidadeLiquida] = useState('');
 
     // Nutritional Preview
     const [nutrientes, setNutrientes] = useState<PreparacaoNutrientes | null>(null);
@@ -173,7 +184,7 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                 const preview = await fndePreparacaoService.calculatePreview(
                     ingredientes.map(i => ({ 
                         alimento_id: i.alimento_id!, 
-                        quantidade_g: i.per_capita_liquido || i.quantidade_per_capita || 0 
+                        quantidade_g: finiteDecimalOr(i.per_capita_liquido, finiteDecimalOr(i.quantidade_per_capita, 0))
                     }))
                 );
                 setNutrientes(preview);
@@ -191,20 +202,23 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
     }, [fndeAlimentos, searchTerm]);
 
     const handleAddIngredient = () => {
-        if (!selectedAlimentoId || quantidadeBruta <= 0 || quantidadeLiquida <= 0) {
+        const bruto = normalizeDecimal(quantidadeBruta);
+        const liquido = normalizeDecimal(quantidadeLiquida);
+
+        if (!selectedAlimentoId || !isPositiveDecimal(bruto) || !isPositiveDecimal(liquido)) {
             addToast("Informe os pesos bruto e líquido (maiores que zero).", "warning");
             return;
         }
 
         const alimento = fndeAlimentos.find(a => a.id === selectedAlimentoId);
-        const fc = quantidadeBruta / quantidadeLiquida;
+        const fc = bruto / liquido;
 
         const newIng: Partial<FNDEPreparacaoIngrediente> = {
             alimento_id: selectedAlimentoId,
-            per_capita_bruto: quantidadeBruta,
-            per_capita_liquido: quantidadeLiquida,
+            per_capita_bruto: bruto,
+            per_capita_liquido: liquido,
             fator_correcao: fc,
-            quantidade_per_capita: quantidadeLiquida,
+            quantidade_per_capita: liquido,
             alimento: {
                 nome: alimento.descricao,
                 grupo_alimentar: alimento.grupo_alimentar
@@ -213,8 +227,8 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
 
         setIngredientes([...ingredientes, newIng]);
         setSelectedAlimentoId('');
-        setQuantidadeBruta(0);
-        setQuantidadeLiquida(0);
+        setQuantidadeBruta('');
+        setQuantidadeLiquida('');
         setSearchTerm('');
         setIsPickerOpen(false);
     };
@@ -225,12 +239,14 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
         setIngredientes(newIngs);
     };
 
-    const handleUpdateIngredient = (index: number, field: 'per_capita_bruto' | 'per_capita_liquido', value: number) => {
+    const handleUpdateIngredient = (index: number, field: 'per_capita_bruto' | 'per_capita_liquido', value: string) => {
+        const normalizedValue = normalizeDecimal(value);
+        const safeValue = Number.isFinite(normalizedValue) ? normalizedValue : 0;
         const newIngs = [...ingredientes];
-        const updated = { ...newIngs[index], [field]: value };
+        const updated = { ...newIngs[index], [field]: safeValue };
         
-        const pb = field === 'per_capita_bruto' ? value : (updated.per_capita_bruto || 0);
-        const pl = field === 'per_capita_liquido' ? value : (updated.per_capita_liquido || 0);
+        const pb = field === 'per_capita_bruto' ? safeValue : normalizeDecimal(updated.per_capita_bruto || 0);
+        const pl = field === 'per_capita_liquido' ? safeValue : normalizeDecimal(updated.per_capita_liquido || 0);
         updated.fator_correcao = pl > 0 ? pb / pl : 1.0;
         updated.quantidade_per_capita = pl;
 
@@ -301,10 +317,10 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                 },
                 ingredientes.map(ing => ({
                     alimento_id: ing.alimento_id!,
-                    per_capita_bruto: ing.per_capita_bruto,
-                    per_capita_liquido: ing.per_capita_liquido,
-                    fator_correcao: ing.fator_correcao,
-                    quantidade_per_capita: ing.per_capita_liquido || ing.quantidade_per_capita || 0
+                    per_capita_bruto: finiteDecimalOr(ing.per_capita_bruto, 0),
+                    per_capita_liquido: finiteDecimalOr(ing.per_capita_liquido, 0),
+                    fator_correcao: finiteDecimalOr(ing.fator_correcao, 1.0),
+                    quantidade_per_capita: finiteDecimalOr(ing.per_capita_liquido, finiteDecimalOr(ing.quantidade_per_capita, 0))
                 }))
             );
 
@@ -392,16 +408,18 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per capita bruto (g)</label>
-                                            <input type="number" value={quantidadeBruta || ''} onChange={(e) => setQuantidadeBruta(parseFloat(e.target.value) || 0)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PB" />
+                                            <input type="text" inputMode="decimal" value={quantidadeBruta} onChange={(e) => setQuantidadeBruta(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PB" />
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per capita líquido (g)</label>
-                                            <input type="number" value={quantidadeLiquida || ''} onChange={(e) => setQuantidadeLiquida(parseFloat(e.target.value) || 0)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PL" />
+                                            <input type="text" inputMode="decimal" value={quantidadeLiquida} onChange={(e) => setQuantidadeLiquida(e.target.value)} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3 text-xs font-black" placeholder="PL" />
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">FC Calculado</label>
                                             <div className="w-full h-[50px] bg-slate-100 flex items-center px-4 rounded-2xl text-xs font-black text-slate-500 border-2 border-slate-100">
-                                                {quantidadeLiquida > 0 ? (quantidadeBruta / quantidadeLiquida).toFixed(2) : '1.00'}
+                                                {isPositiveDecimal(normalizeDecimal(quantidadeLiquida)) && isPositiveDecimal(normalizeDecimal(quantidadeBruta))
+                                                    ? (normalizeDecimal(quantidadeBruta) / normalizeDecimal(quantidadeLiquida)).toFixed(2)
+                                                    : '1.00'}
                                             </div>
                                         </div>
                                         <div className="flex items-end">
@@ -421,11 +439,11 @@ const PreparacaoEditor: React.FC<PreparacaoEditorProps> = ({ id, onClose, onSave
                                         <div className="flex items-center gap-4">
                                             <div className="flex flex-col gap-1">
                                                 <label className="text-[8px] font-black text-slate-400 uppercase">Bruto</label>
-                                                <input type="number" value={ing.per_capita_bruto || ''} onChange={(e) => handleUpdateIngredient(idx, 'per_capita_bruto', parseFloat(e.target.value) || 0)} className="w-16 bg-slate-100 rounded-lg px-2 py-1 text-xs font-black text-right" />
+                                                <input type="text" inputMode="decimal" value={ing.per_capita_bruto || ''} onChange={(e) => handleUpdateIngredient(idx, 'per_capita_bruto', e.target.value)} className="w-16 bg-slate-100 rounded-lg px-2 py-1 text-xs font-black text-right" />
                                             </div>
                                             <div className="flex flex-col gap-1">
                                                 <label className="text-[8px] font-black text-slate-400 uppercase">Líquido</label>
-                                                <input type="number" value={ing.per_capita_liquido || ''} onChange={(e) => handleUpdateIngredient(idx, 'per_capita_liquido', parseFloat(e.target.value) || 0)} className="w-16 bg-slate-100 rounded-lg px-2 py-1 text-xs font-black text-right" />
+                                                <input type="text" inputMode="decimal" value={ing.per_capita_liquido || ''} onChange={(e) => handleUpdateIngredient(idx, 'per_capita_liquido', e.target.value)} className="w-16 bg-slate-100 rounded-lg px-2 py-1 text-xs font-black text-right" />
                                             </div>
                                             <div className="flex flex-col gap-1">
                                                 <label className="text-[8px] font-black text-slate-400 uppercase text-center">FC</label>

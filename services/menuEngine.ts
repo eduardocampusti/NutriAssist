@@ -32,6 +32,40 @@ export interface NutritionalTargets {
     minVitaminCMg: number;
     sodiumMaxMg: number;
     coverage: number;
+
+    // Compatibilidade com componentes legados do front-end
+    minProtein?: number;
+    maxProtein?: number;
+    minCarbs?: number;
+    minFats?: number;
+    maxFats?: number;
+    maxSodium?: number;
+}
+
+export interface MenuComplianceResult {
+    isCompliant: boolean;
+    violations: string[];
+    blockingViolations: string[];
+    warnings: string[];
+    infos: string[];
+    stats: {
+        totalKcal: number;
+        totalCarbs: number;
+        totalProtein: number;
+        totalFats: number;
+        totalSodium: number;
+        totalFiber: number;
+        totalCalcium: number;
+        totalIron: number;
+        totalSatFat: number;
+        totalMagnesium: number;
+        totalZinc: number;
+        totalVitA: number;
+        totalVitC: number;
+        totalTransFat: number;
+        totalCost: number;
+        ultraProcessedCount: number;
+    };
 }
 
 // --- CORE FUNCTIONS ---
@@ -81,9 +115,10 @@ export const calculateNutritionalTargets = (
     const targets = base[key] || base['FUNDAMENTAL_I'];
     
     // Ajustar proporcionalmente ao coverage se diferente do default 0.3
+    let result: NutritionalTargets;
     if (coverage !== 0.3) {
         const factor = coverage / 0.3;
-        return {
+        result = {
             minKcal: Math.round(targets.minKcal * factor),
             maxKcal: Math.round(targets.maxKcal * factor),
             minProteinG: Math.round(targets.minProteinG * factor),
@@ -100,8 +135,19 @@ export const calculateNutritionalTargets = (
             sodiumMaxMg: Math.round(targets.sodiumMaxMg * factor),
             coverage,
         };
+    } else {
+        result = { ...targets, coverage } as NutritionalTargets;
     }
-    return { ...targets, coverage };
+
+    // Injetar aliases para compatibilidade com o front-end
+    result.minProtein = result.minProteinG;
+    result.maxProtein = result.maxProteinG;
+    result.minCarbs = result.minCarbG;
+    result.minFats = result.minFatG;
+    result.maxFats = result.maxFatG;
+    result.maxSodium = result.sodiumMaxMg;
+
+    return result;
 };
 
 /**

@@ -26,5 +26,22 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src/**/*",
+    "contexts/**/*",
+    "components/**/*",
+    "pages/**/*",
+    "services/**/*",
+    "utils/**/*",
+    "types.ts",
+    "App.tsx",
+    "index.tsx",
+    "constants.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "_backup_antes_restauracao_2026-05-08"
+  ]
 }

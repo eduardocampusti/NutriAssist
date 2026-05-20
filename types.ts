@@ -13,6 +13,7 @@ export enum UserRole {
   COORDENADORA = 'COORDENADORA',
   SECRETARIO = 'SECRETARIO',
   NUCLEO_ESCOLAR = 'NÚCLEO ESCOLAR',
+  NUCLEO_COCAL = 'NÚCLEO COCAL',
   VISUALIZADOR = 'VISUALIZADOR'
 }
 
@@ -25,6 +26,7 @@ export interface UserProfile {
   role: UserRole;
   perfil?: UserRole; // Legacy compatibility
   ativo: boolean;
+  status?: 'ATIVO' | 'INATIVO' | 'BLOQUEADO' | string;
   bloqueado?: boolean;
   school_id?: string;
   zona_id?: 'SEDE' | 'RURAL' | 'COCAL' | string;
@@ -68,6 +70,9 @@ export interface NormativeFood {
   versao: number;
   ativo: boolean;
   data_criacao?: string;
+  nome_alimento?: string;
+  faixa_etaria_min_meses?: number;
+  faixa_etaria_max_meses?: number;
 }
 
 // --- 5. ESTOQUE (O Físico) ---
@@ -96,6 +101,7 @@ export interface InventoryItem extends StockProduct {
   protein: number;
   carbs: number;
   fats: number;
+  lipids?: number; // Added
   sodium?: number;
   iron?: number;
   vit_a?: number;
@@ -130,6 +136,7 @@ export interface InventoryItem extends StockProduct {
 
   // Relational Extensions
   classificacaoNova?: string;
+  classificacao_nova?: string; // Added
   faixaEtariaMinMeses?: number;
   faixaEtariaMaxMeses?: number;
   statusNormativo?: 'PERMITIDO' | 'RESTRITO' | 'PROIBIDO';
@@ -137,7 +144,7 @@ export interface InventoryItem extends StockProduct {
   observacoesTecnicas?: string;
 
   created_at: number; // Legacy uses number timestamp
-  origemPadrao?: 'AGRICULTURA_FAMILIAR' | 'PROCESSO_LICITATORIO' | 'DISPENSA';
+  origemPadrao?: 'AGRICULTURA_FAMILIAR' | 'PROCESSO_LICITATORIO' | 'DISPENSA' | 'LICITACAO';
 }
 
 // --- 6. MOVIMENTAÇÕES ---
@@ -309,6 +316,15 @@ export interface ProcurementProcess {
   justificativa_tecnica?: string;
   authorId?: string;
   author_id?: string;
+
+  // Aliases de compatibilidade para componentes legados do front-end
+  year?: number;
+  estimatedValue?: number;
+  afRequired?: boolean;
+  protocolNumber?: string;
+  modeName?: string;
+  modeId?: string; // Added
+  object?: string; // Added
 }
 
 export type ProcurementPlan = ProcurementProcess;
@@ -411,7 +427,7 @@ export interface School {
   created_at: number;
   observacoes?: string;
   prioridade_score?: number;
-  prioridade_nivel?: 'ALTA' | 'MÉDIA' | 'BAIXA';
+  prioridade_nivel?: 'ALTA' | 'MÉDIA' | 'BAIXA' | 'CRITICA' | 'CRÍTICA' | string;
   ultima_priorizacao_data?: string;
 }
 
@@ -473,10 +489,10 @@ export interface ProcurementMapItem {
 // --- LEGACY COMPATIBILITY ---
 export interface HistoryItem {
   id: string;
-  date: number;
-  action: string;
-  user: string;
-  details: string;
+  date?: number;
+  action?: string;
+  user?: string;
+  details?: string;
   // Extras
   timestamp?: number;
   type?: string;
@@ -497,6 +513,18 @@ export interface Cook {
   telefone: string;
   ativo: boolean;
   created_at?: number | string;
+  situacao?: string;
+  permissaoCardapio?: boolean;
+  permissaoEstoque?: boolean;
+  observacoes?: string;
+  foto?: string;
+  turno?: string;
+  dataNascimento?: string;
+  email?: string;
+  matricula?: string;
+  vinculo?: string;
+  permissaoConsumo?: boolean;
+  funcao?: string;
 }
 
 export interface StudentNE {
@@ -562,6 +590,8 @@ export interface InventoryMovement {
   finalidade?: string | MovementPurpose;
   observacao?: string;
   valuePerUnit?: number;
+  data?: number | string; // Added
+  purpose?: string; // Added
 
   // DB Aliases
   item_id?: string;
@@ -591,6 +621,7 @@ export interface InventoryBatch {
   supplierId?: string;
   ativo?: boolean;
   created_at?: number | string;
+  numeroNF?: string; // Added
 }
 
 export interface NutritionalEvaluation {
@@ -612,8 +643,8 @@ export interface NutritionalEvaluation {
   estatura: number;
   imc: number;
   classificacaoImc?: SisvanClassification;
-  condicoesClinicas: string;
-  necessidadesEspeciais: string;
+  condicoesClinicas?: string;
+  necessidadesEspeciais?: string;
   riscoIdentificado: boolean;
   diagnosticoDescritivo: string;
   authorId?: string;
@@ -689,6 +720,8 @@ export interface Supplier {
   tipo?: string | SupplierType;
   ativo: boolean;
   created_at?: number | string;
+  email?: string;
+  telefone?: string;
 }
 
 export enum DocumentCategory {
@@ -801,9 +834,30 @@ export interface StockAnalysisResult { [key: string]: any; }
 export interface SpecialNeedsRegistryResult { [key: string]: any; }
 export interface MenuAutomationResult { [key: string]: any; }
 export interface MonthlyReportResult { [key: string]: any; }
-export interface Contract { [key: string]: any; }
-export interface ProcessStatus { [key: string]: any; }
-export interface ContractStatus { [key: string]: any; }
+export enum ProcessStatus {
+  PLANEJAMENTO = 'PLANEJAMENTO',
+  ANDAMENTO = 'EM_ANDAMENTO',
+  HOMOLOGADO = 'HOMOLOGADO',
+  CANCELADO = 'CANCELADO'
+}
+export enum ContractStatus {
+  ATIVO = 'ATIVO',
+  VENCIDO = 'VENCIDO',
+  RESCINDIDO = 'RESCINDIDO'
+}
+export interface Contract {
+  id: string;
+  procurementId: string;
+  supplierId: string;
+  supplierName: string;
+  contractNumber: string;
+  startDate: string;
+  endDate: string;
+  totalValue: number;
+  balanceRemaining: number;
+  status: ContractStatus | string;
+  created_at?: number | string;
+}
 
 
 // --- 17. ALERTAS INTELIGENTES ---
@@ -894,6 +948,7 @@ export interface DistributionItem {
   quantidade_recebida?: number;
   observacao_item?: string;
   created_at?: string;
+  produto?: InventoryItem;
 }
 
 
@@ -945,6 +1000,11 @@ export interface OperationalOccurrence {
 
   created_at?: string;
   updated_at?: string;
+
+  // Aliases de compatibilidade para componentes legados do front-end
+  type?: string;
+  title?: string;
+  description?: string;
 }
 
 // --- 18. AUDITORIA E REPOSIÇÃO DE ESTOQUE ---

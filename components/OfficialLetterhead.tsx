@@ -8,6 +8,7 @@ interface OfficialLetterheadProps {
     showDate?: boolean;
     type?: 'header' | 'footer';
     className?: string;
+    forceShow?: boolean;
 }
 
 export const OfficialLetterhead: React.FC<OfficialLetterheadProps> = ({
@@ -15,7 +16,8 @@ export const OfficialLetterhead: React.FC<OfficialLetterheadProps> = ({
     title,
     showDate = true,
     type = 'header',
-    className = ""
+    className = "",
+    forceShow
 }) => {
     if (type === 'footer') {
         return (

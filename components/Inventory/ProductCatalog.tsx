@@ -160,6 +160,11 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ inventory, batches, onA
         i.nome.toUpperCase().includes(searchTerm.toUpperCase()) && i.ativo
     );
 
+    const getValTime = (v: number | string | undefined): number => {
+        if (!v) return 0;
+        return typeof v === 'number' ? v : new Date(v).getTime();
+    };
+
     const getTrafficLight = (itemId: string) => {
         const itemBatches = batches.filter(b => b.itemId === itemId && b.saldoAtual > 0 && b.ativo);
         if (itemBatches.length === 0) return { color: 'text-slate-300', label: 'SEM ESTOQUE', bg: 'bg-slate-50' };
@@ -167,10 +172,10 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ inventory, batches, onA
         const now = Date.now();
         const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-        const expired = itemBatches.some(b => b.validade < now);
+        const expired = itemBatches.some(b => getValTime(b.validade) < now);
         if (expired) return { color: 'text-red-600', label: 'Lote Vencido!', bg: 'bg-red-50' };
 
-        const critical = itemBatches.some(b => b.validade < now + thirtyDays);
+        const critical = itemBatches.some(b => getValTime(b.validade) < now + thirtyDays);
         if (critical) return { color: 'text-orange-600', label: 'Validade Curta', bg: 'bg-orange-50' };
 
         return { color: 'text-emerald-600', label: 'Estoque Regular', bg: 'bg-emerald-50' };

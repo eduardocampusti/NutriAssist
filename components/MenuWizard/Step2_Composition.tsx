@@ -82,7 +82,7 @@ export const Step2_Composition: React.FC<Step2Props> = ({ plan, inventory, onCha
     // Determine Stage and Targets
     const currentStage = (plan.faixaEtariaMaxMeses || 0) <= 36 ? EducationalStage.CRECHE : EducationalStage.FUNDAMENTAL_I;
     const targets = React.useMemo(() => {
-        const coverage = ['LANCHE_MANHA', 'LANCHE_TARDE', 'CEIA'].includes(mealType) ? 'PARTIAL' : 'SEMI';
+        const coverage = ['LANCHE_MANHA', 'LANCHE_TARDE', 'CEIA'].includes(mealType) ? 0.2 : 0.3;
         return calculateNutritionalTargets(currentStage, coverage);
     }, [currentStage, mealType]);
 

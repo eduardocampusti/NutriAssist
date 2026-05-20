@@ -34,12 +34,16 @@ serve(async (req) => {
             password,
             nome,
             role,
+            perfil,
             school_id,
             cpf,
             crn,
             telefone,
             endereco,
-            foto
+            foto,
+            zona_id,
+            ativo,
+            status
         } = await req.json()
 
         if (!email || !password || !nome) {
@@ -49,12 +53,18 @@ serve(async (req) => {
             )
         }
 
+        const normalizedRole = String(role || perfil || 'NUTRICIONISTA').toUpperCase()
+        const requestedStatus = String(status || 'ATIVO').toUpperCase()
+        const normalizedStatus = ['ATIVO', 'INATIVO', 'BLOQUEADO'].includes(requestedStatus)
+            ? requestedStatus
+            : 'ATIVO'
+
         // 3. Create User in Auth
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
             email_confirm: true, // Auto-confirm email since admin created it
-            user_metadata: { nome, role }
+            user_metadata: { nome, role: normalizedRole }
         })
 
         if (authError) throw authError
@@ -68,16 +78,20 @@ serve(async (req) => {
             .insert({
                 id: userId,
                 nome,
-                role: role || 'VISUALIZADOR',
+                email,
+                role: normalizedRole,
                 school_id: school_id || null,
                 cpf,
                 crn,
                 telefone,
                 endereco,
                 foto,
+                zona_id: zona_id || null,
                 login: email, // Keep consistency
-                ativo: true,
-                bloqueado: false
+                ativo: ativo !== false,
+                status: normalizedStatus,
+                bloqueado: false,
+                senha_provisoria: true
             })
 
         if (profileError) {

@@ -177,7 +177,7 @@ const TechnicalNoteForm: React.FC<TechnicalNoteFormProps> = ({ onSubmit, isLoadi
             <button
               type="submit"
               disabled={isLoading || !context}
-              style={{width:'100%',maxWidth:360,background:'linear-gradient(135deg,#059669,#15803d)',color:'#fff',padding:'13px 28px',borderRadius:13,border:'none',fontSize:12,fontWeight:800,textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer',boxShadow:'0 6px 20px rgba(5,150,105,0.4)',transition:'all 0.2s',display:'flex',alignItems:'center',justifyContent:'center',gap:10,opacity:(!context||isLoading)?0.4:1}} disabled={isLoading||!context}
+              style={{width:'100%',maxWidth:360,background:'linear-gradient(135deg,#059669,#15803d)',color:'#fff',padding:'13px 28px',borderRadius:13,border:'none',fontSize:12,fontWeight:800,textTransform:'uppercase',letterSpacing:'0.08em',cursor:'pointer',boxShadow:'0 6px 20px rgba(5,150,105,0.4)',transition:'all 0.2s',display:'flex',alignItems:'center',justifyContent:'center',gap:10,opacity:(!context||isLoading)?0.4:1}}
             >
               {isLoading && (
                 <div className="absolute inset-0 bg-emerald-600 flex items-center justify-center">

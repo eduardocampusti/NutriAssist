@@ -109,7 +109,7 @@ const ProfileManager: React.FC<ProfileManagerProps> = ({ profiles, schools, onAd
       handleCloseForm();
     } catch (error) {
       console.error(error);
-      alert("Erro ao processar perfil.");
+      alert(error instanceof Error ? error.message : "Erro ao processar perfil.");
     }
   };
 

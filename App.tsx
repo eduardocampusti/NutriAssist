@@ -99,7 +99,7 @@ const LoadingScreen = () => (
 );
 
 const AppContent: React.FC = () => {
-  const { profiles, activeProfile, isLoading } = useUsers();
+  const { profiles, activeProfile, isLoading, addProfile, updateProfile, deleteProfile } = useUsers();
   const { schools } = useSchools();
   const { inventory, movements, addMovement } = useInventory();
   const { formalDocs, docTypes, generatedContent, currentDocId, currentDocStatus, setGeneratedContent, setCurrentDocId, setCurrentDocStatus, setIsGenerating, isGenerating, addDocument, updateDocumentStatus, deleteDocument } = useDocuments();
@@ -191,7 +191,7 @@ const AppContent: React.FC = () => {
             <Route path="/pnae" element={<AccessGate permission="VIEW_PROCUREMENT" fallback={<Navigate to="/" />}><ProcurementManager plans={[]} menuPlans={[]} inventory={inventory} activeProfile={activeProfile} onSave={async () => { }} onRequestDocument={handleGenerateDocument} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/relatorios" element={<ReportingCenter activeProfile={activeProfile} onClose={() => navigate('/')} />} />
             <Route path="/relatorios-gestao" element={<OperationalReports activeProfile={activeProfile} onClose={() => navigate('/')} />} />
-            <Route path="/usuarios" element={<AccessGate permission="MANAGE_USERS" fallback={<Navigate to="/" />}><ProfileManager profiles={profiles} schools={schools} onAdd={async () => { }} onUpdate={async () => { }} onDelete={async () => { }} onClose={() => navigate('/')} activeUser={activeProfile} /></AccessGate>} />
+            <Route path="/usuarios" element={<AccessGate permission="MANAGE_USERS" fallback={<Navigate to="/" />}><ProfileManager profiles={profiles} schools={schools} onAdd={addProfile} onUpdate={updateProfile} onDelete={deleteProfile} onClose={() => navigate('/')} activeUser={activeProfile} /></AccessGate>} />
             <Route path="/configuracoes" element={<AccessGate permission="MANAGE_SYSTEM_SETTINGS" fallback={<Navigate to="/" />}><InstitutionalSettings config={letterhead} onUpdate={async (c) => await updateLetterhead(c)} onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/logs" element={<AccessGate permission="VIEW_LOGS" fallback={<Navigate to="/" />}><SystemLogManager onClose={() => navigate('/')} /></AccessGate>} />
             <Route path="/conformidade" element={<AccessGate permission="VIEW_REPORTS_TECHNICAL" fallback={<Navigate to="/" />}><ComplianceDashboard /></AccessGate>} />

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { MenuAutomationResult, UserProfile, UserRole } from '../types';
 import { automateMenuPlanning } from '../services/geminiService';
+import { useInventory } from '../contexts/InventoryContext';
 
 interface MenuAutomationProps {
   activeProfile?: UserProfile;
@@ -10,6 +11,7 @@ interface MenuAutomationProps {
 }
 
 const MenuAutomation: React.FC<MenuAutomationProps> = ({ activeProfile, onResult, onClose }) => {
+  const { inventory } = useInventory();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     input: '',
@@ -29,13 +31,13 @@ const MenuAutomation: React.FC<MenuAutomationProps> = ({ activeProfile, onResult
     setIsLoading(true);
     try {
       const result = await automateMenuPlanning(
-        formData.input,
+        inventory,
         formData.numAlunos,
-        formData.modalidade,
-        formData.faixaEtaria,
         formData.turno,
-        formData.periodo,
-        formData.diasLetivos
+        formData.input,
+        formData.modalidade,
+        formData.diasLetivos,
+        activeProfile?.role || UserRole.NUTRICIONISTA
       );
       onResult(result);
     } catch (error) {

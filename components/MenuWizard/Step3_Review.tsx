@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MenuPlan, InventoryItem } from '../../types';
+import { MenuPlan, InventoryItem, EducationalStage } from '../../types';
 import { validateMenuCompliance } from '../../services/menuEngine';
 
 interface Step3Props {
@@ -15,7 +15,12 @@ export const Step3_Review: React.FC<Step3Props> = ({ plan, inventory, onChange, 
 
     useEffect(() => {
         // Run Validation
-        const result = validateMenuCompliance(plan, inventory, plan.numAlunos, plan.etapa);
+        const result = validateMenuCompliance(
+            plan,
+            inventory,
+            plan.numAlunos || 0,
+            (plan.etapa as EducationalStage) || EducationalStage.FUNDAMENTAL_I
+        );
         setCompliance(result);
 
         // Gatekeeper Logic

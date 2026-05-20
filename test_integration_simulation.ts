@@ -1,5 +1,5 @@
 
-import { stockService } from './services/stockService';
+// import { stockService } from './services/stockService.ts'; // Not needed for integration test
 // We mock supabase manually by overwriting the imported object property if possible, 
 // or by using dependency injection if the service supported it. 
 // Since we can't easily overwrite the import in ES modules without a test runner,

@@ -40,6 +40,7 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { user } = useAuth();
 
     // Initial load and sync
+    // Initial load from Supabase with Offline Cache Fallback
     useEffect(() => {
         const loadInitialData = async () => {
             setIsLoading(true);
@@ -49,59 +50,14 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 const { data: dbSuppliers, error: sErr } = await supabase.from('suppliers').select('*').order('nome');
                 const { data: dbBatches, error: bErr } = await supabase.from('inventory_batches').select('*').order('validade');
                 const { data: dbMovements, error: mErr } = await supabase.from('inventory_movements').select('*').order('created_at', { ascending: false }).limit(1000);
-                const { data: dbDistributions, error: dErr } = await supabase.from('distribuicoes').select('*, escola:escolas(*), itens:distribuicao_itens(*, produto:inventory_items(*))').order('created_at', { ascending: false });
+                const { data: dbDistributions, error: dErr } = await supabase.from('distribuicoes').select('*, escola:schools(*), itens:distribuicao_itens(*, produto:inventory_items(*))').order('created_at', { ascending: false });
                 const { data: dbOccurrences, error: oErr } = await supabase.from('operational_occurrences').select('*').order('created_at', { ascending: false });
 
-                // 2. Migration logic: if DB is empty, check localStorage
-                if ((!dbItems || dbItems.length === 0) && !iErr) {
+                // Fallback and Map Items
+                if (iErr) {
+                    console.warn("Erro ao carregar catálogo de estoque, usando cache local:", iErr.message);
                     const localItems = JSON.parse(localStorage.getItem('nutriassist_inventory_v2') || '[]');
-                    const localSuppliers = JSON.parse(localStorage.getItem('nutriassist_suppliers') || '[]');
-                    const localBatches = JSON.parse(localStorage.getItem('nutriassist_batches_v1') || '[]');
-                    const localMovements = JSON.parse(localStorage.getItem('nutriassist_movements_v2') || '[]');
-
-                    if (localItems.length > 0 || localSuppliers.length > 0) {
-                        if (localSuppliers.length > 0) await supabase.from('suppliers').insert(localSuppliers);
-                        if (localItems.length > 0) await supabase.from('inventory_items').insert(localItems);
-                        if (localBatches.length > 0) await supabase.from('inventory_batches').insert(localBatches);
-                        if (localMovements.length > 0) await supabase.from('inventory_movements').insert(localMovements);
-
-                        setInventory(localItems);
-                        setSuppliers(localSuppliers);
-                        setBatches(localBatches);
-                        setMovements(localMovements);
-                    } else {
-                        // Seeding if both are empty
-                        const initialSuppliersList: Supplier[] = [
-                            { id: generateId(), nome: 'SUPERMERCADO CENTRAL', tipo: 'PESSOA_JURIDICA', documento: '00.000.000/0001-00', ativo: true, created_at: Date.now() },
-                            { id: generateId(), nome: 'ASSOCIAÇÃO DE AGRICULTORES DE BROTAS', tipo: 'AGRICULTURA_FAMILIAR', documento: '11.111.111/0001-11', ativo: true, created_at: Date.now() }
-                        ];
-                        await supabase.from('suppliers').insert(initialSuppliersList);
-                        setSuppliers(initialSuppliersList);
-
-                        const initialInventory: InventoryItem[] = [
-                            { id: generateId(), nome: 'ARROZ PARBOILIZADO', categoria: InventoryCategory.SECO, saldoAtual: 500, estoqueMinimo: 50, unidadeMedida: 'KG', kcal: 350, protein: 7, carbs: 78, fats: 1, correctionFactor: 1, costPerUnit: 5.50, isUltraProcessed: false, ativo: true, created_at: Date.now() },
-                            { id: generateId(), nome: 'FEIJÃO CARIOCA', categoria: InventoryCategory.SECO, saldoAtual: 300, estoqueMinimo: 30, unidadeMedida: 'KG', kcal: 330, protein: 20, carbs: 60, fats: 1.5, correctionFactor: 1, costPerUnit: 7.20, isUltraProcessed: false, ativo: true, created_at: Date.now() },
-                            { id: generateId(), nome: 'LEITE EM PÓ INTEGRAL', categoria: InventoryCategory.SECO, saldoAtual: 100, estoqueMinimo: 20, unidadeMedida: 'KG', kcal: 500, protein: 25, carbs: 38, fats: 27, correctionFactor: 1, costPerUnit: 25.00, isUltraProcessed: false, ativo: true, created_at: Date.now() }
-                        ];
-                        await supabase.from('inventory_items').insert(initialInventory);
-                        setInventory(initialInventory);
-
-                        const initialBatches: InventoryBatch[] = initialInventory.map(item => ({
-                            id: generateId(),
-                            itemId: item.id,
-                            supplierId: initialSuppliersList[0].id,
-                            dataEntrada: Date.now(),
-                            validade: Date.now() + (90 * 24 * 60 * 60 * 1000),
-                            quantidadeInicial: item.saldoAtual,
-                            saldoAtual: item.saldoAtual,
-                            valorUnitario: item.costPerUnit,
-                            loteCod: 'INICIAL-AUTO',
-                            ativo: true,
-                            created_at: Date.now()
-                        }));
-                        await supabase.from('inventory_batches').insert(initialBatches);
-                        setBatches(initialBatches);
-                    }
+                    setInventory(localItems);
                 } else {
                     setInventory((dbItems || []).map((i: any) => ({
                         ...i,
@@ -113,7 +69,23 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                         unidadeMedida: i.unidade_medida || i.unidadeMedida || 'KG',
                         created_at: i.created_at ? new Date(i.created_at).getTime() : Date.now()
                     })));
+                }
+
+                // Fallback and Map Suppliers
+                if (sErr) {
+                    console.warn("Erro ao carregar fornecedores, usando cache local:", sErr.message);
+                    const localSuppliers = JSON.parse(localStorage.getItem('nutriassist_suppliers') || '[]');
+                    setSuppliers(localSuppliers);
+                } else {
                     setSuppliers(dbSuppliers || []);
+                }
+
+                // Fallback and Map Batches
+                if (bErr) {
+                    console.warn("Erro ao carregar lotes de estoque, usando cache local:", bErr.message);
+                    const localBatches = JSON.parse(localStorage.getItem('nutriassist_batches_v1') || '[]');
+                    setBatches(localBatches);
+                } else {
                     setBatches((dbBatches || []).map((b: any) => ({
                         ...b,
                         itemId: b.item_id || b.itemId,
@@ -126,6 +98,14 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                         loteCod: b.lote_cod || b.loteCod,
                         created_at: b.created_at ? new Date(b.created_at).getTime() : Date.now()
                     })));
+                }
+
+                // Fallback and Map Movements
+                if (mErr) {
+                    console.warn("Erro ao carregar movimentações de estoque, usando cache local:", mErr.message);
+                    const localMovements = JSON.parse(localStorage.getItem('nutriassist_movements_v2') || '[]');
+                    setMovements(localMovements);
+                } else {
                     setMovements((dbMovements || []).map((m: any) => ({
                         ...m,
                         itemId: m.item_id || m.itemId,
@@ -137,11 +117,32 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                         data: m.data_movimento ? new Date(m.data_movimento).getTime() : m.data,
                         created_at: m.created_at ? new Date(m.created_at).getTime() : Date.now()
                     })));
+                }
+
+                // Distributions and Occurrences (Secondary relational caches)
+                if (dErr) {
+                    console.warn("Erro ao carregar ordens de distribuição do Supabase:", dErr.message);
+                } else {
                     setDistributions(dbDistributions || []);
+                }
+
+                if (oErr) {
+                    console.warn("Erro ao carregar ocorrências operacionais do Supabase:", oErr.message);
+                } else {
                     setOccurrences(dbOccurrences || []);
                 }
+
             } catch (error) {
                 console.error("Falha ao carregar dados de estoque do Supabase:", error);
+                // General safety fallback
+                const localItems = JSON.parse(localStorage.getItem('nutriassist_inventory_v2') || '[]');
+                const localSuppliers = JSON.parse(localStorage.getItem('nutriassist_suppliers') || '[]');
+                const localBatches = JSON.parse(localStorage.getItem('nutriassist_batches_v1') || '[]');
+                const localMovements = JSON.parse(localStorage.getItem('nutriassist_movements_v2') || '[]');
+                setInventory(localItems);
+                setSuppliers(localSuppliers);
+                setBatches(localBatches);
+                setMovements(localMovements);
             } finally {
                 setIsLoading(false);
             }
@@ -149,6 +150,32 @@ export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         loadInitialData();
     }, []);
+
+    // Automatic LocalStorage sync when state changes (only after initial load complete)
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_inventory_v2', JSON.stringify(inventory));
+        }
+    }, [inventory, isLoading]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_suppliers', JSON.stringify(suppliers));
+        }
+    }, [suppliers, isLoading]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_batches_v1', JSON.stringify(batches));
+        }
+    }, [batches, isLoading]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_movements_v2', JSON.stringify(movements));
+        }
+    }, [movements, isLoading]);
+
 
     const addItem = async (item: Omit<InventoryItem, 'id' | 'created_at' | 'saldoAtual'>) => {
         const exists = inventory.some(i => i.nome.trim().toUpperCase() === item.nome.trim().toUpperCase());

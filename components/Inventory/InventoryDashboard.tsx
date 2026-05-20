@@ -48,12 +48,17 @@ const InventoryDashboard: React.FC<InventoryDashboardProps> = ({ inventory, batc
     const now = Date.now();
     const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
+    const getValTime = (v: number | string | undefined): number => {
+        if (!v) return 0;
+        return typeof v === 'number' ? v : new Date(v).getTime();
+    };
+
     const totalValue = batches.filter(b => b.ativo && b.saldoAtual > 0).reduce((acc, b) => acc + (b.saldoAtual * b.valorUnitario), 0);
     const agriBatches = batches.filter(b => { const s = suppliers.find(x => x.id === b.supplierId); return s?.tipo === SupplierType.AGRICULTOR; });
     const agriValue = agriBatches.filter(b => b.ativo && b.saldoAtual > 0).reduce((acc, b) => acc + (b.saldoAtual * b.valorUnitario), 0);
     const agriPercent = totalValue > 0 ? (agriValue / totalValue) * 100 : 0;
-    const expiredBatches = batches.filter(b => b.ativo && b.saldoAtual > 0 && b.validade < now);
-    const nearExpirationBatches = batches.filter(b => b.ativo && b.saldoAtual > 0 && b.validade >= now && b.validade < now + thirtyDays);
+    const expiredBatches = batches.filter(b => b.ativo && b.saldoAtual > 0 && getValTime(b.validade) < now);
+    const nearExpirationBatches = batches.filter(b => b.ativo && b.saldoAtual > 0 && getValTime(b.validade) >= now && getValTime(b.validade) < now + thirtyDays);
     const totalActiveBatches = batches.filter(b => b.ativo && b.saldoAtual > 0).length;
     const validityRiskPercent = totalActiveBatches > 0 ? ((expiredBatches.length + nearExpirationBatches.length) / totalActiveBatches) * 100 : 0;
     const lowStockItems = inventory.filter(i => { const bal = batches.filter(b => b.itemId === i.id && b.ativo).reduce((a, b) => a + b.saldoAtual, 0); return i.ativo && bal < i.estoqueMinimo; });
@@ -196,10 +201,10 @@ const InventoryDashboard: React.FC<InventoryDashboardProps> = ({ inventory, batc
                         <span style={{ fontSize: 9.5, fontWeight: 700, color: '#92400e', background: 'rgba(255,255,255,0.7)', padding: '3px 9px', borderRadius: 6, border: '1px solid rgba(146,64,14,0.2)', textTransform: 'uppercase' }}>Top 5</span>
                     </div>
                     <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {batches.filter(b => b.ativo && b.saldoAtual > 0 && b.validade < now + (90*24*60*60*1000))
-                            .sort((a,b) => a.validade - b.validade).slice(0,5).map(b => {
+                        {batches.filter(b => b.ativo && b.saldoAtual > 0 && getValTime(b.validade) < now + (90*24*60*60*1000))
+                            .sort((a,b) => getValTime(a.validade) - getValTime(b.validade)).slice(0,5).map(b => {
                             const item = inventory.find(i => i.id === b.itemId);
-                            const daysLeft = Math.ceil((b.validade - now) / (1000*60*60*24));
+                            const daysLeft = Math.ceil((getValTime(b.validade) - now) / (1000*60*60*24));
                             const isExp = daysLeft < 0, isCrit = daysLeft < 30;
                             return (
                                 <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: isExp ? '#fff1f2' : isCrit ? '#fff7ed' : '#f8fafc', borderRadius: 12, border: `1px solid ${isExp ? '#fecdd3' : isCrit ? '#fed7aa' : '#f1f5f9'}` }}>
@@ -211,7 +216,7 @@ const InventoryDashboard: React.FC<InventoryDashboardProps> = ({ inventory, batc
                                         <p style={{ fontSize: 10, fontWeight: 800, color: isExp ? '#dc2626' : isCrit ? '#d97706' : '#059669', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 2px' }}>
                                             {isExp ? 'Expirado' : `${daysLeft}d`}
                                         </p>
-                                        <p style={{ fontSize: 9.5, color: '#94a3b8', margin: 0 }}>{new Date(b.validade).toLocaleDateString('pt-BR')}</p>
+                                        <p style={{ fontSize: 9.5, color: '#94a3b8', margin: 0 }}>{new Date(getValTime(b.validade)).toLocaleDateString('pt-BR')}</p>
                                     </div>
                                 </div>
                             );

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { UserProfile, UserRole } from '../types';
 import { useAuth } from './AuthContext';
 import { supabase } from '../services/supabase';
@@ -18,6 +18,28 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const normalizeProfile = (p: any): UserProfile => {
+    const rawRole = p.role || p.perfil || UserRole.NUTRICIONISTA;
+    const upperRole = String(rawRole).toUpperCase();
+    const role = Object.values(UserRole).includes(upperRole as UserRole)
+        ? upperRole as UserRole
+        : UserRole.NUTRICIONISTA;
+    const status = p.status || (p.bloqueado ? 'BLOQUEADO' : p.ativo === false ? 'INATIVO' : 'ATIVO');
+
+    return {
+        ...p,
+        role,
+        status,
+        ativo: p.ativo !== false && status !== 'INATIVO',
+        bloqueado: p.bloqueado === true || status === 'BLOQUEADO',
+        email: p.email || p.login || '',
+        zona_id: p.zona_id || null,
+        senha_provisoria: p.senha_provisoria === true,
+        data_alteracao_senha: p.data_alteracao_senha,
+        created_at: p.created_at ? new Date(p.created_at).getTime() : Date.now()
+    } as UserProfile;
+};
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const { addToast } = useToast();
@@ -26,181 +48,124 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [currentProfileId, setCurrentProfileId] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
 
-    // Initial Load & Migration
+    const loadProfiles = useCallback(async () => {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('nome', { ascending: true });
+
+        if (error) throw error;
+        setProfiles((data || []).map(normalizeProfile));
+    }, []);
+
     useEffect(() => {
         const loadInitialData = async () => {
-            // Estabilização: Somente ativa o loading global se NÃO houver perfis.
-            // Isso impede o sistema de "piscar" e unmount/mount ao re-validar a sessão.
-            if (profiles.length === 0) {
-                setIsLoading(true);
-            }
+            setIsLoading(true);
             try {
-                // 1. Fetch from Supabase
-                const { data: dbProfiles, error } = await supabase
-                    .from('profiles')
-                    .select('*');
+                await loadProfiles();
 
-                if (error) throw error;
-
-                // 2. Migration if empty
-                if (!dbProfiles || dbProfiles.length === 0) {
-                    await seedLocalProfiles();
-                } else {
-                    setProfiles(dbProfiles.map(p => {
-                        const rawRole = p.role || p.perfil;
-                        let role = UserRole.NUTRICIONISTA;
-
-                        // Defensive role mapping
-                        if (rawRole) {
-                            const upperRole = rawRole.toUpperCase();
-                            if (Object.values(UserRole).includes(upperRole as UserRole)) {
-                                role = upperRole as UserRole;
-                            }
-                        }
-
-                        // Special case: if login is admin, force ADMIN role if not set
-                        if (role === UserRole.NUTRICIONISTA && (p.login === 'admin' || p.email === 'admin@gmail.com')) {
-                            role = UserRole.ADMIN;
-                        }
-
-                        return {
-                            ...p,
-                            role,
-                            zona_id: p.zona_id || null,
-                            senha_provisoria: p.senha_provisoria === true,
-                            data_alteracao_senha: p.data_alteracao_senha,
-                            created_at: p.created_at ? new Date(p.created_at).getTime() : Date.now()
-                        };
-                    }) as any);
-                }
-
-                // Initial Active Profile
                 const lastId = localStorage.getItem('nutriassist_active_profile_id')?.replace(/"/g, '');
                 if (lastId && user) setCurrentProfileId(lastId);
                 else if (!user) setCurrentProfileId('');
-
             } catch (err) {
-                console.error("Error loading user profiles (falling back to local):", err);
-                // Fallback to local seeding on error
-                await seedLocalProfiles();
+                console.error('Error loading user profiles:', err);
+                setProfiles([]);
+                setCurrentProfileId('');
+                addToast('Erro ao carregar perfis de usuarios do banco.', 'error');
             } finally {
                 setIsLoading(false);
             }
         };
 
-        const seedLocalProfiles = async () => {
-            const localProfiles = JSON.parse(localStorage.getItem('nutriassist_profiles') || '[]');
-            if (localProfiles.length > 0) {
-                setProfiles(localProfiles.map((p: any) => ({
-                    ...p,
-                    role: (p.role || p.perfil || UserRole.NUTRICIONISTA).toUpperCase()
-                })));
-            } else {
-                // Seeding
-                const initial: UserProfile[] = [];
-                setProfiles(initial);
-                // Force Admin default ONLY if there is no user and we are seeding from scratch
-                // Actually, better not to set currentProfileId to admin by default if we want security.
-                // setCurrentProfileId(initial[0].id); // Removed fallback
-                localStorage.removeItem('nutriassist_active_profile_id');
-            }
-        };
-
         loadInitialData();
-    }, [user]); // Added dependency on user
+    }, [user, loadProfiles, addToast]);
 
-    // Sync Active Profile ID to Local Storage for convenience
     useEffect(() => {
         if (currentProfileId && user) {
             localStorage.setItem('nutriassist_active_profile_id', currentProfileId);
         }
     }, [currentProfileId, user]);
 
-    // Sync with Auth User
     useEffect(() => {
-        if (user && profiles.length > 0) {
-            const userEmailLower = user.email?.toLowerCase();
-
-            // 1. Try exact ID match first
-            let match = profiles.find(p => p.id === user.id);
-
-            // 2. Try email/login match
-            if (!match && userEmailLower) {
-                match = profiles.find(p =>
-                    (p.email && p.email.toLowerCase() === userEmailLower) ||
-                    (p.login && p.login.toLowerCase() === userEmailLower)
-                );
-            }
-
-            // 3. Admin Force logic
-            if (userEmailLower === 'admin' || userEmailLower === 'admin@gmail.com') {
-                const adminMatch = profiles.find(p => p.role === UserRole.ADMIN || p.login === 'admin');
-                if (adminMatch) {
-                    setCurrentProfileId(adminMatch.id);
-                } else {
-                    // Create virtual admin profile if totally missing
-                    const virtualAdmin: UserProfile = {
-                        id: user.id || '00000000-0000-0000-0000-000000000001',
-                        nome: "Admin Municipal",
-                        role: UserRole.ADMIN,
-                        ativo: true,
-                        email: 'admin@gmail.com',
-                        login: 'admin'
-                    };
-                    setProfiles(prev => [virtualAdmin, ...prev]);
-                    setCurrentProfileId(virtualAdmin.id);
-                }
-            } else if (match) {
-                setCurrentProfileId(match.id);
-            } else {
-                // If it's a new user but no profile matched, don't just leave it at the old one
-                // Check if the currentProfileId still makes sense for this user context
-                if (!profiles.some(p => p.id === currentProfileId)) {
-                    setCurrentProfileId('');
-                }
-            }
+        if (!user) {
+            setCurrentProfileId('');
+            return;
         }
-    }, [user, profiles]);
 
+        const userEmailLower = user.email?.toLowerCase();
+        let match = profiles.find(p => p.id === user.id);
+
+        if (!match && userEmailLower) {
+            match = profiles.find(p =>
+                (p.email && p.email.toLowerCase() === userEmailLower) ||
+                (p.login && p.login.toLowerCase() === userEmailLower)
+            );
+        }
+
+        setCurrentProfileId(match?.id || '');
+    }, [user, profiles]);
 
     const addProfile = async (profile: Omit<UserProfile, 'id' | 'created_at'>) => {
         setIsLoading(true);
         try {
-            // New "Professional" Flow: Call Edge Function
+            const email = (profile.email || profile.login || '').trim().toLowerCase();
+            const password = profile.senha?.trim();
+
+            if (!email || !password || !profile.nome?.trim()) {
+                throw new Error('Nome, email/login e senha inicial sao obrigatorios.');
+            }
+
+            const profilePayload = {
+                ...profile,
+                email,
+                login: email,
+                role: profile.role || UserRole.NUTRICIONISTA,
+                perfil: profile.role || UserRole.NUTRICIONISTA,
+                ativo: true,
+                status: 'ATIVO',
+                bloqueado: false
+            };
+
             const { data, error } = await supabase.functions.invoke('create-user', {
                 body: {
-                    email: profile.login, // In our form, login field is treated as email
-                    password: profile.senha,
-                    nome: profile.nome,
-                    role: profile.role,
-                    school_id: profile.school_id,
-                    cpf: profile.cpf,
-                    crn: profile.crn,
-                    telefone: profile.telefone,
-                    endereco: profile.endereco,
-                    foto: profile.foto,
-                    zona_id: profile.zona_id
+                    email,
+                    password,
+                    nome: profilePayload.nome,
+                    role: profilePayload.role,
+                    perfil: profilePayload.perfil,
+                    school_id: profilePayload.school_id || null,
+                    cpf: profilePayload.cpf || null,
+                    crn: profilePayload.crn || null,
+                    telefone: profilePayload.telefone || null,
+                    endereco: profilePayload.endereco || null,
+                    foto: profilePayload.foto || null,
+                    zona_id: profilePayload.zona_id || null,
+                    ativo: true,
+                    status: 'ATIVO'
                 }
             });
 
-            if (error) throw new Error(error.message || 'Erro ao chamar função de criação');
-            // Check for application level errors from the function
-            if (data && data.error) throw new Error(data.error);
+            if (error) throw new Error(error.message || 'Erro ao chamar funcao de criacao.');
+            if (data?.error) throw new Error(data.error);
+            if (!data?.user?.id) throw new Error('Usuario criado sem id de Auth retornado.');
 
-            if (!data || !data.user) {
-                throw new Error('Erro desconhecido ao criar usuário (sem resposta).');
+            const { data: createdProfile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profileError || !createdProfile) {
+                throw new Error(profileError?.message || 'Auth user criado, mas o profile nao foi encontrado no banco.');
             }
 
-            // Optimistic Update
-            const newProfile: UserProfile = {
-                ...profile,
-                id: data.user.id,
-                senha_provisoria: true,
-                created_at: Date.now()
-            };
+            const normalizedProfile = normalizeProfile(createdProfile);
+            if (normalizedProfile.role !== profilePayload.role || !normalizedProfile.ativo || normalizedProfile.status !== 'ATIVO') {
+                throw new Error('Profile criado com role, status ou ativo incompatibeis com a listagem.');
+            }
 
-            setProfiles(prev => [...prev, newProfile]);
-            addToast("Usuário e Login criados com sucesso!", 'success');
+            await loadProfiles();
+            addToast('Usuario e login criados com sucesso!', 'success');
 
             await addLog({
                 usuario_id: user?.id || 'system',
@@ -208,14 +173,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 modulo: 'USUARIOS',
                 acao: 'CADASTRO_USUARIO_COMPLETO',
                 level: 'INFO',
-                message: `Usuário criado: ${newProfile.nome}`,
+                message: `Usuario criado: ${normalizedProfile.nome}`,
                 timestamp: Date.now(),
-                dados: { id: newProfile.id, nome: newProfile.nome, role: newProfile.role }
+                dados: { id: normalizedProfile.id, nome: normalizedProfile.nome, role: normalizedProfile.role }
             });
-
         } catch (err: any) {
-            console.error("Erro ao criar usuário:", err);
-            addToast(err.message || "Erro ao processar cadastro.", 'error');
+            console.error('Erro ao criar usuario:', err);
+            addToast(err.message || 'Erro ao processar cadastro.', 'error');
+            throw err;
         } finally {
             setIsLoading(false);
         }
@@ -227,24 +192,21 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const updatedProfile = { ...currentProfile, ...updates };
 
-        // SYNC SUPABASE AUTH: If updating own password, sync to Auth layer
         if (updates.senha && user?.id === id) {
             const { error: authError } = await supabase.auth.updateUser({ password: updates.senha });
             if (authError) {
-                console.error("Erro ao sincronizar senha com Auth:", authError);
+                console.error('Erro ao sincronizar senha com Auth:', authError);
 
-                // If password is same as old, we can treat as success or ignore
                 const msg = authError.message?.toLowerCase();
-                if (msg?.includes("different") || msg?.includes("same") || msg?.includes("igual")) {
-                    console.warn("Senha igual à anterior, prosseguindo...");
+                if (msg?.includes('different') || msg?.includes('same') || msg?.includes('igual')) {
+                    console.warn('Senha igual a anterior, prosseguindo...');
                 } else {
-                    addToast(`Erro de Autenticação: ${authError.message}`, 'error');
-                    return;
+                    addToast(`Erro de Autenticacao: ${authError.message}`, 'error');
+                    throw authError;
                 }
             }
         }
 
-        // Use RPC to bypass RLS
         const { error } = await supabase.rpc('manage_user_profile', {
             p_id: id,
             p_nome: updatedProfile.nome,
@@ -266,12 +228,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (error) {
             console.error(error);
-            const msg = "Erro ao atualizar perfil: " + error.message;
+            const msg = 'Erro ao atualizar perfil: ' + error.message;
             addToast(msg, 'error');
             throw new Error(msg);
         }
-        addToast("Perfil atualizado!", 'success');
-        setProfiles(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+
+        await loadProfiles();
+        addToast('Perfil atualizado!', 'success');
 
         await addLog({
             usuario_id: user?.id || 'system',
@@ -279,14 +242,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             modulo: 'USUARIOS',
             acao: 'EDICAO_USUARIO',
             level: 'INFO',
-            message: `Edição de usuário: ${updatedProfile.nome}`,
+            message: `Edicao de usuario: ${updatedProfile.nome}`,
             timestamp: Date.now(),
             dados: { id, nome: updatedProfile.nome, updates }
         });
     };
 
     const deleteProfile = async (id: string) => {
-        if (!window.confirm("ATENÇÃO: Isso excluirá permanentemente o usuário e seu acesso. Confirma?")) return;
+        if (!window.confirm('ATENCAO: Isso excluira permanentemente o usuario e seu acesso. Confirma?')) return;
 
         setIsLoading(true);
         try {
@@ -295,10 +258,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
             if (error) throw new Error(error.message);
-            if (data && data.error) throw new Error(data.error);
+            if (data?.error) throw new Error(data.error);
 
-            setProfiles(prev => prev.filter(p => p.id !== id));
-            addToast("Usuário excluído com sucesso.", 'success');
+            await loadProfiles();
+            addToast('Usuario excluido com sucesso.', 'success');
 
             await addLog({
                 usuario_id: user?.id || 'system',
@@ -306,14 +269,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 modulo: 'USUARIOS',
                 acao: 'EXCLUSAO_USUARIO',
                 level: 'WARN',
-                message: `Exclusão de usuário: ${id}`,
+                message: `Exclusao de usuario: ${id}`,
                 timestamp: Date.now(),
                 dados: { id }
             });
-
         } catch (err: any) {
-            console.error("Erro ao excluir:", err);
-            addToast("Falha ao excluir usuário: " + err.message, 'error');
+            console.error('Erro ao excluir:', err);
+            addToast('Falha ao excluir usuario: ' + err.message, 'error');
+            throw err;
         } finally {
             setIsLoading(false);
         }

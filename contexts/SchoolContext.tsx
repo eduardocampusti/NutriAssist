@@ -34,70 +34,59 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const { user } = useAuth();
 
     // Initial load and sync
+    // Initial load from Supabase with Offline Cache Fallback
     useEffect(() => {
         const loadInitialData = async () => {
             setIsLoading(true);
             try {
                 // 1. Fetch from Supabase
                 const { data: dbSchools, error: sErr } = await supabase.from('schools').select('*').order('nome');
-
-                // Map DB (snake_case) to TS (camelCase)
-                const mappedSchools: School[] = (dbSchools || []).map((s: any) => ({
-                    ...s,
-                    zona: s.zona_escolar || s.zona || 'SEDE',
-                    zona_id: s.zona_id || s.zona_escolar || s.zona || 'SEDE',
-                    numAlunos: s.num_alunos || s.numAlunos || 0,
-                    numAlunosNE: s.num_alunos_ne || s.numAlunosNE || 0,
-                    created_at: s.created_at ? new Date(s.created_at).getTime() : Date.now()
-                }));
-
                 const { data: dbCooks, error: cErr } = await supabase.from('cooks').select('*').order('nome');
                 const { data: dbStudents, error: stErr } = await supabase.from('students_ne').select('*').order('nome');
 
-                // 2. Migration logic: if DB is empty, check localStorage
-                if ((!mappedSchools || mappedSchools.length === 0) && !sErr) {
+                // Fallback to LocalStorage for Schools on error
+                if (sErr) {
+                    console.warn("Erro ao buscar escolas no Supabase, usando cache local:", sErr.message);
                     const localSchools = JSON.parse(localStorage.getItem('nutriassist_schools_v3') || '[]');
-                    if (localSchools.length > 0) {
-                        // Insert local schools mapping camel -> snake AND timestamp -> ISO
-                        const dbPayload = localSchools.map((s: School) => ({
-                            ...s,
-                            zona_escolar: s.zona,
-                            num_alunos: s.numAlunos,
-                            num_alunos_ne: s.numAlunosNE,
-                            created_at: new Date(s.created_at).toISOString()
-                        }));
-                        await supabase.from('schools').insert(dbPayload);
-                        setSchools(localSchools);
-                    } else {
-                        // No seeding of dummy data. Return empty or prompt user to create a school.
-                        console.warn('Nenhuma escola encontrada no banco de dados.');
-                        setSchools([]);
-                    }
+                    setSchools(localSchools);
                 } else {
-                    setSchools(mappedSchools || []);
+                    const mappedSchools: School[] = (dbSchools || []).map((s: any) => ({
+                        ...s,
+                        zona: s.zona_escolar || s.zona || 'SEDE',
+                        zona_id: s.zona_id || s.zona_escolar || s.zona || 'SEDE',
+                        numAlunos: s.num_alunos || s.numAlunos || 0,
+                        numAlunosNE: s.num_alunos_ne || s.numAlunosNE || 0,
+                        created_at: s.created_at ? new Date(s.created_at).getTime() : Date.now()
+                    }));
+                    setSchools(mappedSchools);
                 }
 
-                if ((!dbCooks || dbCooks.length === 0) && !cErr) {
+                // Fallback to LocalStorage for Cooks
+                if (cErr) {
+                    console.warn("Erro ao buscar merendeiras no Supabase, usando cache local:", cErr.message);
                     const localCooks = JSON.parse(localStorage.getItem('nutriassist_cooks_v3') || '[]');
-                    if (localCooks.length > 0) {
-                        await supabase.from('cooks').insert(localCooks);
-                        setCooks(localCooks);
-                    }
+                    setCooks(localCooks);
                 } else {
                     setCooks(dbCooks || []);
                 }
 
-                if ((!dbStudents || dbStudents.length === 0) && !stErr) {
+                // Fallback to LocalStorage for Students_NE
+                if (stErr) {
+                    console.warn("Erro ao buscar alunos NE no Supabase, usando cache local:", stErr.message);
                     const localStudents = JSON.parse(localStorage.getItem('nutriassist_students_ne') || '[]');
-                    if (localStudents.length > 0) {
-                        await supabase.from('students_ne').insert(localStudents);
-                        setStudentsNE(localStudents);
-                    }
+                    setStudentsNE(localStudents);
                 } else {
                     setStudentsNE(dbStudents || []);
                 }
             } catch (error) {
                 console.error("Falha ao carregar dados do Supabase:", error);
+                // General fallback on critical network exceptions
+                const localSchools = JSON.parse(localStorage.getItem('nutriassist_schools_v3') || '[]');
+                const localCooks = JSON.parse(localStorage.getItem('nutriassist_cooks_v3') || '[]');
+                const localStudents = JSON.parse(localStorage.getItem('nutriassist_students_ne') || '[]');
+                setSchools(localSchools);
+                setCooks(localCooks);
+                setStudentsNE(localStudents);
             } finally {
                 setIsLoading(false);
             }
@@ -105,6 +94,25 @@ export const SchoolProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         loadInitialData();
     }, []);
+
+    // Automatic LocalStorage sync when state changes (only after initial load complete)
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_schools_v3', JSON.stringify(schools));
+        }
+    }, [schools, isLoading]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_cooks_v3', JSON.stringify(cooks));
+        }
+    }, [cooks, isLoading]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            localStorage.setItem('nutriassist_students_ne', JSON.stringify(studentsNE));
+        }
+    }, [studentsNE, isLoading]);
 
     const addSchool = async (s: Omit<School, 'id' | 'created_at' | 'ativo'>) => {
         const newSchool: School = {
